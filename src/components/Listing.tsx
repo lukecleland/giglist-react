@@ -27,7 +27,7 @@ export const Listing:React.ElementType = ({gigs}: {gigs:TListing[]}) => {
               <div className="name">{ gig.name }, { gig.suburb }</div>
               <div className="address">{ gig.address }</div>
             </div>
-            <div className="event-time">{ gig.date_formatted }</div>
+            <div className="event-time">{ gig.date_formatted.toUpperCase() }</div>
           </li>
           }
           gig = { gig }

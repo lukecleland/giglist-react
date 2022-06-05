@@ -33,10 +33,10 @@ const ListingModal: FC<Props> = ({ children, ...props }) => {
       </Modal.Content>
       <Modal.Actions>
         <Button color='black' onClick={() => setOpen(false)}>
-          Close
+          Maybe next time
         </Button>
         <Button
-          content="I'm going!"
+          content="Add to my Giglist!"
           labelPosition='right'
           icon='checkmark'
           onClick={() => setOpen(false)}

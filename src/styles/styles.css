@@ -60,9 +60,17 @@ body {
      display:block;
 }
  li.event-wrapper {
-     padding:5px 10px 12px 5px;
-
+    padding:5px 10px 5px 5px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    max-width: 98%;
 }
+
+li.event-wrapper:hover {
+    background-color: #e1e1e1;
+    border:1px solid #ccc;
+}
+
  li.event-wrapper.sponsored {
      padding:10px 10px 10px 10px;
      width: 96%;
