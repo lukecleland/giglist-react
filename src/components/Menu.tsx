@@ -35,8 +35,10 @@ export const Menu:React.ElementType = () => {
                                 </form>
                             </div>
                         )}
-                        <a href="submit.php" className="item">Submit</a>
                         <a href="/gigmap" className="item">Gigmap</a>
+                        <a href="submit.php" className="item">Submit</a>
+                        <a href="shop.php" className="item">Shop</a>
+                        <a href="/classifieds" className="item">Musos Wanted!</a>
                     </div>
                 </div>
             </div>
