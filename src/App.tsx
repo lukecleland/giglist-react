@@ -38,7 +38,12 @@ function App() {
       <main>
         <div className="ui page grid">
           <Menu />
-          <BrowserRouter>
+          <div className="side-scroll ">
+                  <section>
+                    <DateList gigdata={gigdata as TGiglist}/>
+                  </section>
+                </div>
+          {/* <BrowserRouter>
             <Routes>
               <Route path="/" element= {
                 <div className="side-scroll ">
@@ -49,7 +54,7 @@ function App() {
               } />
               {routes}
             </Routes>
-          </BrowserRouter>
+          </BrowserRouter> */}
         </div>
         <div className="footer">
           <div className="footer-outer">
