@@ -58,8 +58,8 @@ function App() {
         </div>
         <div className="footer">
           <div className="footer-outer">
-            <a href="/classifieds" className="item">Classifieds</a>
-            <a href="shop.php" className="item">Shop</a>
+            {/* <a href="/classifieds" className="item">Classifieds</a>
+            <a href="shop.php" className="item">Shop</a> */}
             <a href="/" className="item float-right giglist-copy"><span className="copy">&copy;</span>Giglist 2022</a>
           </div>
         </div>
