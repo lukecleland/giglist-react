@@ -1,2 +1,2 @@
 git pull
-cp -a ./* ../wp-content/themes/giglist_v2/ -f
+cp -a ./build/* ../wp-content/themes/giglist_v3/ -f
