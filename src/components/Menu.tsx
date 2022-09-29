@@ -1,6 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+
 
 export const Menu:React.ElementType = () => {
+
+    const [searchToggle, setSearchToggle] = useState<boolean>(false);
+
+    const handleSearchToggle = (event: React.MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
+        setSearchToggle(!searchToggle);
+    }
+
+    const handleSearchClick = (event: React.MouseEvent<HTMLInputElement>) => {
+        event.preventDefault();
+    }
 
     return (
         <>
@@ -8,7 +21,20 @@ export const Menu:React.ElementType = () => {
                 <div className="ui inverted menu navbar full-width">
                     <a href="/"><img className="main-logo" src={require('../styles/assets/logo_web.png')} width="300" alt="Giglist" /></a>
                     <div className="right menu">
-                        <a href="/" className="item search-button">Search</a>
+                        <a href="/" className="item search-button" onClick={handleSearchToggle}>Search</a>
+                        {searchToggle && ( 
+                            <div className="ui inverted form search-form" id="search-form">
+                                <form className="search_event" name="search_event" action="" method="post">
+                                <div className="field pad">
+                                    <label>Artist / Venue / Suburb</label>
+                                    <input autoComplete="off" name="searchq" type="text" placeholder="Search Artist / Venue / Suburb" id="event_name_search" autoFocus={false} />
+                                </div>
+                                <div className="field pad">
+                                    <input name="submit" type="submit" value="Search" className="ui button" id="eventSearchBtn" onClick={handleSearchClick} />
+                                </div>
+                                </form>
+                            </div>
+                        )}
                         <a href="submit.php" className="item">Submit</a>
                         <a href="/gigmap" className="item">Gigmap</a>
                     </div>
@@ -25,19 +51,21 @@ export const Menu:React.ElementType = () => {
                 <div className="mobile-links">
                 <ul>
                     <li>
-                    <a href="/" className="item search-mobile">Search</a>
-                    <div className="ui inverted form search-form-mobile" id="search-form-mobile" style={{display:"none"}}>
+                    <a href="/" className="item search-mobile" onClick={handleSearchToggle}>Search</a>
+                    {searchToggle && ( 
+                        <div className="ui inverted form search-form-mobile" id="search-form-mobile">
 
-                        <form className="search_event" name="search_event" action="" method="post" autoComplete="off">
-                        <div className="field pad">
-                            <label>Artist / Venue / Suburb</label>
-                            <input name="searchq" type="text" placeholder="Search Artist / Venue / Suburb" id="event_name_search" />
+                            <form className="search_event" name="search_event" action="" method="post" autoComplete="off">
+                            <div className="field pad">
+                                <label>Artist / Venue / Suburb</label>
+                                <input name="searchq" type="text" placeholder="Search Artist / Venue / Suburb" id="event_name_search" />
+                            </div>
+                            <div className="field pad">
+                                <input name="submit" type="submit" value="Search" className="ui button" id="eventSearchBtn" onClick={handleSearchClick} />
+                            </div>
+                            </form>
                         </div>
-                        <div className="field pad">
-                            <input name="submit" type="submit" value="Search" className="ui button" id="eventSearchBtn" />
-                        </div>
-                        </form>
-                    </div>
+                    )}
                     </li>
                     <li><a className="item" href="/gigmap>">Gigmap</a></li>
                     <li><a className="item" href="submit.php">Submit</a></li>

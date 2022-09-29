@@ -169,6 +169,9 @@ li.event-wrapper > .event-venue > .name {
      font-family: 'Merriweather', serif;
      margin-right:4px;
 }
+.giglist-copy {
+    margin-right:20px;
+}
  .button {
      font-family: 'Merriweather', serif !important;
 }
@@ -936,4 +939,16 @@ body{
          width: calc(25vw - 40px);
     }
      */
+}
+
+.page-modal-listing {
+
+}
+
+.giglist-header {
+    background-color: #000;
+    color:white;
+    font-family: 'Merriweather';
+    font-size: 20px;
+    padding:20px;
 }

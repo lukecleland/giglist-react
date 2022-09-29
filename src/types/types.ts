@@ -14,7 +14,7 @@ export type TListing = {
   };
 
 export type TGiglist = {
-    dates: TDatelist[];
+    dates?: TDatelist[];
 };
 
 export type TDatelist = {
