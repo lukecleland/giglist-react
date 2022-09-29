@@ -11,7 +11,7 @@ import PageListing from './components/PageListing';
 import { TGiglistApiResponse, TGiglist, TListing } from './types/types';
 import { useGiglistApiGet } from './hooks/useGigilstApiHook';
 import './styles/styles.css';
-import { useListStore } from './stores/listStore';
+// import { useListStore } from './stores/listStore';
 
 function App() {
 

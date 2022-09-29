@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import PageListing from "./PageListing";
-import { Button, Header, Icon, Image, Modal } from 'semantic-ui-react'
+import { Modal } from 'semantic-ui-react'
 import { TListing } from "../types/types";
 
 interface Props {

@@ -1,12 +1,12 @@
 //import QRCode from "react-qr-code";
-import { url } from 'inspector';
+
 import React, { ReactElement } from 'react';
 import QRCode from 'react-qr-code';
 import { TListing } from '../types/types';
 import { Icon } from 'semantic-ui-react'
 
-const apiKey = "AIzaSyDTkZauLKxFmJ3qW2jKsgjLvgt30kqJ3AM";
-const googlemapsurl = "https://maps.googleapis.com/maps/api/staticmap";
+// const apiKey = "AIzaSyDTkZauLKxFmJ3qW2jKsgjLvgt30kqJ3AM";
+// const googlemapsurl = "https://maps.googleapis.com/maps/api/staticmap";
 
 export const PageListing = ({ gig }: {gig:TListing}): ReactElement => {
     const event_url = `/gig/${gig.artist}/${gig.name}/${gig.date}`.replace(/\s+/g, '-').toLowerCase();
