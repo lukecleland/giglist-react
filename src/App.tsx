@@ -11,18 +11,16 @@ import { Helmet } from "react-helmet";
 import giglistFeed from "./feed.json";
 
 export const App = () => {
-    const [giglist, setGiglist] = useState<TDate[]>([]);
-    const [fullGiglist, setFullGiglist] = useState<TDate[]>([]);
-    //const giglistFeedUrl = "./feed.json";
+    const [giglist, setGiglist] = useState<TDate[]>(giglistFeed);
 
     const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {
         if (!e) {
-            setGiglist(fullGiglist as TDate[]);
+            setGiglist(giglistFeed as TDate[]);
             return;
         }
         const input = e.target.value;
         const newGiglist: TDate[] = [];
-        fullGiglist.forEach((el) => {
+        giglistFeed.forEach((el) => {
             const foundObjects = el.listings.filter(
                 (l) =>
                     l.artist.toLowerCase().includes(input.toLowerCase()) ||
@@ -46,13 +44,6 @@ export const App = () => {
         }
         setGiglist(newGiglist as TDate[]);
     };
-
-    useEffect(() => {
-        // axios.get(giglistFeedUrl).then((response) => {
-        setFullGiglist(giglistFeed);
-        setGiglist(giglistFeed);
-        // });
-    }, []);
 
     const routes =
         !!giglist &&
@@ -82,6 +73,11 @@ export const App = () => {
                 <main>
                     <div className="ui page grid">
                         <Menu doSearch={doSearch} />
+                        <div className="side-scroll ">
+                            <section>
+                                <DateList giglist={giglist} />
+                            </section>
+                        </div>
                         <BrowserRouter>
                             <Routes>
                                 <Route

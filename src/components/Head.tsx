@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 export const Head = () => {
     return (
         <Helmet>
+            <title>Giglist. Gigs in a List</title>
             <meta charSet="utf-8" />
             <meta
                 name="viewport"
