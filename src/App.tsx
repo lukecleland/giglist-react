@@ -68,7 +68,6 @@ export const App = () => {
                                 .replace(/\s+/g, "-")
                                 .toLowerCase();
                         const el: ReactElement = <PageListing listing={gig} />;
-                        console.log(gigurl);
                         return <Route path={gigurl} element={el} key={i * j} />;
                     })
             )
