@@ -30,6 +30,7 @@ export const Head = () => {
                 type="image/x-icon"
                 href="https://giglist.com.au/wp-content/uploads/2018/08/favicon-1.ico"
             />
+
             <link
                 rel="stylesheet"
                 href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
