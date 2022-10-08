@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet";
 
 export const Head = () => {
     return (
-        <>
+        <Helmet>
             <meta charSet="utf-8" />
             <meta
                 name="viewport"
@@ -18,12 +18,6 @@ export const Head = () => {
                 name="description"
                 content="WA’s largest live music gig guide. Driven by the music community, created and maintained by locals. Features include easy search & gig map. Submit a gig to Giglist."
             />
-
-            <script
-                src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.js"
-                integrity="sha256-VSluyclkkEBBFNZ6S8I2Okq/R6W0InHkqdukNreEYOY="
-                crossOrigin="anonymous"
-            ></script>
 
             <link
                 rel="shortcut icon"
@@ -52,17 +46,6 @@ export const Head = () => {
             <meta property="og:image" content="assets/logo_web.png" />
 
             <title>Giglist</title>
-
-            {/* <script>
-                $(function()
-                {$("section").mousewheel(function (event, delta) {
-                    if ($(window).width() > 600) {
-                        this.scrollLeft -= delta * 5;
-                        event.preventDefault();
-                    }
-                })}
-                )
-            </script> */}
-        </>
+        </Helmet>
     );
 };

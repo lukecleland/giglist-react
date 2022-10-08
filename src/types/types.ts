@@ -33,3 +33,9 @@ export type TDate = {
 };
 
 export type TGiglist = TDate[];
+
+declare global {
+    interface JQuery {
+        printArea(): void;
+    }
+}
