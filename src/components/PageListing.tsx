@@ -100,13 +100,13 @@ export const PageListing = ({
                         <div style={{ fontFamily: "Merriweather" }}>
                             {gig.address}
                         </div>
-                        <div style={{ float: "right" }}>
+                        {/* <div style={{ float: "right" }}>
                             <Icon size="large" name="map" />
                             &nbsp;&nbsp;&nbsp;
                             <Icon size="large" name="share square" />
                             &nbsp;&nbsp;&nbsp;
                             <Icon size="large" name="facebook" />
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
