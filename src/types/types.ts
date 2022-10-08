@@ -1,3 +1,11 @@
+export type TGiglistApiResponse = {
+    status: number;
+    statusText: string;
+    data: TDate[];
+    error: any;
+    loading: boolean;
+};
+
 export type TListing = {
     lat: number;
     lng: number;
@@ -10,23 +18,18 @@ export type TListing = {
     start: string;
     date_formatted: string;
     date: string;
+    state: string;
+    zip: string;
     location_image_url: string;
-  };
-
-export type TGiglist = {
-    dates?: TDatelist[];
+    datestamp: {
+        date: Date;
+    };
 };
 
-export type TDatelist = {
+export type TDate = {
     datestring: string;
     datetime: string;
-    gigs: TListing[];
-}
-
-export type TGiglistApiResponse = {
-    status: number;
-    statusText: string;
-    data: any;
-    error: any;
-    loading: boolean;
+    listings: TListing[];
 };
+
+export type TGiglist = TDate[];

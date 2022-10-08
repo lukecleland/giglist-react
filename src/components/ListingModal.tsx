@@ -1,40 +1,40 @@
-import React, { FC } from "react";
+import React from "react";
 import PageListing from "./PageListing";
-import { Modal } from 'semantic-ui-react'
+import { Icon, Modal } from "semantic-ui-react";
 import { TListing } from "../types/types";
+import { Listing } from "./Listing";
 
-interface Props {
-    gig: TListing
-}
+export const ListingModal = ({ listing }: { listing: TListing }) => {
+    const [open, setOpen] = React.useState(false);
 
-const ListingModal: FC<Props> = ({ children, ...props }) => {
-  const [open, setOpen] = React.useState(false)
-  
-  return (
-    <Modal
-      onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      open={open}
-      trigger={children}
-    >
-      {/* <Modal.Header>{ props.gig.artist } @{ props.gig.name }</Modal.Header> */}
-      <Modal.Content>
-        <PageListing gig={props.gig} />
-      </Modal.Content>
-      <Modal.Actions>
-        {/* <Button color='black' onClick={() => setOpen(false)}>
-          <Icon style={{position:'absolute', top:0, right: 0}} name={"window close"}></Icon>
-        </Button> */}
-        {/* <Button
-          content="Add to my Giglist!"
-          labelPosition='right'
-          icon='checkmark'
-          onClick={() => setOpen(false)}
-          positive
-        /> */}
-      </Modal.Actions>
-    </Modal>
-  )
-}
-
-export default ListingModal
+    return (
+        <Modal
+            onClose={() => setOpen(false)}
+            onOpen={() => setOpen(true)}
+            open={open}
+            trigger={
+                <div>
+                    <Listing listing={listing} />
+                </div>
+            }
+        >
+            <Modal.Content>
+                <PageListing listing={listing} />
+            </Modal.Content>
+            <Modal.Actions>
+                <Icon
+                    onClick={() => setOpen(false)}
+                    style={{
+                        position: "absolute",
+                        top: -10,
+                        right: -20,
+                        backgroundColor: "white",
+                        cursor: "pointer",
+                    }}
+                    name={"window close"}
+                    size={"big"}
+                ></Icon>
+            </Modal.Actions>
+        </Modal>
+    );
+};
