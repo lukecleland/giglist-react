@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ReactElement, useState } from "react";
+import React, { ChangeEvent, ReactElement, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Menu from "./components/Menu";
@@ -8,9 +8,19 @@ import "./styles/styles.css";
 import { DateList } from "./components/DateList";
 import { Head } from "./components/Head";
 import { Helmet } from "react-helmet";
-import giglistFeed from "./feed.json";
+import axios from "axios";
+//import giglistFeed from "./feed.json";
+
 export const App = () => {
-    const [giglist, setGiglist] = useState<TDate[]>(giglistFeed);
+    const [giglist, setGiglist] = useState<TDate[]>([]);
+    const [giglistFeed, setGiglistFeed] = useState<TDate[]>([]);
+
+    useEffect(() => {
+        axios.get("https://giglist.com.au/feed.php").then((response) => {
+            setGiglistFeed(response.data);
+            setGiglist(response.data);
+        });
+    }, []);
 
     const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {
         if (!e) {
