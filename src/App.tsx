@@ -59,7 +59,13 @@ export const App = () => {
                                 .replace(/\s+/g, "-")
                                 .toLowerCase();
                         const el: ReactElement = <PageListing listing={gig} />;
-                        return <Route path={gigurl} element={el} key={i * j} />;
+                        return (
+                            <Route
+                                path={gigurl + "/:uid"}
+                                element={el}
+                                key={i * j}
+                            />
+                        );
                     })
             )
             .flat();
@@ -97,7 +103,7 @@ export const App = () => {
                                             <iframe
                                                 style={{
                                                     position: "absolute",
-                                                    top: 80,
+                                                    top: 62,
                                                     left: 0,
                                                     bottom: 0,
                                                     right: 0,
@@ -126,7 +132,7 @@ export const App = () => {
                                             <iframe
                                                 style={{
                                                     position: "absolute",
-                                                    top: 80,
+                                                    top: 62,
                                                     left: 0,
                                                     bottom: 0,
                                                     right: 0,
@@ -156,7 +162,7 @@ export const App = () => {
                                             <iframe
                                                 style={{
                                                     position: "absolute",
-                                                    top: 80,
+                                                    top: 62,
                                                     left: 0,
                                                     bottom: 0,
                                                     right: 0,
