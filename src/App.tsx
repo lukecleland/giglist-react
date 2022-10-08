@@ -6,14 +6,14 @@ import PageListing from "./components/PageListing";
 import { TDate, TListing } from "./types/types";
 import "./styles/styles.css";
 import { DateList } from "./components/DateList";
-import axios from "axios";
 import { Head } from "./components/Head";
 import { Helmet } from "react-helmet";
+import giglistFeed from "./feed.json";
 
 export const App = () => {
     const [giglist, setGiglist] = useState<TDate[]>([]);
     const [fullGiglist, setFullGiglist] = useState<TDate[]>([]);
-    const giglistFeedUrl = "https://giglist.com.au/feed.php";
+    //const giglistFeedUrl = "./feed.json";
 
     const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {
         if (!e) {
@@ -48,10 +48,10 @@ export const App = () => {
     };
 
     useEffect(() => {
-        axios.get(giglistFeedUrl).then((response) => {
-            response.data && setFullGiglist(response.data);
-            response.data && setGiglist(response.data);
-        });
+        // axios.get(giglistFeedUrl).then((response) => {
+        setFullGiglist(giglistFeed);
+        setGiglist(giglistFeed);
+        // });
     }, []);
 
     const routes =

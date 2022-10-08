@@ -7,14 +7,14 @@ export type TGiglistApiResponse = {
 };
 
 export type TListing = {
-    lat: number;
-    lng: number;
+    lat: string;
+    lng: string;
     name: string;
     artist: string;
     artist_url: string;
     address: string;
     suburb: string;
-    location_url: string;
+    location_url: string | null;
     start: string;
     date_formatted: string;
     date: string;
@@ -22,7 +22,7 @@ export type TListing = {
     zip: string;
     location_image_url: string;
     datestamp: {
-        date: Date;
+        date: Date | string;
     };
 };
 

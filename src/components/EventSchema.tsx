@@ -20,12 +20,12 @@ export const EventSchema = ({ gig }: { gig: TListing }) => {
                     organizer: {
                         "@type": "Organization",
                         name: gig.name,
-                        url: gig.location_url,
+                        url: gig.location_url || "",
                     },
                     image: gig.location_image_url,
                     location: {
                         "@type": "Place",
-                        url: gig.location_url,
+                        url: gig.location_url || "",
                         name: gig.name,
                         address: {
                             "@type": "PostalAddress",
@@ -46,7 +46,7 @@ export const EventSchema = ({ gig }: { gig: TListing }) => {
                         price: "0",
                         priceCurrency: "AUD",
                         validFrom: gig.datestamp.date + "",
-                        url: gig.location_url,
+                        url: gig.location_url || "",
                         availability: "https://schema.org/InStock",
                     },
                 })}
