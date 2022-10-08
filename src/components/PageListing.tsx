@@ -14,7 +14,7 @@ export const PageListing = ({
 }): ReactElement => {
     const gig = listing;
 
-    const event_url = `/gig/${gig.artist}/${gig.name}/${gig.date}`
+    const event_url = `/gig-${gig.artist}-${gig.name}-${gig.date}`
         .replace(/\s+/g, "-")
         .toLowerCase();
 
@@ -32,6 +32,7 @@ export const PageListing = ({
                     backgroundSize: "cover",
                     width: "100%",
                     minHeight: "500px",
+                    zIndex: 9999,
                 }}
             >
                 <div

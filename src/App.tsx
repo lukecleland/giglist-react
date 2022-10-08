@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ReactElement, useEffect, useState } from "react";
+import React, { ChangeEvent, ReactElement, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Menu from "./components/Menu";
@@ -9,7 +9,6 @@ import { DateList } from "./components/DateList";
 import { Head } from "./components/Head";
 import { Helmet } from "react-helmet";
 import giglistFeed from "./feed.json";
-
 export const App = () => {
     const [giglist, setGiglist] = useState<TDate[]>(giglistFeed);
 
@@ -55,17 +54,12 @@ export const App = () => {
                     date.listings.length &&
                     date.listings.map((gig, j) => {
                         const gigurl =
-                            `/gig/${gig.artist}/${gig.name}/${gig.date}`
+                            `/gig-${gig.artist}-${gig.name}-${gig.date}`
                                 .replace(/\s+/g, "-")
                                 .toLowerCase();
                         const el: ReactElement = <PageListing listing={gig} />;
-                        return (
-                            <Route
-                                path={gigurl + "/:uid"}
-                                element={el}
-                                key={i * j}
-                            />
-                        );
+                        console.log(gigurl);
+                        return <Route path={gigurl} element={el} key={i * j} />;
                     })
             )
             .flat();
@@ -79,11 +73,6 @@ export const App = () => {
                 <main>
                     <div className="ui page grid">
                         <Menu doSearch={doSearch} />
-                        <div className="side-scroll ">
-                            <section>
-                                <DateList giglist={giglist} />
-                            </section>
-                        </div>
                         <BrowserRouter>
                             <Routes>
                                 <Route
@@ -132,7 +121,7 @@ export const App = () => {
                                             <iframe
                                                 style={{
                                                     position: "absolute",
-                                                    top: 62,
+                                                    top: "55 !important",
                                                     left: 0,
                                                     bottom: 0,
                                                     right: 0,
@@ -186,6 +175,16 @@ export const App = () => {
                                     }
                                 />
                                 {routes}
+                                <Route
+                                    path="/notfound"
+                                    element={
+                                        <div className="side-scroll ">
+                                            <section>
+                                                <DateList giglist={giglist} />
+                                            </section>
+                                        </div>
+                                    }
+                                />
                             </Routes>
                         </BrowserRouter>
                     </div>
