@@ -1,6 +1,5 @@
 import React, { ChangeEvent, ReactElement, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import Menu from "./components/Menu";
 import PageListing from "./components/PageListing";
 import { TDate, TListing } from "./types/types";
