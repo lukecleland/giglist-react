@@ -206,7 +206,7 @@ export const App = () => {
                                                 height={"100%"}
                                                 width={"100%"}
                                                 title={"Gigtools"}
-                                                src="https://giglist.com.au/gig-tools/index.php"
+                                                src="https://giglist.com.au/gigtools/index.php"
                                             ></iframe>
                                         </div>
                                     }
