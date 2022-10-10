@@ -149,11 +149,18 @@ ul li {
 .email-form {
     display: none;
 }
-@font-face {
+/* @font-face {
     font-family: "carbontyperegular";
-    src: url("./font/carbon_2-webfont.woff") format("woff");
+    src: url("./font/carbon_2-webfont.woff2") format("woff2"),
+        url("./font/carbon_2-webfont.woff") format("woff");
     font-weight: normal;
     font-style: normal;
+} */
+
+@font-face {
+    font-family: "carbontyperegular";
+    src: local("carbontyperegular"),
+        url(./font/carbon_2-webfont1.woff) format("woff");
 }
 
 /* .search-link~.search-input {
