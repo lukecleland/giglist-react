@@ -13,7 +13,7 @@ export const Listing = ({ listing }: { listing: TListing }) => {
             <div style={{ position: "relative" }}>
                 <li
                     className="event-wrapper listing"
-                    onMouseOver={() => setFullListing(true)}
+                    onMouseOver={() => setFullListing(false)}
                 >
                     <div className="event-title">
                         {gig.artist.replace(/&amp;/g, "&")}
