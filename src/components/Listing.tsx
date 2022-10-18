@@ -13,7 +13,7 @@ export const Listing = ({ listing }: { listing: TListing }) => {
             <div style={{ position: "relative" }}>
                 <li
                     className="event-wrapper listing"
-                    onMouseOver={() => setFullListing(false)}
+                    onMouseOver={() => setFullListing(true)}
                 >
                     <div className="event-title">
                         {gig.artist.replace(/&amp;/g, "&")}
@@ -38,16 +38,30 @@ export const Listing = ({ listing }: { listing: TListing }) => {
                     style={{
                         backgroundImage: gigBackground,
                         position: "absolute",
-                        height: "400px",
+                        height: "140px",
                         zIndex: 99,
                     }}
                     onMouseOver={() => setFullListing(true)}
                     onMouseOut={() => setFullListing(false)}
                 >
-                    <div className="event-title">
+                    <div
+                        className="event-title"
+                        style={{
+                            backgroundColor: "black",
+                            color: "white",
+                            fontWeight: "bold",
+                        }}
+                    >
                         {gig.artist.replace(/&amp;/g, "&")}
                     </div>
-                    <div className="event-venue">
+                    <div
+                        className="event-venue"
+                        style={{
+                            backgroundColor: "black",
+                            color: "white",
+                            fontWeight: "bold",
+                        }}
+                    >
                         <div className="name">
                             {gig.name.replace(/&amp;/g, "&")}, {gig.suburb}
                         </div>

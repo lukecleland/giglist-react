@@ -8,6 +8,8 @@ import { DateList } from "./components/DateList";
 import { Head } from "./components/Head";
 import { Helmet } from "react-helmet";
 import axios from "axios";
+import { LocationGraphic } from "./components/LocationGraphic";
+import { WordCloud } from "./components/WordCloud";
 //import giglistFeed from "./feed.json";
 
 export const App = () => {
@@ -193,6 +195,32 @@ export const App = () => {
                                     }
                                 />
                                 {routes}
+                                <Route
+                                    path="/locationimagecollage"
+                                    element={
+                                        <div>
+                                            <LocationGraphic
+                                                giglist={giglist}
+                                            ></LocationGraphic>
+                                        </div>
+                                    }
+                                />
+                                <Route
+                                    path="/locationwordcollage"
+                                    element={
+                                        <div
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                backgroundColor: "black",
+                                            }}
+                                        >
+                                            <WordCloud
+                                                giglist={giglist}
+                                            ></WordCloud>
+                                        </div>
+                                    }
+                                />
                                 <Route
                                     path="/notfound"
                                     element={

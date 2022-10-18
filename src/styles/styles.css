@@ -17,7 +17,7 @@ html {
 }
 
 body {
-    font-family: "Merriweather", serif;
+    /* font-family: "Merriweather", serif; */
     height: 100%;
     width: 100%;
     overflow: auto;
@@ -25,6 +25,10 @@ body {
 
 .advert {
     margin-bottom: 10px;
+}
+
+.event-time {
+    color: 979797;
 }
 
 .search_event {
@@ -96,7 +100,7 @@ li .listingTrigger {
 } */
 
 li.event-wrapper > .event-venue > .name {
-    color: black;
+    color: AEAEAE;
 }
 
 /* li.event-wrapper > .event-title:hover {
@@ -186,16 +190,22 @@ ul li {
 .button {
     font-family: "Merriweather", serif !important;
 }
+
+.date:first-child {
+    margin-top: 0px;
+}
+
 .date {
     /* break-before: always !important; */
     font-size: 24px;
     font-family: "carbontyperegular";
     margin-bottom: 10px;
     margin-right: 10px;
-    background: black;
-    color: white;
+    background: white;
+    color: black;
     padding: 5px;
     cursor: pointer;
+    margin-top: 30px;
 }
 /* .artist-header {
      font-size:28px;
@@ -218,7 +228,7 @@ ul li {
     line-height: 1.2;
     /* text-transform:uppercase;
    */
-    color: black;
+    color: white;
     margin-bottom: 2px;
     /*color:white;
    background: black;
@@ -301,17 +311,12 @@ body {
 }
 body {
     /* font-family: 'Merriweather', serif; */
-    background-color: #ededed;
-    color: #161716;
     margin: 0;
 }
-body.dark {
-    color: white;
-    background: #161716;
-}
+
 .date.dark {
-    color: black;
-    background: white;
+    color: white;
+    background: black;
 }
 h3 {
     text-transform: uppercase !important;
@@ -368,6 +373,7 @@ main section {
     column-gap: 0px;
     column-fill: auto;
     /* background-size: calc(100vw/4.05) 100%; */
+    background-color: black;
 }
 main section h1 {
     margin: 0 0 -0.75rem 0;
@@ -481,7 +487,7 @@ li a {
 ul {
     list-style: none !important;
     padding-inline-start: 10px;
-    background-image: url(./assets/column_bg.jpg);
+    /* background-image: url(./assets/column_bg.jpg); */
     background-size: 100% 100%;
 
     /* display: inline-block; */
@@ -517,7 +523,7 @@ header ul {
     width: 500px;
 }
 .ui.inverted.menu {
-    background-color: black;
+    background-color: white;
     border: none;
     font-family: carbontyperegular;
     font-size: 16px;
@@ -622,7 +628,7 @@ header ul {
     border-radius: 10px;
     position: absolute !important;
     padding: 20px !important;
-    background: black;
+    background: white;
     right: 10px;
     top: 65px;
     z-index: 999;
