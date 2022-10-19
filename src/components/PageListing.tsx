@@ -14,9 +14,10 @@ export const PageListing = ({
 }): ReactElement => {
     const gig = listing;
 
-    const event_url = `/gig-${gig.artist}-${gig.name}-${gig.date}`
-        .replace(/\s+/g, "-")
-        .toLowerCase();
+    const event_url =
+        `https://giglist.com.au/gig-${gig.artist}-${gig.name}-${gig.date}`
+            .replace(/\s+/g, "-")
+            .toLowerCase();
 
     const bg = `url(${gig.location_image_url})`;
     const gigBackground = bg === "url()" ? `url('placeholder-gig.jpeg')` : bg;

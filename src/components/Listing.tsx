@@ -7,10 +7,19 @@ export const Listing = ({ listing }: { listing: TListing }) => {
     const bg = `url(${gig.location_image_url})`;
     const gigBackground = bg === "url()" ? `url('placeholder-gig.jpeg')` : bg;
 
+    const event_url =
+        `https://giglist.com.au/gig-${gig.artist}-${gig.name}-${gig.date}`
+            .replace(/\s+/g, "-")
+            .toLowerCase();
+
     let returnComponent = <div></div>;
     if (!fullListing) {
         returnComponent = (
-            <div style={{ position: "relative" }}>
+            <a
+                href={event_url}
+                style={{ position: "relative" }}
+                onClick={(e) => e.preventDefault()}
+            >
                 <li
                     className="event-wrapper listing"
                     onMouseOver={() => setFullListing(false)}
@@ -26,7 +35,7 @@ export const Listing = ({ listing }: { listing: TListing }) => {
                     </div>
                     <div className="event-time">{gig.start}</div>
                 </li>
-            </div>
+            </a>
         );
     }
 
