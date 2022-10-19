@@ -195,6 +195,10 @@ ul li {
     margin-top: 0px;
 }
 
+.date:first-of-type {
+    margin-top: 10px !important;
+}
+
 .date {
     /* break-before: always !important; */
     font-size: 24px;
@@ -205,8 +209,9 @@ ul li {
     color: black;
     padding: 5px;
     cursor: pointer;
-    margin-top: 30px;
+    margin-top: 30px !important;
 }
+
 /* .artist-header {
      font-size:28px;
      font-family: 'carbontyperegular';
@@ -553,7 +558,7 @@ header ul {
 */
 
 .ui.page.grid > .computer.tablet.only.row {
-    margin-bottom: 10px !important;
+    margin-bottom: 4px !important;
 }
 
 .padding-reset {
@@ -620,7 +625,7 @@ header ul {
     position: absolute;
     bottom: 0;
     background: #000;
-    height: 50px;
+    height: 55px;
     width: 100%;
 }
 .search-form {
@@ -935,4 +940,8 @@ header ul {
 
 .frame-parent {
     position: relative;
+}
+
+.ui.grid > * {
+    padding-right: 0 !important;
 }
