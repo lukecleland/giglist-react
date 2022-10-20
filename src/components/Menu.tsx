@@ -83,7 +83,7 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                                             onChange={(e) => doSearch(e)}
                                         />
                                     </div>
-                                    <div className="field pad">
+                                    {/* <div className="field pad">
                                         <input
                                             name="submit"
                                             type="submit"
@@ -92,7 +92,7 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                                             id="eventSearchBtn"
                                             onClick={handleSearchClick}
                                         />
-                                    </div>
+                                    </div> */}
                                 </form>
                             </div>
                         )}
