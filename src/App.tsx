@@ -1,15 +1,11 @@
-import React, { ChangeEvent, ReactElement, useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { BrowserRouter } from "react-router-dom";
 import Menu from "./components/Menu";
-import PageListing from "./components/PageListing";
 import { TDate, TListing } from "./types/types";
-import { DateList } from "./components/DateList";
-import { Helmet } from "react-helmet";
 import axios from "axios";
-import { LocationGraphic } from "./components/LocationGraphic";
-import { WordCloud } from "./components/WordCloud";
 import "semantic-ui-css/semantic.min.css";
 import "./styles/styles.css";
+import { Routing } from "./components/Routing";
 
 export const App = () => {
     const [giglist, setGiglist] = useState<TDate[]>([]);
@@ -54,25 +50,6 @@ export const App = () => {
         setGiglist(newGiglist as TDate[]);
     };
 
-    const routes =
-        !!giglist &&
-        giglist.length &&
-        giglist
-            .map(
-                (date, i) =>
-                    date.listings &&
-                    date.listings.length &&
-                    date.listings.map((gig, j) => {
-                        const gigurl =
-                            `/gig-${gig.artist}-${gig.name}-${gig.date}`
-                                .replace(/\s+/g, "-")
-                                .toLowerCase();
-                        const el: ReactElement = <PageListing listing={gig} />;
-                        return <Route path={gigurl} element={el} key={i * j} />;
-                    })
-            )
-            .flat();
-
     return (
         !!giglist && (
             <>
@@ -80,188 +57,7 @@ export const App = () => {
                     <div className="ui page grid">
                         <Menu doSearch={doSearch} />
                         <BrowserRouter>
-                            <Routes>
-                                <Route
-                                    path="/"
-                                    element={
-                                        <>
-                                            <Helmet>
-                                                <link
-                                                    rel="canonical"
-                                                    href="https://giglist.com.au/"
-                                                />
-                                            </Helmet>
-                                            <div className="side-scroll ">
-                                                <section>
-                                                    <DateList
-                                                        giglist={giglist}
-                                                    />
-                                                </section>
-                                            </div>
-                                        </>
-                                    }
-                                />
-                                <Route
-                                    path="/gigmap"
-                                    element={
-                                        <>
-                                            <Helmet>
-                                                <link
-                                                    rel="canonical"
-                                                    href="https://giglist.com.au/gigmap"
-                                                />
-                                            </Helmet>
-                                            <div className="gigmap">
-                                                <iframe
-                                                    style={{
-                                                        position: "absolute",
-                                                        top: 62,
-                                                        left: 0,
-                                                        bottom: 0,
-                                                        right: 0,
-                                                        width: "100%",
-                                                        height: "100%",
-                                                        border: "none !important",
-                                                        outline: "none",
-                                                        margin: 0,
-                                                        padding: 0,
-                                                        overflow: "hidden",
-                                                        zIndex: 10,
-                                                    }}
-                                                    frameBorder="0"
-                                                    height={"100%"}
-                                                    width={"100%"}
-                                                    title={"Gigmap"}
-                                                    src="https://giglist.com.au/gigmap-no-menu.php"
-                                                ></iframe>
-                                            </div>
-                                        </>
-                                    }
-                                />
-                                <Route
-                                    path="/submit"
-                                    element={
-                                        <>
-                                            <Helmet>
-                                                <link
-                                                    rel="canonical"
-                                                    href="https://giglist.com.au/submit"
-                                                />
-                                            </Helmet>
-                                            <div className={"iframe-parent"}>
-                                                <iframe
-                                                    style={{
-                                                        position: "absolute",
-                                                        top: "55 !important",
-                                                        left: 0,
-                                                        bottom: 0,
-                                                        right: 0,
-                                                        width: "100%",
-                                                        height: "100%",
-                                                        border: "none !important",
-                                                        outline: "none",
-                                                        margin: 0,
-                                                        padding: 0,
-                                                        overflow: "hidden",
-                                                        zIndex: 10,
-                                                    }}
-                                                    className={"iframe"}
-                                                    frameBorder="0"
-                                                    height={"100%"}
-                                                    width={"100%"}
-                                                    title={"Submit"}
-                                                    src="https://giglist.com.au/submit-no-menu.php"
-                                                ></iframe>
-                                            </div>
-                                        </>
-                                    }
-                                />
-                                <Route
-                                    path="/musoswanted"
-                                    element={
-                                        <>
-                                            <Helmet>
-                                                <link
-                                                    rel="canonical"
-                                                    href="https://giglist.com.au/musoswanted"
-                                                />
-                                            </Helmet>
-                                            <div className={"iframe-parent"}>
-                                                <iframe
-                                                    style={{
-                                                        position: "absolute",
-                                                        top: 62,
-                                                        left: 0,
-                                                        bottom: 0,
-                                                        right: 0,
-                                                        width: "100%",
-                                                        height: "100%",
-                                                        border: "none !important",
-                                                        outline: "none",
-                                                        margin: 0,
-                                                        padding: 0,
-                                                        overflow: "hidden",
-                                                        zIndex: 999999,
-                                                    }}
-                                                    className={"iframe"}
-                                                    frameBorder="0"
-                                                    height={"100%"}
-                                                    width={"100%"}
-                                                    title={"Musos Wanted"}
-                                                    src="https://giglist.com.au/classifieds"
-                                                ></iframe>
-                                            </div>
-                                        </>
-                                    }
-                                />
-                                <Route
-                                    path="/gigtools"
-                                    element={
-                                        <div className="gigtools">
-                                            <script>
-                                                location.href='https://giglist.com.au/gigtools/index.php'
-                                            </script>
-                                        </div>
-                                    }
-                                />
-                                {routes}
-                                <Route
-                                    path="/locationimagecollage"
-                                    element={
-                                        <div>
-                                            <LocationGraphic
-                                                giglist={giglist}
-                                            ></LocationGraphic>
-                                        </div>
-                                    }
-                                />
-                                <Route
-                                    path="/locationwordcollage"
-                                    element={
-                                        <div
-                                            style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                backgroundColor: "black",
-                                            }}
-                                        >
-                                            <WordCloud
-                                                giglist={giglist}
-                                            ></WordCloud>
-                                        </div>
-                                    }
-                                />
-                                <Route
-                                    path="/notfound"
-                                    element={
-                                        <div className="side-scroll ">
-                                            <section>
-                                                <DateList giglist={giglist} />
-                                            </section>
-                                        </div>
-                                    }
-                                />
-                            </Routes>
+                            <Routing giglist={giglist} />
                         </BrowserRouter>
                     </div>
                     <div className="footer">
