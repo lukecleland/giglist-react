@@ -44,6 +44,10 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                         {searchToggle && (
                             <div
                                 className="ui inverted form search-form"
+                                style={{
+                                    backgroundColor: "black",
+                                    color: "white",
+                                }}
                                 id="search-form"
                             >
                                 <Icon
@@ -55,7 +59,7 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                                         position: "absolute",
                                         top: 8,
                                         right: 5,
-                                        backgroundColor: "white",
+                                        backgroundColor: "black",
                                         cursor: "pointer",
                                     }}
                                     name={"window close"}
