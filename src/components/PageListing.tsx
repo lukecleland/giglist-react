@@ -3,6 +3,7 @@ import QRCode from "react-qr-code";
 import { TListing } from "../types/types";
 import { Icon } from "semantic-ui-react";
 import { EventSchema } from "./EventSchema";
+import { Helmet } from "react-helmet";
 
 // const apiKey = "AIzaSyDTkZauLKxFmJ3qW2jKsgjLvgt30kqJ3AM";
 // const googlemapsurl = "https://maps.googleapis.com/maps/api/staticmap";
@@ -24,6 +25,9 @@ export const PageListing = ({
 
     return (
         <>
+            <Helmet>
+                <link rel="canonical" href={event_url} />
+            </Helmet>
             <EventSchema gig={gig} />
             <div
                 className="page-modal-listing"

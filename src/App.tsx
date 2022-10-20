@@ -77,9 +77,6 @@ export const App = () => {
     return (
         !!giglist && (
             <>
-                <Helmet>
-                    <Head />
-                </Helmet>
                 <main>
                     <div className="ui page grid">
                         <Menu doSearch={doSearch} />
@@ -88,100 +85,134 @@ export const App = () => {
                                 <Route
                                     path="/"
                                     element={
-                                        <div className="side-scroll ">
-                                            <section>
-                                                <DateList giglist={giglist} />
-                                            </section>
-                                        </div>
+                                        <>
+                                            <Helmet>
+                                                <link
+                                                    rel="canonical"
+                                                    href="https://giglist.com.au/"
+                                                />
+                                            </Helmet>
+                                            <div className="side-scroll ">
+                                                <section>
+                                                    <DateList
+                                                        giglist={giglist}
+                                                    />
+                                                </section>
+                                            </div>
+                                        </>
                                     }
                                 />
                                 <Route
                                     path="/gigmap"
                                     element={
-                                        <div className="gigmap">
-                                            <iframe
-                                                style={{
-                                                    position: "absolute",
-                                                    top: 62,
-                                                    left: 0,
-                                                    bottom: 0,
-                                                    right: 0,
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    border: "none !important",
-                                                    outline: "none",
-                                                    margin: 0,
-                                                    padding: 0,
-                                                    overflow: "hidden",
-                                                    zIndex: 10,
-                                                }}
-                                                frameBorder="0"
-                                                height={"100%"}
-                                                width={"100%"}
-                                                title={"Gigmap"}
-                                                src="https://giglist.com.au/gigmap-no-menu.php"
-                                            ></iframe>
-                                        </div>
+                                        <>
+                                            <Helmet>
+                                                <link
+                                                    rel="canonical"
+                                                    href="https://giglist.com.au/gigmap"
+                                                />
+                                            </Helmet>
+                                            <div className="gigmap">
+                                                <iframe
+                                                    style={{
+                                                        position: "absolute",
+                                                        top: 62,
+                                                        left: 0,
+                                                        bottom: 0,
+                                                        right: 0,
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        border: "none !important",
+                                                        outline: "none",
+                                                        margin: 0,
+                                                        padding: 0,
+                                                        overflow: "hidden",
+                                                        zIndex: 10,
+                                                    }}
+                                                    frameBorder="0"
+                                                    height={"100%"}
+                                                    width={"100%"}
+                                                    title={"Gigmap"}
+                                                    src="https://giglist.com.au/gigmap-no-menu.php"
+                                                ></iframe>
+                                            </div>
+                                        </>
                                     }
                                 />
                                 <Route
                                     path="/submit"
                                     element={
-                                        <div className={"iframe-parent"}>
-                                            <iframe
-                                                style={{
-                                                    position: "absolute",
-                                                    top: "55 !important",
-                                                    left: 0,
-                                                    bottom: 0,
-                                                    right: 0,
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    border: "none !important",
-                                                    outline: "none",
-                                                    margin: 0,
-                                                    padding: 0,
-                                                    overflow: "hidden",
-                                                    zIndex: 10,
-                                                }}
-                                                className={"iframe"}
-                                                frameBorder="0"
-                                                height={"100%"}
-                                                width={"100%"}
-                                                title={"Submit"}
-                                                src="https://giglist.com.au/submit-no-menu.php"
-                                            ></iframe>
-                                        </div>
+                                        <>
+                                            <Helmet>
+                                                <link
+                                                    rel="canonical"
+                                                    href="https://giglist.com.au/submit"
+                                                />
+                                            </Helmet>
+                                            <div className={"iframe-parent"}>
+                                                <iframe
+                                                    style={{
+                                                        position: "absolute",
+                                                        top: "55 !important",
+                                                        left: 0,
+                                                        bottom: 0,
+                                                        right: 0,
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        border: "none !important",
+                                                        outline: "none",
+                                                        margin: 0,
+                                                        padding: 0,
+                                                        overflow: "hidden",
+                                                        zIndex: 10,
+                                                    }}
+                                                    className={"iframe"}
+                                                    frameBorder="0"
+                                                    height={"100%"}
+                                                    width={"100%"}
+                                                    title={"Submit"}
+                                                    src="https://giglist.com.au/submit-no-menu.php"
+                                                ></iframe>
+                                            </div>
+                                        </>
                                     }
                                 />
                                 <Route
                                     path="/musoswanted"
                                     element={
-                                        <div className={"iframe-parent"}>
-                                            <iframe
-                                                style={{
-                                                    position: "absolute",
-                                                    top: 62,
-                                                    left: 0,
-                                                    bottom: 0,
-                                                    right: 0,
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    border: "none !important",
-                                                    outline: "none",
-                                                    margin: 0,
-                                                    padding: 0,
-                                                    overflow: "hidden",
-                                                    zIndex: 999999,
-                                                }}
-                                                className={"iframe"}
-                                                frameBorder="0"
-                                                height={"100%"}
-                                                width={"100%"}
-                                                title={"Musos Wanted"}
-                                                src="https://giglist.com.au/classifieds"
-                                            ></iframe>
-                                        </div>
+                                        <>
+                                            <Helmet>
+                                                <link
+                                                    rel="canonical"
+                                                    href="https://giglist.com.au/musoswanted"
+                                                />
+                                            </Helmet>
+                                            <div className={"iframe-parent"}>
+                                                <iframe
+                                                    style={{
+                                                        position: "absolute",
+                                                        top: 62,
+                                                        left: 0,
+                                                        bottom: 0,
+                                                        right: 0,
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        border: "none !important",
+                                                        outline: "none",
+                                                        margin: 0,
+                                                        padding: 0,
+                                                        overflow: "hidden",
+                                                        zIndex: 999999,
+                                                    }}
+                                                    className={"iframe"}
+                                                    frameBorder="0"
+                                                    height={"100%"}
+                                                    width={"100%"}
+                                                    title={"Musos Wanted"}
+                                                    src="https://giglist.com.au/classifieds"
+                                                ></iframe>
+                                            </div>
+                                        </>
                                     }
                                 />
                                 <Route
