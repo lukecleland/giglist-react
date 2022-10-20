@@ -3,21 +3,20 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Menu from "./components/Menu";
 import PageListing from "./components/PageListing";
 import { TDate, TListing } from "./types/types";
-import "./styles/styles.css";
 import { DateList } from "./components/DateList";
-import { Head } from "./components/Head";
 import { Helmet } from "react-helmet";
 import axios from "axios";
 import { LocationGraphic } from "./components/LocationGraphic";
 import { WordCloud } from "./components/WordCloud";
-//import giglistFeed from "./feed.json";
+import "semantic-ui-css/semantic.min.css";
+import "./styles/styles.css";
 
 export const App = () => {
     const [giglist, setGiglist] = useState<TDate[]>([]);
     const [giglistFeed, setGiglistFeed] = useState<TDate[]>([]);
 
     useEffect(() => {
-        axios.get("https://giglist.com.au/feed.php").then((response) => {
+        axios.get("https://giglist.com.au/feedStatic.php").then((response) => {
             setGiglistFeed(response.data);
             setGiglist(response.data);
         });

@@ -4,7 +4,7 @@ require("babel-register")({
 
 require("babel-register");
 
-const router = require("./Routes").default;
+const router = require("./src/App").default;
 const Sitemap = require("./react-router-sitemap").default;
 
 new Sitemap(router)

@@ -84,18 +84,18 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                                 </form>
                             </div>
                         )}
-                        <a href="/gigmap" className="item">
+                        {/* <a href="/gigmap" className="item">
                             Gigmap
-                        </a>
+                        </a> */}
                         <a href="/submit" className="item">
                             Submit
                         </a>
                         {/* <a href="shop.php" className="item">
                             Shop
                         </a> */}
-                        <a href="/musoswanted" className="item">
+                        {/* <a href="/musoswanted" className="item">
                             Musos Wanted!
-                        </a>
+                        </a> */}
                     </div>
                 </div>
             </div>
