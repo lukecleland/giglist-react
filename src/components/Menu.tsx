@@ -3,14 +3,22 @@ import { Icon } from "semantic-ui-react";
 
 export const Menu: React.ElementType = ({ doSearch }) => {
     const [searchToggle, setSearchToggle] = useState<boolean>(false);
+    const [menuToggle, setMenuToggle] = useState<boolean>(false);
 
     const handleSearchToggle = (event: React.MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
         setSearchToggle(!searchToggle);
     };
 
+    const handleMenuToggle = (event: React.MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
+        setMenuToggle(!menuToggle);
+    };
+
     const handleSearchClick = (event: React.MouseEvent<HTMLInputElement>) => {
         event.preventDefault();
+        setSearchToggle(false);
+        setMenuToggle(false);
     };
 
     return (
@@ -106,10 +114,21 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                     </a>
 
                     <div className="menu-icon">
-                        <i className="fa fa-bars"></i>
+                        <Icon
+                            name="sidebar"
+                            style={{ color: "white", borderLeft: "black" }}
+                            onClick={handleMenuToggle}
+                        ></Icon>
                     </div>
 
-                    <div className="mobile-links">
+                    <div
+                        className="mobile-links"
+                        style={
+                            menuToggle
+                                ? { display: "block" }
+                                : { display: "none" }
+                        }
+                    >
                         <ul>
                             <li>
                                 <a
@@ -136,10 +155,15 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                                                     Artist / Venue / Suburb
                                                 </label>
                                                 <input
+                                                    autoComplete="off"
                                                     name="searchq"
                                                     type="text"
                                                     placeholder="Search Artist / Venue / Suburb"
                                                     id="event_name_search"
+                                                    autoFocus={false}
+                                                    onChange={(e) =>
+                                                        doSearch(e)
+                                                    }
                                                 />
                                             </div>
                                             <div className="field pad">
@@ -157,22 +181,22 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                                 )}
                             </li>
                             <li>
-                                <a className="item" href="/gigmap>">
+                                <a className="item" href="/gigmap">
                                     Gigmap
                                 </a>
                             </li>
                             <li>
-                                <a className="item" href="submit.php">
+                                <a className="item" href="/submit">
                                     Submit
                                 </a>
                             </li>
-                            <li>
+                            {/* <li>
                                 <a className="item" href="shop.php">
                                     Shop
                                 </a>
-                            </li>
+                            </li> */}
                             <li>
-                                <a className="item" href="/classifieds">
+                                <a className="item" href="/musoswanted">
                                     Musos Wanted!
                                 </a>
                             </li>

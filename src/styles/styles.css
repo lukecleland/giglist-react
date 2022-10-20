@@ -762,11 +762,11 @@ header ul {
         font-size: 25px;
         position: absolute;
         right: 20px;
-        top: 18px;
+        top: 0px;
     }
 
     .mobile-links {
-        display: none;
+        /* display: none; */
         background-color: #000;
         /* position:absolute; */
         /* top:62px;

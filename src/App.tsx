@@ -12,7 +12,7 @@ export const App = () => {
     const [giglistFeed, setGiglistFeed] = useState<TDate[]>([]);
 
     useEffect(() => {
-        axios.get("https://giglist.com.au/feedStatic.php").then((response) => {
+        axios.get("https://giglist.com.au/feed.php").then((response) => {
             setGiglistFeed(response.data);
             setGiglist(response.data);
         });
