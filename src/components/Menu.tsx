@@ -28,8 +28,7 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                     <a href="/">
                         <img
                             className="main-logo"
-                            src={require("../styles/assets/logo_web.png")}
-                            width="300"
+                            src={require("../styles/assets/newLogoGiglist.png")}
                             alt="Giglist"
                         />
                     </a>
@@ -41,6 +40,7 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                         >
                             Search
                         </a>
+
                         {searchToggle && (
                             <div
                                 className="ui inverted form search-form"
@@ -105,9 +105,9 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                         {/* <a href="shop.php" className="item">
                             Shop
                         </a> */}
-                        <a href="/musoswanted" className="item">
+                        {/* <a href="/musoswanted" className="item">
                             Musos Wanted!
-                        </a>
+                        </a> */}
                     </div>
                 </div>
             </div>
@@ -199,11 +199,11 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                                     Shop
                                 </a>
                             </li> */}
-                            <li>
+                            {/* <li>
                                 <a className="item" href="/musoswanted">
                                     Musos Wanted!
                                 </a>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
                 </div>

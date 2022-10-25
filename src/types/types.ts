@@ -7,6 +7,7 @@ export type TGiglistApiResponse = {
 };
 
 export type TListing = {
+    id: number;
     lat: string;
     lng: string;
     name: string;
@@ -14,7 +15,7 @@ export type TListing = {
     artist_url: string;
     address: string;
     suburb: string;
-    location_url: string | null;
+    location_url: string;
     start: string;
     date_formatted: string;
     date: string;

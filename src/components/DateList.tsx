@@ -1,23 +1,78 @@
+import moment from "moment";
 import { Fragment } from "react";
 import { TDate, TListing } from "../types/types";
+import { GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
 
 type Props = {
     giglist: TDate[];
+    searchMode: boolean;
+    filterByDate: (date: TDate) => void;
 };
 
-export const DateList = ({ giglist }: Props) => {
+export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
+    /**
+     * a function that returns a random integer between min (included) and max (included)
+     */
+    const getRandomInt = (min: number, max: number) => {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+
+    const adStart = getRandomInt(0, 100);
+
     return (
         <>
             {giglist.length &&
                 giglist.map((date, index) => {
+                    const adId = (index + adStart) % 4;
                     return (
-                        <ul className="day" key={index}>
-                            <div className="date">
-                                <span>{date.datestring}</span>
-                            </div>
-                            <Listings listings={date.listings} />
-                        </ul>
+                        <>
+                            <ul className="day" key={index}>
+                                {/* <a
+                                    href="/"
+                                    style={{
+                                        position: "relative",
+                                        fontFamily: "carbontyperegular",
+                                        color: "white",
+                                        fontSize: "48px",
+                                        marginLeft: "12px",
+                                        paddingTop: "200px",
+                                        // backgroundColor: "black",
+                                    }}
+                                >
+                                    <br />
+                                    <br />
+                                    Giglist
+                                    <img
+                                    style={{
+                                        paddingTop: "20px",
+                                        marginLeft: "0px",
+                                    }}
+                                    className="main-logo"
+                                    src={require("../styles/assets/newLogoGiglist.png")}
+                                    alt="Giglist"
+                                />
+                                </a> */}
+                                <div
+                                    className="date"
+                                    onClick={() => {
+                                        filterByDate(date);
+                                    }}
+                                >
+                                    <span>
+                                        {date.datestring}{" "}
+                                        <span style={{ fontSize: "12px" }}>
+                                            {moment(date.datetime).year()}
+                                        </span>
+                                    </span>
+                                </div>
+                                <Listings listings={date.listings} />
+
+                                {!searchMode && <GigAds adId={adId} />}
+                            </ul>
+                        </>
                     );
                 })}
         </>

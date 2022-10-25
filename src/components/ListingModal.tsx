@@ -27,7 +27,7 @@ export const ListingModal = ({ listing }: { listing: TListing }) => {
                     style={{
                         position: "absolute",
                         top: -10,
-                        right: -20,
+                        right: -10,
                         backgroundColor: "white",
                         cursor: "pointer",
                     }}

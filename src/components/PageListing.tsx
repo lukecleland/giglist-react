@@ -4,9 +4,17 @@ import { TListing } from "../types/types";
 import { Icon } from "semantic-ui-react";
 import { EventSchema } from "./EventSchema";
 import { Helmet } from "react-helmet";
+import { google, outlook, office365, yahoo, ics } from "calendar-link";
+import moment from "moment";
 
-// const apiKey = "AIzaSyDTkZauLKxFmJ3qW2jKsgjLvgt30kqJ3AM";
-// const googlemapsurl = "https://maps.googleapis.com/maps/api/staticmap";
+// // Then fetch the link
+// google(event); // https://calendar.google.com/calendar/render...
+// outlook(event); // https://outlook.live.com/owa/...
+// office365(event); // https://outlook.office.com/owa/...
+// yahoo(event); // https://calendar.yahoo.com/?v=60&title=...
+// ics(event); // standard ICS file based on https://icalendar.org
+// // const apiKey = "AIzaSyDTkZauLKxFmJ3qW2jKsgjLvgt30kqJ3AM";
+// // const googlemapsurl = "https://maps.googleapis.com/maps/api/staticmap";
 
 export const PageListing = ({
     listing,
@@ -21,7 +29,19 @@ export const PageListing = ({
             .toLowerCase();
 
     const bg = `url(${gig.location_image_url})`;
-    const gigBackground = bg === "url()" ? `url('placeholder-gig.jpeg')` : bg;
+    const gigBackground = bg === "url()" ? `url('./placeholder-gig.jpeg')` : bg;
+
+    console.log(gig.datestamp.date);
+
+    // Set event as an object
+    const event = {
+        title: gig.artist + " @" + gig.name,
+        description: gig.artist + " @" + gig.name,
+        start: moment(gig.datestamp.date).format("YYYY-MM-DD HH:mm:ss +0800"),
+        end: moment(gig.datestamp.date)
+            .add(1, "hours")
+            .format("YYYY-MM-DD HH:mm:ss +0800"),
+    };
 
     return (
         <>
@@ -31,22 +51,22 @@ export const PageListing = ({
             <EventSchema gig={gig} />
             <div
                 className="page-modal-listing"
-                style={{
-                    backgroundImage: gigBackground,
-                    backgroundColor: "none",
-                    backgroundSize: "cover",
-                    width: "100%",
-                    minHeight: "500px",
-                    zIndex: 9999,
-                }}
+                style={{ backgroundImage: gigBackground }}
             >
-                <div
-                    className="ui heading giglist-header"
-                    style={{ background: "rgba(0,0,0,0.9)" }}
-                >
-                    {gig.artist} <span style={{ fontFamily: "arial" }}>@</span>{" "}
-                    {gig.name.replace(/&amp;/g, "&")}
-                    <Icon
+                <div className="ui heading giglist-header modal-content-header">
+                    <a
+                        href={gig.artist_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ textTransform: "uppercase" }}
+                    >
+                        {gig.artist}
+                    </a>{" "}
+                    <span style={{ fontFamily: "arial" }}>@</span>{" "}
+                    <a href={gig.location_url} target="_blank" rel="noreferrer">
+                        {gig.name.replace(/&amp;/g, "&")}
+                    </a>
+                    {/* <Icon
                         style={{
                             cursor: "pointer",
                             position: "absolute",
@@ -55,63 +75,76 @@ export const PageListing = ({
                         name="copy outline"
                         title={"Copy Link"}
                         onClick={() => navigator.clipboard.writeText(event_url)}
-                    />
+                    /> */}
                 </div>
 
-                <div
-                    style={{
-                        background: "rgba(0,0,0,0.7)",
-                        padding: "6px",
-                        position: "absolute",
-                        right: 22,
-                        bottom: 50,
-                    }}
-                >
-                    <QRCode level={"L"} size={100} value={event_url} />
+                <div className={"modal-qr-code"}>
+                    <QRCode level={"L"} size={130} value={event_url} />
                 </div>
 
                 {/* <img src={ gig.location_image_url } width="400" alt="" /> */}
-                {/* <img style={ {position: 'absolute', right: 122, bottom: 50}} src={`${googlemapsurl}?size=100x100&key=${apiKey}&maptype=roadmap&center=${gig.lat},${gig.lng}&zoom=15&markers=color:blue`} alt="" /> */}
+                {/* <img style={ {position: 'absolute', right: 122, bottom: 50}} src={`${googlemapsurl}?size=100x100&key=${apiKey}
+                    &maptype=roadmap&center=${gig.lat},${gig.lng}&zoom=15&markers=color:blue`} alt="" /> */}
 
-                <div
+                <li
+                    className="event-wrapper listing"
                     style={{
-                        background: "rgba(0,0,0,0.8)",
-                        borderTopRightRadius: "10px",
-                        padding: "15px",
-                        color: "white",
-                        position: "absolute",
-                        fontSize: "18px",
-                        bottom: 50,
-                        left: 22,
-                        fontFamily: "carbontype",
+                        display: "none",
+                        marginLeft: "12px",
+                        listStyle: "none",
                     }}
                 >
+                    <div className="event-title">
+                        {gig.artist.replace(/&amp;/g, "&")}
+                    </div>
+                    <div className="event-venue">
+                        <div className="name">
+                            {gig.name.replace(/&amp;/g, "&")}, {gig.suburb}
+                        </div>
+                        <div className="address">{gig.address}</div>
+                    </div>
+                    <div className="event-time">{gig.start}</div>
+                </li>
+
+                <div className={"modal-content"}>
                     {/* <p><a href={event_url}>Link to this event</a></p> */}
 
                     {/* <div>{ gig.artist.replace(/&amp;/g, '&') }</div> */}
-                    <div style={{ fontFamily: "carbontyperegular" }}>
-                        {gig.start}{" "}
-                        {gig.date_formatted.toString().toUpperCase()}
-                    </div>
                     <div
                         style={{
-                            fontSize: "14px",
-                            //textTransform: 'uppercase'
+                            fontFamily:
+                                "Lato,'Helvetica Neue',Arial,Helvetica,sans-serif",
+                            letterSpacing: "0.5px",
                         }}
                     >
-                        <div style={{ fontFamily: "Merriweather" }}>
-                            {gig.name.replace(/&amp;/g, "&")}, {gig.suburb}
+                        {gig.start}
+                        <br />
+                        {gig.date_formatted.toString().toUpperCase()}
+                    </div>
+                    <div>
+                        <div style={{ fontWeight: "" }}>
+                            {gig.name.replace(/&amp;/g, "&")}
                         </div>
-                        <div style={{ fontFamily: "Merriweather" }}>
+                        <div className="address" style={{ fontFamily: "" }}>
                             {gig.address}
+                            <br />
+                            {gig.suburb}
                         </div>
-                        {/* <div style={{ float: "right" }}>
-                            <Icon size="large" name="map" />
+                        <div style={{ float: "right" }}>
+                            <a
+                                title="Add to Google Calendar"
+                                target="_blank"
+                                rel="noreferrer"
+                                href={google(event)}
+                            >
+                                <Icon name="google" />
+                            </a>
+                            {/* <Icon size="large" name="map" />
                             &nbsp;&nbsp;&nbsp;
                             <Icon size="large" name="share square" />
                             &nbsp;&nbsp;&nbsp;
-                            <Icon size="large" name="facebook" />
-                        </div> */}
+                            <Icon size="large" name="facebook" /> */}
+                        </div>
                     </div>
                 </div>
             </div>

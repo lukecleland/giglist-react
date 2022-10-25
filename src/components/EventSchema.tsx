@@ -13,11 +13,11 @@ export const EventSchema = ({ gig }: { gig: TListing }) => {
                     "@type": "Event",
                     name: gig.artist,
                     startDate: moment(gig.datestamp.date).format(
-                        "YYYY-MM-DDTHH:mm"
+                        "YYYY-MM-DD HH:mm:ss +0800"
                     ),
                     endDate: moment(gig.datestamp.date)
                         .add(1, "hours")
-                        .format("YYYY-MM-DDTHH:mm"),
+                        .format("YYYY-MM-DD HH:mm:ss +0800"),
                     eventStatus: "https://schema.org/EventScheduled",
                     eventAttendanceMode:
                         "https://schema.org/OfflineEventAttendanceMode",

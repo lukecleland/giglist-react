@@ -2,13 +2,21 @@ import React, { Fragment, ReactElement } from "react";
 import { Helmet } from "react-helmet";
 import { Route } from "react-router";
 import { Routes } from "react-router-dom";
-import { TGiglist } from "../types/types";
+import { TDate, TGiglist } from "../types/types";
 import { DateList } from "./DateList";
 import { LocationGraphic } from "./LocationGraphic";
 import PageListing from "./PageListing";
 import { WordCloud } from "./WordCloud";
 
-export const Routing = ({ giglist }: { giglist: TGiglist }) => {
+export const Routing = ({
+    giglist,
+    searchMode,
+    filterByDate,
+}: {
+    giglist: TGiglist;
+    searchMode: boolean;
+    filterByDate: (date: TDate) => void;
+}) => {
     const routes =
         !!giglist &&
         giglist.length &&
@@ -42,7 +50,11 @@ export const Routing = ({ giglist }: { giglist: TGiglist }) => {
                         </Helmet>
                         <div className="side-scroll ">
                             <section>
-                                <DateList giglist={giglist} />
+                                <DateList
+                                    giglist={giglist}
+                                    filterByDate={filterByDate}
+                                    searchMode={searchMode}
+                                />
                             </section>
                         </div>
                     </Fragment>
@@ -231,7 +243,11 @@ export const Routing = ({ giglist }: { giglist: TGiglist }) => {
                 element={
                     <div className="side-scroll ">
                         <section>
-                            <DateList giglist={giglist} />
+                            <DateList
+                                giglist={giglist}
+                                filterByDate={Date}
+                                searchMode={searchMode}
+                            />
                         </section>
                     </div>
                 }
