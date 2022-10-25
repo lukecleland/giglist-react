@@ -24,7 +24,7 @@ body {
 }
 
 .advert {
-    padding: 20px 0 10px 0px !important;
+    padding: 20px 0 20px 0px !important;
 }
 
 .event-time {
@@ -218,7 +218,7 @@ ul li {
 } */
 
 .date {
-    /* break-before: always !important; */
+    break-before: always !important;
     font-size: 24px;
     font-family: "carbontyperegular";
     /* margin-bottom: -10px; */
@@ -920,7 +920,7 @@ main section {
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 768px) {
     main section {
-        column-count: 4;
+        column-count: 5;
         min-height: calc(100vh - 100px);
         height: calc(100vh - 100px);
     }
@@ -928,22 +928,38 @@ main section {
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
     main section {
-        column-count: 5;
-        min-height: calc(100vh - 94px);
-        height: calc(100vh - 94px);
+        column-count: 6;
     }
 }
 /* Extra large devices (large laptops and desktops, 1500px and up) */
-@media only screen and (min-width: 1500px) {
+@media only screen and (min-width: 1600px) {
     main section {
-        column-count: 6;
-        min-height: calc(100vh - 90px);
-        height: calc(100vh - 90px);
+        column-count: 8;
     }
-    /* main section img {
-         width: calc(25vw - 40px);
+}
+/* Extra large devices (large laptops and desktops, 1500px and up) */
+@media only screen and (min-width: 2000px) {
+    main section {
+        column-count: 10;
     }
-     */
+}
+/* Extra large devices (large laptops and desktops, 1500px and up) */
+@media only screen and (min-width: 2400px) {
+    main section {
+        column-count: 12;
+    }
+}
+/* Extra large devices (large laptops and desktops, 1500px and up) */
+@media only screen and (min-width: 2800px) {
+    main section {
+        column-count: 14;
+    }
+}
+/* Extra large devices (large laptops and desktops, 1500px and up) */
+@media only screen and (min-width: 3200px) {
+    main section {
+        column-count: 16;
+    }
 }
 
 .giglist-header {

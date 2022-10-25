@@ -61,8 +61,12 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
                                         filterByDate(date);
                                     }}
                                 >
-                                    <span>
-                                        {date.datestring}{" "}
+                                    <span
+                                        style={{
+                                            letterSpacing: "-0.2rem",
+                                        }}
+                                    >
+                                        {date.datestring}
                                         {/* <span style={{ fontSize: "12px" }}>
                                             {moment(date.datetime).year()}
                                         </span> */}
