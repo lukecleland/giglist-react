@@ -193,11 +193,11 @@ ul li {
     font-family: "Merriweather", serif !important;
 }
 
-/* .date > i {
+.date > i {
     position: absolute;
     right: 14px;
     top: 2px;
-} */
+}
 
 .day {
     padding-top: 15px;
@@ -229,8 +229,8 @@ ul li {
     cursor: pointer;
     line-height: 1.2;
     height: 35px;
-    /* text-align: center; */
-    transform: rotate(-0.2deg);
+    text-align: center;
+    transform: rotate(-0.5deg);
 }
 
 .date span {
@@ -557,7 +557,7 @@ i.icon.hide-sidebar {
 }
 
 .main-logo {
-    margin-top: 12px;
+    margin-top: 8px;
     margin-left: -5px;
 }
 
@@ -905,25 +905,24 @@ header ul {
         float: none;
     }
 }
+/* Small devices (portrait tablets and large phones, 600px and up) */
+/* @media only screen and (min-width: 600px) {
+     main section {
+         column-count: 1;
+    }
+     .listing {
+         width:95%;
+    }
+}
+ */
 
 main section {
     padding-top: 0px;
 }
-
-/* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {
-    main section {
-        column-count: 1;
-    }
-    .listing {
-        width: 95%;
-    }
-}
-
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 768px) {
     main section {
-        column-count: 5;
+        column-count: 3;
         min-height: calc(100vh - 90px);
         height: calc(100vh - 90px);
     }
