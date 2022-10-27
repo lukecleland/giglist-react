@@ -533,7 +533,7 @@ ul {
     padding-inline-start: 10px;
     background-image: url(./assets/column_bg5.png);
     opacity: 1;
-    background-size: 250% 15%;
+    background-size: 250% 25%;
     background-position: 0px 0;
 
     /* display: inline-block; */
@@ -921,8 +921,8 @@ main section {
 @media only screen and (min-width: 768px) {
     main section {
         column-count: 5;
-        min-height: calc(100vh - 100px);
-        height: calc(100vh - 100px);
+        min-height: calc(100vh - 90px);
+        height: calc(100vh - 90px);
     }
 }
 /* Extra large devices (large laptops and desktops, 1200px and up) */

@@ -28,9 +28,8 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
                 giglist.map((date, index) => {
                     const adId = (index + adStart) % 4;
                     return (
-                        <>
-                            <ul className="day" key={index}>
-                                {/* <a
+                        <ul className="day" key={index}>
+                            {/* <a
                                     href="/"
                                     style={{
                                         position: "relative",
@@ -55,28 +54,27 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
                                     alt="Giglist"
                                 />
                                 </a> */}
-                                <div
-                                    className="date"
-                                    onClick={() => {
-                                        filterByDate(date);
+                            <div
+                                className="date"
+                                onClick={() => {
+                                    filterByDate(date);
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        letterSpacing: "-0.2rem",
                                     }}
                                 >
-                                    <span
-                                        style={{
-                                            letterSpacing: "-0.2rem",
-                                        }}
-                                    >
-                                        {date.datestring}
-                                        {/* <span style={{ fontSize: "12px" }}>
+                                    {date.datestring}
+                                    {/* <span style={{ fontSize: "12px" }}>
                                             {moment(date.datetime).year()}
                                         </span> */}
-                                    </span>
-                                </div>
-                                <Listings listings={date.listings} />
+                                </span>
+                            </div>
+                            <Listings listings={date.listings} />
 
-                                {!searchMode && <GigAds adId={adId} />}
-                            </ul>
-                        </>
+                            {!searchMode && <GigAds adId={adId} />}
+                        </ul>
                     );
                 })}
         </>
