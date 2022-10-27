@@ -73,7 +73,7 @@ export const App = () => {
     };
 
     const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {
-        if (!e) {
+        if (!e || e.target.value.length < 2) {
             setSearchMode(false);
             setGiglist(giglistFeed as TDate[]);
             return;

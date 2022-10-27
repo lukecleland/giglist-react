@@ -96,9 +96,9 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                                 </form>
                             </div>
                         )}
-                        <a href="/gigmap" className="item">
+                        {/* <a href="/gigmap" className="item">
                             Gigmap
-                        </a>
+                        </a> */}
                         <a href="/submit" className="item">
                             Submit
                         </a>
@@ -184,11 +184,11 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                                     </div>
                                 )}
                             </li>
-                            <li>
+                            {/* <li>
                                 <a className="item" href="/gigmap">
                                     Gigmap
                                 </a>
-                            </li>
+                            </li> */}
                             <li>
                                 <a className="item" href="/submit">
                                     Submit

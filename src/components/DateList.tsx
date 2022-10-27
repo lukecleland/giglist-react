@@ -26,7 +26,7 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
         <>
             {giglist.length &&
                 giglist.map((date, index) => {
-                    const adId = (index + adStart) % 4;
+                    const adId = (index + adStart) % 6;
                     return (
                         <ul className="day" key={index}>
                             {/* <a

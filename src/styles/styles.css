@@ -193,11 +193,11 @@ ul li {
     font-family: "Merriweather", serif !important;
 }
 
-.date > i {
+/* .date > i {
     position: absolute;
     right: 14px;
     top: 2px;
-}
+} */
 
 .day {
     padding-top: 15px;
@@ -219,16 +219,18 @@ ul li {
 
 .date {
     break-before: always !important;
-    font-size: 24px;
+    font-size: 20px;
     font-family: "carbontyperegular";
     /* margin-bottom: -10px; */
-    margin-right: 10px;
+    /* margin-right: 10px; */
     background: white;
     color: black;
     padding: 5px;
     cursor: pointer;
     line-height: 1.2;
     height: 35px;
+    /* text-align: center; */
+    transform: rotate(-0.2deg);
 }
 
 .date span {
@@ -555,7 +557,7 @@ i.icon.hide-sidebar {
 }
 
 .main-logo {
-    margin-top: 8px;
+    margin-top: 12px;
     margin-left: -5px;
 }
 
