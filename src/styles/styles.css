@@ -219,18 +219,16 @@ ul li {
 
 .date {
     break-before: always !important;
-    font-size: 20px;
+    font-size: 24px;
     font-family: "carbontyperegular";
     /* margin-bottom: -10px; */
-    /* margin-right: 10px; */
+    margin-right: 10px;
     background: white;
     color: black;
     padding: 5px;
     cursor: pointer;
     line-height: 1.2;
     height: 35px;
-    text-align: center;
-    transform: rotate(-0.5deg);
 }
 
 .date span {
@@ -535,7 +533,7 @@ ul {
     padding-inline-start: 10px;
     background-image: url(./assets/column_bg5.png);
     opacity: 1;
-    background-size: 250% 25%;
+    background-size: 250% 15%;
     background-position: 0px 0;
 
     /* display: inline-block; */
@@ -923,8 +921,8 @@ main section {
 @media only screen and (min-width: 768px) {
     main section {
         column-count: 5;
-        min-height: calc(100vh - 90px);
-        height: calc(100vh - 90px);
+        min-height: calc(100vh - 100px);
+        height: calc(100vh - 100px);
     }
 }
 /* Extra large devices (large laptops and desktops, 1200px and up) */
