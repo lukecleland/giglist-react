@@ -230,7 +230,7 @@ export const Routing = ({
                 }
             />
             <Route
-                path="/locationwordcollage"
+                path="/today"
                 element={
                     <div
                         style={{

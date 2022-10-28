@@ -13,30 +13,24 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
     const [words, setWords] = useState<{ text: string; value: number }[]>([]);
 
     useEffect(() => {
-        let wordArray: Word[] = [];
-        giglist.forEach((date) => {
-            return date.listings.forEach((listing) => {
-                const startdate = moment();
-                const enddate = moment().add(1, "day");
+        if (giglist.length) {
+            console.log(giglist);
 
-                console.log(startdate, enddate);
+            let wordArray: Word[] = [];
 
-                if (moment().isBetween(startdate, enddate)) {
-                    const sourceObject = {
-                        text: listing.artist,
-                        value: getRandomInt(10, 16),
-                        rotationAngles: [0, 0],
-                        rotations: 0,
-                        fontWeight: 700,
-                    };
-                    wordArray.push(sourceObject);
-                }
+            giglist[0].listings.forEach((listing) => {
+                const sourceObject = {
+                    text: listing.artist,
+                    value: getRandomInt(10, 16),
+                    rotationAngles: [0, 0],
+                    rotations: 0,
+                    fontWeight: 700,
+                };
+                wordArray.push(sourceObject);
             });
-        });
 
-        console.log(wordArray);
-
-        setWords(wordArray);
+            setWords(wordArray);
+        }
     }, [giglist]);
 
     // useEffect(() => {
@@ -45,34 +39,48 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
     // }, [photos]);
 
     return (
-        <div style={{ position: "relative", textAlign: "center" }}>
-            <h1
-                style={{
-                    position: "absolute",
-                    backgroundColor: "white",
-                    padding: 10,
-                    marginTop: 45,
-                    color: "black",
-                    fontFamily: "carbontyperegular",
-                    fontSize: "20px",
-                    left: 10,
-                }}
-            >
-                {`${moment().format("dddd D MMMM")}`}
-            </h1>
+        <>
             <div
                 style={{
-                    position: "relative",
-                    margin: 0,
-                    backgroundColor: "white",
-                    padding: 10,
-                    color: "black",
-                    fontFamily: "carbontyperegular",
-                    fontSize: "30px",
+                    width: "400px",
+                    height: "400px",
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    zIndex: 100,
                 }}
-            >{`${"Live Music Tonight"}`}</div>
-            <ReactWordcloud options={options} words={words} />
-        </div>
+            ></div>
+            <div style={{ position: "relative", textAlign: "center" }}>
+                <h1
+                    style={{
+                        position: "absolute",
+                        backgroundColor: "white",
+                        padding: 10,
+                        marginTop: 45,
+                        color: "black",
+                        fontFamily: "carbontyperegular",
+                        fontSize: "20px",
+                        left: 10,
+                    }}
+                >
+                    {`${moment().format("dddd D MMMM")}`}
+                </h1>
+                <div
+                    style={{
+                        position: "relative",
+                        margin: 0,
+                        backgroundColor: "white",
+                        padding: 10,
+                        color: "black",
+                        fontFamily: "carbontyperegular",
+                        fontSize: "30px",
+                    }}
+                >{`${"Live Music Tonight"}`}</div>
+                <div style={{ marginTop: "-50px" }}>
+                    <ReactWordcloud options={options} words={words} />
+                </div>
+            </div>
+        </>
     );
 };
 
