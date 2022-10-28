@@ -73,7 +73,9 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
                             </div>
                             <Listings listings={date.listings} />
 
-                            {!searchMode && <GigAds adId={adId} />}
+                            {!searchMode && index < 50 && (
+                                <GigAds adId={adId} />
+                            )}
                         </ul>
                     );
                 })}
