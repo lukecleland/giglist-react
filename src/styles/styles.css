@@ -255,8 +255,8 @@ ul li {
     font-size: 14px;
     line-height: 1.2;
     letter-spacing: 1.2px;
-    /* text-transform:uppercase;
-   */
+    text-transform: uppercase;
+
     /* font-family: "carbontyperegular"; 
     letter-spacing: -3px;*/
     font-weight: 100;
