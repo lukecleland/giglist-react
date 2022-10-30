@@ -45,19 +45,7 @@ body {
 .ui.grid > * {
     padding-left: 0 !important;
 }
-#list {
-    color: white;
-    font-size: 14px;
-}
-.event-wrapper.active {
-    border: 1px solid #000;
-    /* border-radius: 8px;
-     */
-    /* background-color: #f4f4f4;
-     */
-    /* box-shadow: 2px 2px 2px 0px rgba(0,0,0,0.15);
-     */
-}
+
 .event-venue .address,
 .event-wrapper .event-links,
 .event-date {
@@ -229,6 +217,9 @@ ul li {
     cursor: pointer;
     line-height: 1.2;
     height: 35px;
+    /* color: white; */
+    /* Halloween */
+    background: #ff0100;
 }
 
 .date span {
@@ -261,11 +252,13 @@ ul li {
     letter-spacing: -3px;*/
     font-weight: 100;
 
-    color: white;
     margin-bottom: 2px;
     /*color:white;
    background: black;
    */
+    /* color: white; */
+    /* Halloween */
+    color: #ff0100;
 }
 .header.white {
     color: #fff !important;
@@ -1007,7 +1000,10 @@ main section {
 }
 
 a {
-    color: #fff !important;
+    /* color: #fff !important; */
+    /* color: white; */
+    /* Halloween */
+    color: #ff0100 !important;
 }
 
 .loader {

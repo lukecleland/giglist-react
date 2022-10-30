@@ -252,15 +252,28 @@ export const Routing = ({
             <Route
                 path="/today"
                 element={
-                    <div
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            backgroundColor: "black",
-                        }}
-                    >
-                        <WordCloud giglist={giglist}></WordCloud>
-                    </div>
+                    <>
+                        <div
+                            style={{
+                                width: "400px",
+                                height: "50px",
+                                position: "absolute",
+                                backgroundColor: "black",
+                                top: 0,
+                                right: 0,
+                                zIndex: 1,
+                            }}
+                        ></div>
+                        <div
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                backgroundColor: "black",
+                            }}
+                        >
+                            <WordCloud giglist={giglist}></WordCloud>
+                        </div>
+                    </>
                 }
             />
             <Route

@@ -1,8 +1,11 @@
 import React from "react";
 import ReactWordcloud from "react-wordcloud";
 import { useEffect, useState } from "react";
-import { TDate } from "../types/types";
+import { TDate, TListing } from "../types/types";
 import moment from "moment";
+import { Icon, Modal } from "semantic-ui-react";
+import PageListing from "./PageListing";
+import { Listing } from "./Listing";
 
 type Word = {
     text: string;
@@ -14,8 +17,6 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
 
     useEffect(() => {
         if (giglist.length) {
-            console.log(giglist);
-
             let wordArray: Word[] = [];
 
             giglist[0].listings.forEach((listing) => {
@@ -33,23 +34,23 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
         }
     }, [giglist]);
 
-    // useEffect(() => {
-    //     setWords(wordArray);
-    //     console.log(setting);
-    // }, [photos]);
+    // type Word = {
+    //     value: number;
+    //     text: string;
+    // };
+
+    const callbacks = {
+        getWordColor: (word: Word) => (word.value > 50 ? "blue" : "red"),
+        onWordClick: console.log,
+        onWordMouseOver: console.log,
+        getWordTooltip: (word: Word) =>
+            `${word.text} (${word.value}) [${
+                word.value > 50 ? "good" : "bad"
+            }]`,
+    };
 
     return (
         <>
-            <div
-                style={{
-                    width: "400px",
-                    height: "400px",
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    zIndex: 100,
-                }}
-            ></div>
             <div style={{ position: "relative", textAlign: "center" }}>
                 <h1
                     style={{
@@ -77,7 +78,11 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
                     }}
                 >{`${"Live Music Tonight"}`}</div>
                 <div style={{ marginTop: "-50px" }}>
-                    <ReactWordcloud options={options} words={words} />
+                    <ReactWordcloud
+                        callbacks={callbacks}
+                        options={options}
+                        words={words}
+                    />
                 </div>
             </div>
         </>
@@ -105,4 +110,39 @@ const options = {
     //spiral: "archimedean",
     transitionDuration: 0,
     svgAttributes: { height: "1000px" },
+};
+
+export const WordCloudModal = ({ listing }: { listing: TListing }) => {
+    const [open, setOpen] = React.useState(false);
+
+    return (
+        <Modal
+            onClose={() => setOpen(false)}
+            onOpen={() => setOpen(true)}
+            open={open}
+            trigger={
+                <div>
+                    <Listing listing={listing} />
+                </div>
+            }
+        >
+            <Modal.Content>
+                <PageListing listing={listing} />
+            </Modal.Content>
+            <Modal.Actions>
+                <Icon
+                    onClick={() => setOpen(false)}
+                    style={{
+                        position: "absolute",
+                        top: -10,
+                        right: -10,
+                        backgroundColor: "white",
+                        cursor: "pointer",
+                    }}
+                    name={"window close"}
+                    size={"big"}
+                ></Icon>
+            </Modal.Actions>
+        </Modal>
+    );
 };
