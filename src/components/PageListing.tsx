@@ -5,6 +5,7 @@ import { Icon } from "semantic-ui-react";
 import { EventSchema } from "./EventSchema";
 import { Helmet } from "react-helmet";
 import { google, outlook, office365, yahoo, ics } from "calendar-link";
+import { EmailShareButton, FacebookShareButton } from "react-share";
 import moment from "moment";
 
 // // Then fetch the link
@@ -47,6 +48,11 @@ export const PageListing = ({
         <>
             <Helmet>
                 <link rel="canonical" href={event_url} />
+                <meta property="og:site_name" content="Giglist" />
+                <meta property="og:url" content={event_url} />
+                <meta property="og:description" content={event.title} />
+                <meta property="og:type" content="website" />
+                <meta property="og:image" content={gig.location_image_url} />
             </Helmet>
             <EventSchema gig={gig} />
             <div
@@ -139,6 +145,10 @@ export const PageListing = ({
                             >
                                 <Icon name="google" />
                             </a>
+                            <FacebookShareButton url={event_url}>
+                                <Icon name="facebook" />
+                            </FacebookShareButton>
+
                             {/* <Icon size="large" name="map" />
                             &nbsp;&nbsp;&nbsp;
                             <Icon size="large" name="share square" />
