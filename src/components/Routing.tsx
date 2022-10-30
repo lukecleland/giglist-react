@@ -65,7 +65,7 @@ export const Routing = ({
                             <meta property="og:type" content="website" />
                             <meta
                                 property="og:image"
-                                content="/giglistlogo.png"
+                                content="https://giglist.com.au/giglistlogo.png"
                             />
                         </Helmet>
                         <div className="side-scroll ">
