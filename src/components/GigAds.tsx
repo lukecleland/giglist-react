@@ -25,7 +25,7 @@ export const GigAds = ({ adId }: { adId: number }) => {
                     link: response.data.results[adId].url_forward,
                 });
             });
-    }, []);
+    }, [adId]);
 
     return (
         <div className="advert">

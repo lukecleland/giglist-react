@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { TListing } from "../types/types";
 import { EventSchema } from "./EventSchema";
 
 export const Listing = ({ listing }: { listing: TListing }) => {
-    const [fullListing, setFullListing] = useState<boolean>(false);
+    //const [fullListing, setFullListing] = useState<boolean>(false);
     const gig = listing;
     //const bg = `url(${gig.location_image_url})`;
     //const gigBackground = bg === "url()" ? `url('placeholder-gig.jpeg')` : bg;
@@ -14,32 +14,32 @@ export const Listing = ({ listing }: { listing: TListing }) => {
             .toLowerCase();
 
     let returnComponent = <div></div>;
-    if (!fullListing) {
-        returnComponent = (
-            <a
-                href={event_url}
-                style={{ position: "relative" }}
-                onClick={(e) => e.preventDefault()}
+    //if (!fullListing) {
+    returnComponent = (
+        <a
+            href={event_url}
+            style={{ position: "relative" }}
+            onClick={(e) => e.preventDefault()}
+        >
+            {gig.id <= 3 && <EventSchema gig={gig} />}
+            <li
+                className="event-wrapper listing"
+                //onMouseOver={() => setFullListing(false)}
             >
-                {gig.id <= 3 && <EventSchema gig={gig} />}
-                <li
-                    className="event-wrapper listing"
-                    //onMouseOver={() => setFullListing(false)}
-                >
-                    <div className="event-title">
-                        {gig.artist.replace(/&amp;/g, "&")}
+                <div className="event-title">
+                    {gig.artist.replace(/&amp;/g, "&")}
+                </div>
+                <div className="event-venue">
+                    <div className="name">
+                        {gig.name.replace(/&amp;/g, "&")}, {gig.suburb}
                     </div>
-                    <div className="event-venue">
-                        <div className="name">
-                            {gig.name.replace(/&amp;/g, "&")}, {gig.suburb}
-                        </div>
-                        <div className="address">{gig.address}</div>
-                    </div>
-                    <div className="event-time">{gig.start}</div>
-                </li>
-            </a>
-        );
-    }
+                    <div className="address">{gig.address}</div>
+                </div>
+                <div className="event-time">{gig.start}</div>
+            </li>
+        </a>
+    );
+    //}
 
     // if (fullListing) {
     //     returnComponent = (

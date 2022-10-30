@@ -4,7 +4,7 @@ import { TListing } from "../types/types";
 import { Icon } from "semantic-ui-react";
 import { EventSchema } from "./EventSchema";
 import { Helmet } from "react-helmet";
-import { google, outlook, office365, yahoo, ics } from "calendar-link";
+import { google } from "calendar-link";
 import { EmailShareButton, FacebookShareButton } from "react-share";
 import moment from "moment";
 
@@ -145,6 +145,9 @@ export const PageListing = ({
                             >
                                 <Icon name="google" />
                             </a>
+                            <EmailShareButton url={event_url}>
+                                <Icon name="mail" />
+                            </EmailShareButton>
                             <FacebookShareButton url={event_url}>
                                 <Icon name="facebook" />
                             </FacebookShareButton>

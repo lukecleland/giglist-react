@@ -1,4 +1,3 @@
-import moment from "moment";
 import { Fragment } from "react";
 import { TDate, TListing } from "../types/types";
 import { GigAds } from "./GigAds";
