@@ -21,7 +21,7 @@ export const Listing = ({ listing }: { listing: TListing }) => {
                 style={{ position: "relative" }}
                 onClick={(e) => e.preventDefault()}
             >
-                {gig.id < 20 && <EventSchema gig={gig} />}
+                {gig.id <= 3 && <EventSchema gig={gig} />}
                 <li
                     className="event-wrapper listing"
                     //onMouseOver={() => setFullListing(false)}
