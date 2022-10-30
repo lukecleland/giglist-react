@@ -11,6 +11,7 @@
     "static/media/brand-icons.eot": "./static/media/brand-icons.d68fa3e67dbb653a13ce.eot",
     "static/media/brand-icons.ttf": "./static/media/brand-icons.65a2fb6d9aaa164b41a0.ttf",
     "static/media/brand-icons.woff": "./static/media/brand-icons.cac87dc00c87a5d74711.woff",
+    "service-worker.js": "./service-worker.js",
     "static/media/brand-icons.woff2": "./static/media/brand-icons.278156e41e0ad908cf7f.woff2",
     "static/media/icons.woff": "./static/media/icons.425399f81e4ce7cbd967.woff",
     "static/media/icons.woff2": "./static/media/icons.38c6d8bab26db77d8c80.woff2",
