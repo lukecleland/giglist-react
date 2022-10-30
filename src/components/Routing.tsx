@@ -1,6 +1,7 @@
 import React, { Fragment, ReactElement } from "react";
 import { Helmet } from "react-helmet";
 import { Route } from "react-router";
+import { Navigate } from "react-router-dom";
 import { Routes } from "react-router-dom";
 import { TDate, TGiglist } from "../types/types";
 import { DateList } from "./DateList";
@@ -102,6 +103,7 @@ export const Routing = ({
                     </Fragment>
                 }
             />
+            <Route path="/qr" element={<Navigate to="/" />} />
             <Route
                 path="/submit"
                 element={
