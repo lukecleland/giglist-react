@@ -23,6 +23,7 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
                 const sourceObject = {
                     text: listing.artist,
                     value: getRandomInt(10, 16),
+                    id: listing.id,
                     rotationAngles: [0, 0],
                     rotations: 0,
                     fontWeight: 700,
@@ -33,21 +34,6 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
             setWords(wordArray);
         }
     }, [giglist]);
-
-    // type Word = {
-    //     value: number;
-    //     text: string;
-    // };
-
-    const callbacks = {
-        getWordColor: (word: Word) => (word.value > 50 ? "blue" : "red"),
-        onWordClick: console.log,
-        onWordMouseOver: console.log,
-        getWordTooltip: (word: Word) =>
-            `${word.text} (${word.value}) [${
-                word.value > 50 ? "good" : "bad"
-            }]`,
-    };
 
     return (
         <>
@@ -77,9 +63,17 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
                         fontSize: "30px",
                     }}
                 >{`${"Live Music Tonight"}`}</div>
-                <div style={{ marginTop: "-50px" }}>
+                <div style={{ marginTop: "-30px" }}>
                     <ReactWordcloud
-                        callbacks={callbacks}
+                        callbacks={{
+                            onWordClick: () => {
+                                return (
+                                    <WordCloudModal
+                                        listing={giglist[0].listings[0]}
+                                    />
+                                );
+                            },
+                        }}
                         options={options}
                         words={words}
                     />
@@ -106,25 +100,25 @@ const options = {
     padding: 3,
     rotations: 3,
     rotationAngles: [0, 0] as [number, number],
-    //scale: "sqrt",
-    //spiral: "archimedean",
     transitionDuration: 0,
     svgAttributes: { height: "1000px" },
 };
 
-export const WordCloudModal = ({ listing }: { listing: TListing }) => {
+const WordCloudModal = ({ listing }: { listing: TListing }) => {
     const [open, setOpen] = React.useState(false);
+
+    console.log("wordcloudlink");
 
     return (
         <Modal
             onClose={() => setOpen(false)}
             onOpen={() => setOpen(true)}
             open={open}
-            trigger={
-                <div>
-                    <Listing listing={listing} />
-                </div>
-            }
+            // trigger={
+            //     <div>
+            //         <Listing listing={listing} />
+            //     </div>
+            // }
         >
             <Modal.Content>
                 <PageListing listing={listing} />

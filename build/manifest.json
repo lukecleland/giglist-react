@@ -1,0 +1,47 @@
+{
+    "theme_color": "#FFF",
+    "background_color": "#000",
+    "display": "fullscreen",
+    "scope": "/",
+    "start_url": "/",
+    "app_name": "Giglist",
+    "short_name": "Giglist",
+    "description": "WA Live Music Gig Guide",
+    "icons": [
+        {
+            "src": "https://giglist.com.au/giglistLogo_120.png",
+            "sizes": "120x",
+            "type": "image/png"
+        },
+        {
+            "src": "https://giglist.com.au/giglistLogo_167.png",
+            "sizes": "167x",
+            "type": "image/png"
+        },
+        {
+            "src": "https://giglist.com.au/giglistLogo_180.png",
+            "sizes": "180x",
+            "type": "image/png"
+        },
+        {
+            "src": "https://giglist.com.au/giglistLogo_192.png",
+            "sizes": "192x",
+            "type": "image/png"
+        },
+        {
+            "src": "https://giglist.com.au/giglistLogo_256.png",
+            "sizes": "256x",
+            "type": "image/png"
+        },
+        {
+            "src": "https://giglist.com.au/giglistLogo_384.png",
+            "sizes": "384x",
+            "type": "image/png"
+        },
+        {
+            "src": "https://giglist.com.au/giglistLogo_512.png",
+            "sizes": "512x",
+            "type": "image/png"
+        }
+    ]
+}
