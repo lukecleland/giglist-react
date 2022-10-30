@@ -53,6 +53,10 @@ export const Routing = ({
                                 rel="canonical"
                                 href="https://giglist.com.au/"
                             />
+                            <meta
+                                property="og:title"
+                                content="Giglist. Gigs in a list."
+                            />
                             <meta property="og:site_name" content="Giglist" />
                             <meta
                                 property="og:url"
@@ -60,7 +64,7 @@ export const Routing = ({
                             />
                             <meta
                                 property="og:description"
-                                content="Gigs in a list. Giglist."
+                                content="Perth's most comprehensive live music gig guide. Driven by the music community, created and maintained by locals."
                             />
                             <meta property="og:type" content="website" />
                             <meta
