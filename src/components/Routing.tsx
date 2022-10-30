@@ -53,6 +53,20 @@ export const Routing = ({
                                 rel="canonical"
                                 href="https://giglist.com.au/"
                             />
+                            <meta property="og:site_name" content="Giglist" />
+                            <meta
+                                property="og:url"
+                                content="https://giglist.com.au"
+                            />
+                            <meta
+                                property="og:description"
+                                content="Gigs in a list. Giglist."
+                            />
+                            <meta property="og:type" content="website" />
+                            <meta
+                                property="og:image"
+                                content="assets/giglistlogo.png"
+                            />
                         </Helmet>
                         <div className="side-scroll ">
                             <section>
