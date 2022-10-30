@@ -9,38 +9,38 @@
     "description": "WA Live Music Gig Guide",
     "icons": [
         {
-            "src": "https://giglist.com.au/giglistLogo_120.png",
-            "sizes": "120x",
+            "src": "giglistLogo_120.png",
+            "sizes": "120x120",
             "type": "image/png"
         },
         {
-            "src": "https://giglist.com.au/giglistLogo_167.png",
-            "sizes": "167x",
+            "src": "giglistLogo_167.png",
+            "sizes": "167x167",
             "type": "image/png"
         },
         {
-            "src": "https://giglist.com.au/giglistLogo_180.png",
-            "sizes": "180x",
+            "src": "giglistLogo_180.png",
+            "sizes": "180x180",
             "type": "image/png"
         },
         {
-            "src": "https://giglist.com.au/giglistLogo_192.png",
-            "sizes": "192x",
+            "src": "giglistLogo_192.png",
+            "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "https://giglist.com.au/giglistLogo_256.png",
-            "sizes": "256x",
+            "src": "giglistLogo_256.png",
+            "sizes": "256x256",
             "type": "image/png"
         },
         {
-            "src": "https://giglist.com.au/giglistLogo_384.png",
-            "sizes": "384x",
+            "src": "giglistLogo_384.png",
+            "sizes": "384x384",
             "type": "image/png"
         },
         {
-            "src": "https://giglist.com.au/giglistLogo_512.png",
-            "sizes": "512x",
+            "src": "giglistLogo_512.png",
+            "sizes": "512x512",
             "type": "image/png"
         }
     ]
