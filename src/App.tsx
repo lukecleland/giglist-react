@@ -58,7 +58,7 @@ export const App = () => {
     let feedLink = "https://giglist.com.au/feed.php";
 
     if (window.innerWidth < 768) {
-        feedLink = "https://giglist.com.au/feed.php?mobile=true";
+        feedLink = "https://giglist.com.au/feed.php?mobile";
     }
 
     useEffect(() => {
