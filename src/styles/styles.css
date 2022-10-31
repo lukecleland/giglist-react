@@ -694,7 +694,7 @@ header ul {
 
 @media only screen and (max-width: 767px) {
     ul {
-        background-image: none;
+        background-image: none !important;
     }
 
     .ui.container.submission {
@@ -886,7 +886,18 @@ header ul {
         float: left;
         clear: right;
         width: 100%;
+        font-size: 20px;
     }
+
+    .event-time {
+        font-size: 16px;
+    }
+    .event-time,
+    .event-venue {
+        font-size: 16px;
+        line-height: 1.4;
+    }
+
     i.fa-bars {
         color: white;
     }
