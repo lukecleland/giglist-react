@@ -55,8 +55,14 @@ export const App = () => {
     const [searchMode, setSearchMode] = useState<boolean>(false);
     const myRef = useRef<HTMLDivElement>(null);
 
+    let feedLink = "https://giglist.com.au/feed.php";
+
+    if (window.innerWidth < 768) {
+        feedLink = "https://giglist.com.au/feed.php?mobile=true";
+    }
+
     useEffect(() => {
-        axios.get("https://giglist.com.au/feed.php").then((response) => {
+        axios.get(feedLink).then((response) => {
             setGiglistFeed(response.data);
             setGiglist(response.data);
         });
