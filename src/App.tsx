@@ -6,6 +6,7 @@ import "semantic-ui-css/semantic.min.css";
 import "./styles/styles.css";
 import { Routing } from "./components/Routing";
 import Menu from "./components/Menu";
+import { isMobile } from "react-device-detect";
 
 const Loader = () => {
     const [loading, setLoading] = useState(true);
@@ -57,7 +58,7 @@ export const App = () => {
 
     let feedLink = "https://giglist.com.au/feed.php";
 
-    if (window.innerWidth < 768) {
+    if (isMobile) {
         feedLink = "https://giglist.com.au/feed.php?mobile";
     }
 
