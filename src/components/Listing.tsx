@@ -16,11 +16,12 @@ export const Listing = ({ listing }: { listing: TListing }) => {
     let returnComponent = <div></div>;
     //if (!fullListing) {
     returnComponent = (
-        <a
-            href={event_url}
-            style={{ position: "relative" }}
-            onClick={(e) => e.preventDefault()}
-        >
+        // <a
+        //     href={event_url}
+        //     style={{ position: "relative" }}
+        //     onClick={(e) => e.preventDefault()}
+        // >
+        <>
             {gig.id <= 3 && <EventSchema gig={gig} />}
             <li
                 className="event-wrapper listing"
@@ -37,7 +38,8 @@ export const Listing = ({ listing }: { listing: TListing }) => {
                 </div>
                 <div className="event-time">{gig.start}</div>
             </li>
-        </a>
+        </>
+        // </a>
     );
     //}
 
