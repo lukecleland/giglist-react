@@ -693,6 +693,10 @@ header ul {
 }
 
 @media only screen and (max-width: 767px) {
+    ul {
+        background-image: none;
+    }
+
     .ui.container.submission {
         padding-top: 70px;
     }
