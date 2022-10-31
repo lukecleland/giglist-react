@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { TDate, TListing } from "../types/types";
 import { GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
+import { isMobile } from "react-device-detect";
 
 type Props = {
     giglist: TDate[];
@@ -20,6 +21,12 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
     };
 
     const adStart = getRandomInt(0, 100);
+
+    let numberOfAdsToShow = 28;
+
+    if (isMobile) {
+        numberOfAdsToShow = 7;
+    }
 
     return (
         <>
@@ -72,7 +79,7 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
                             </div>
                             <Listings listings={date.listings} />
 
-                            {!searchMode && index < 28 && (
+                            {!searchMode && index < numberOfAdsToShow && (
                                 <GigAds adId={adId} />
                             )}
                         </ul>
