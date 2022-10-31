@@ -25,7 +25,7 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
     let numberOfAdsToShow = 28;
 
     if (isMobile) {
-        numberOfAdsToShow = 7;
+        numberOfAdsToShow = 0;
     }
 
     return (
