@@ -2,6 +2,7 @@
     "theme_color": "#FFF",
     "background_color": "#000",
     "display": "fullscreen",
+    "id": "/",
     "scope": "/",
     "start_url": "/",
     "app_name": "Giglist",

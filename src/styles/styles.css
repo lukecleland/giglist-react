@@ -921,7 +921,7 @@ main section {
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
     main section {
-        column-count: 6;
+        column-count: 5;
     }
 }
 /* Extra large devices (large laptops and desktops, 1500px and up) */
