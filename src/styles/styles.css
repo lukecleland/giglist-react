@@ -217,9 +217,7 @@ ul li {
     cursor: pointer;
     line-height: 1.2;
     height: 35px;
-    /* color: white; */
-    /* Halloween */
-    background: #ff0100;
+    color: white;
 }
 
 .date span {
@@ -256,9 +254,7 @@ ul li {
     /*color:white;
    background: black;
    */
-    /* color: white; */
-    /* Halloween */
-    color: #ff0100;
+    color: white;
 }
 .header.white {
     color: #fff !important;
@@ -1015,10 +1011,7 @@ main section {
 }
 
 a {
-    /* color: #fff !important; */
-    /* color: white; */
-    /* Halloween */
-    color: #ff0100 !important;
+    color: #fff !important;
 }
 
 .loader {
