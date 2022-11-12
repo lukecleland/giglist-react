@@ -7,7 +7,6 @@ import { TDate, TGiglist } from "../types/types";
 import { DateList } from "./DateList";
 import { LocationGraphic } from "./LocationGraphic";
 import PageListing from "./PageListing";
-import { Travelling } from "./Travelling";
 import { WordCloud } from "./WordCloud";
 
 export const Routing = ({
@@ -40,10 +39,6 @@ export const Routing = ({
 
     return (
         <Routes>
-            <Route
-                path="/travelling"
-                element={<Travelling giglist={giglist}></Travelling>}
-            ></Route>
             <Route
                 path="/"
                 element={
