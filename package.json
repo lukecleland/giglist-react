@@ -10,6 +10,7 @@
         "@types/react-dom": "^17.0.14",
         "@types/react-router-dom": "^5.3.3",
         "@types/supercluster": "^7.1.0",
+        "antd": "^4.24.1",
         "axios": "^0.27.2",
         "bezier-js": "^6.1.0",
         "calendar-link": "^2.3.1",

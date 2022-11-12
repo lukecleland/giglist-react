@@ -119,6 +119,7 @@ li.event-wrapper > .event-venue > .name {
      width:95%;
      */
     cursor: pointer;
+    font-family: Lato;
 }
 ul li {
     page-break-inside: avoid !important;
@@ -246,14 +247,11 @@ ul li {
     letter-spacing: 1.2px;
     text-transform: uppercase;
 
-    /* font-family: "carbontyperegular"; 
-    letter-spacing: -3px;*/
+    font-family: "Lato";
+
     font-weight: 100;
 
     margin-bottom: 2px;
-    /*color:white;
-   background: black;
-   */
     color: white;
 }
 .header.white {
@@ -1096,13 +1094,43 @@ a {
         padding: 10px;
         bottom: 30;
         left: 14;
+        width: 92.5%;
+        border-radius: 0;
     }
     .modal-qr-code {
-        right: 14;
-        bottom: 30;
+        right: 30%;
+        bottom: -145;
     }
     .modal-content-header {
         padding: 10px;
         font-size: 20px;
     }
+}
+
+.datePicker {
+    visibility: hidden;
+    height: 0;
+    padding: 0;
+    width: 0;
+    position: absolute;
+}
+
+.ant-picker-date-panel {
+    background-color: #000;
+    color: #fff !important;
+}
+
+.ant-picker-date-panel td,
+.ant-picker-date-panel th,
+.ant-picker-date-panel button {
+    color: #fff !important;
+    font-family: carbontyperegular;
+}
+
+.ant-picker-date-panel div:hover {
+    color: #000 !important;
+}
+
+.ant-picker-footer {
+    display: none;
 }

@@ -70,7 +70,19 @@ export const App = () => {
     }, []);
 
     const filterByDate = (date: TDate) => {
+        console.log(date);
         setGiglist(giglistFeed.filter((gig) => gig.datetime === date.datetime));
+        myRef &&
+            myRef.current &&
+            myRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+    };
+
+    const filterByDateCalendar = (datetime: string) => {
+        console.log(datetime);
+        setGiglist(giglistFeed.filter((gig) => gig.datetime === datetime));
         myRef &&
             myRef.current &&
             myRef.current.scrollIntoView({
@@ -127,7 +139,10 @@ export const App = () => {
                         style={{ marginTop: "0px;" }}
                     >
                         <BrowserRouter>
-                            <Menu doSearch={doSearch} />
+                            <Menu
+                                doSearch={doSearch}
+                                filterByDateCalendar={filterByDateCalendar}
+                            />
                             <Routing
                                 giglist={giglist}
                                 filterByDate={filterByDate}

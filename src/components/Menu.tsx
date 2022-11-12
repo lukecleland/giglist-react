@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import { Icon } from "semantic-ui-react";
+import type { DatePickerProps } from "antd";
+import { DatePicker, Space } from "antd";
+import "antd/dist/antd.css";
 
-export const Menu: React.ElementType = ({ doSearch }) => {
+export const Menu: React.ElementType = ({ doSearch, filterByDateCalendar }) => {
     const [searchToggle, setSearchToggle] = useState<boolean>(false);
     const [menuToggle, setMenuToggle] = useState<boolean>(false);
+    const [datePickerOpen, setDatePickerOpen] = useState(false);
+
+    const onChange: DatePickerProps["onChange"] = (date, dateString) => {
+        console.log(date, dateString);
+        filterByDateCalendar(dateString);
+    };
 
     const handleSearchToggle = (event: React.MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
@@ -108,6 +117,31 @@ export const Menu: React.ElementType = ({ doSearch }) => {
                         {/* <a href="/musoswanted" className="item">
                             Musos Wanted!
                         </a> */}
+                        <Space
+                            direction="vertical"
+                            style={{
+                                backgroundColor: "black",
+                                color: "white",
+                            }}
+                        >
+                            <Icon
+                                name="calendar alternate outline"
+                                onClick={() => setDatePickerOpen(true)}
+                                size={"large"}
+                                style={{
+                                    color: "white",
+                                    marginTop: 12,
+                                    marginRight: 15,
+                                }}
+                            />
+
+                            <DatePicker
+                                className={"datePicker"}
+                                open={datePickerOpen}
+                                onOpenChange={setDatePickerOpen}
+                                onChange={onChange}
+                            />
+                        </Space>
                     </div>
                 </div>
             </div>
