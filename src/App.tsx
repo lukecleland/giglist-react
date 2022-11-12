@@ -72,12 +72,12 @@ export const App = () => {
     const filterByDate = (date: TDate) => {
         console.log(date);
         setGiglist(giglistFeed.filter((gig) => gig.datetime === date.datetime));
-        myRef &&
-            myRef.current &&
-            myRef.current.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-            });
+        // myRef &&
+        //     myRef.current &&
+        //     myRef.current.scrollIntoView({
+        //         behavior: "smooth",
+        //         block: "start",
+        //     });
     };
 
     const filterByLocation = () => {
@@ -88,32 +88,30 @@ export const App = () => {
             const kms = 50;
             const distance = (1 / 60) * 0.621371 * kms;
 
-            const newListings = giglistFeed.filter((date) =>
-                date.listings.filter(
-                    (gig) =>
-                        parseFloat(gig.lat) < lat + distance &&
-                        parseFloat(gig.lat) > lat - distance &&
-                        parseFloat(gig.lng) < lng + distance &&
-                        parseFloat(gig.lng) > lng - distance
-                )
+            giglistFeed.filter(
+                (date, index) =>
+                    (giglistFeed[index].listings = date.listings.filter(
+                        (gig) =>
+                            parseFloat(gig.lat) < lat + distance &&
+                            parseFloat(gig.lat) > lat - distance &&
+                            parseFloat(gig.lng) < lng + distance &&
+                            parseFloat(gig.lng) > lng - distance
+                    ))
             );
 
-            setGiglist({
-                ...giglistFeed,
-                ...newListings,
-            });
+            setGiglist([...giglistFeed]);
         });
     };
 
     const filterByDateCalendar = (datetime: string) => {
         console.log(datetime);
         setGiglist(giglistFeed.filter((gig) => gig.datetime === datetime));
-        myRef &&
-            myRef.current &&
-            myRef.current.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-            });
+        // myRef &&
+        //     myRef.current &&
+        //     myRef.current.scrollIntoView({
+        //         behavior: "smooth",
+        //         block: "start",
+        //     });
     };
 
     const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {
