@@ -9,7 +9,10 @@ export const Menu: React.ElementType = ({ doSearch, filterByDateCalendar }) => {
     const [menuToggle, setMenuToggle] = useState<boolean>(false);
     const [datePickerOpen, setDatePickerOpen] = useState(false);
 
-    const onChange: DatePickerProps["onChange"] = (date, dateString) => {
+    const onChange: DatePickerProps["onChange"] = (
+        date: any,
+        dateString: any
+    ) => {
         console.log(date, dateString);
         filterByDateCalendar(dateString);
     };
@@ -73,7 +76,7 @@ export const Menu: React.ElementType = ({ doSearch, filterByDateCalendar }) => {
                                     }}
                                     name={"window close"}
                                     size={"large"}
-                                ></Icon>
+                                />
                                 <form
                                     className="search_event"
                                     name="search_event"
