@@ -133,8 +133,9 @@ export const Menu: React.ElementType = ({ doSearch, filterByDateCalendar }) => {
                                 size={"large"}
                                 style={{
                                     color: "white",
-                                    marginTop: 12,
+                                    marginTop: 13,
                                     marginRight: 15,
+                                    cursor: "pointer",
                                 }}
                             />
 
