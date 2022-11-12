@@ -107,8 +107,6 @@ const options = {
 const WordCloudModal = ({ listing }: { listing: TListing }) => {
     const [open, setOpen] = React.useState(false);
 
-    console.log("wordcloudlink");
-
     return (
         <Modal
             onClose={() => setOpen(false)}

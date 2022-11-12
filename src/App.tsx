@@ -70,7 +70,6 @@ export const App = () => {
     }, []);
 
     const filterByDate = (date: TDate) => {
-        console.log(date);
         setGiglist(giglistFeed.filter((gig) => gig.datetime === date.datetime));
         // myRef &&
         //     myRef.current &&
@@ -84,7 +83,6 @@ export const App = () => {
         navigator.geolocation.getCurrentPosition((position) => {
             let lat = position.coords.latitude;
             let lng = position.coords.longitude;
-            console.log(lat, lng);
             const kms = 50;
             const distance = (1 / 60) * 0.621371 * kms;
 
@@ -104,7 +102,6 @@ export const App = () => {
     };
 
     const filterByDateCalendar = (datetime: string) => {
-        console.log(datetime);
         setGiglist(giglistFeed.filter((gig) => gig.datetime === datetime));
         // myRef &&
         //     myRef.current &&

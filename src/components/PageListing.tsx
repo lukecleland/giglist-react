@@ -32,8 +32,6 @@ export const PageListing = ({
     const bg = `url(${gig.location_image_url})`;
     const gigBackground = bg === "url()" ? `url('./placeholder-gig.jpeg')` : bg;
 
-    console.log(gig.datestamp.date);
-
     // Set event as an object
     const event = {
         title: gig.artist + " @" + gig.name,

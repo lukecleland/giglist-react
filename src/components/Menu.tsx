@@ -18,7 +18,6 @@ export const Menu: React.ElementType = ({
         date: any,
         dateString: any
     ) => {
-        console.log(date, dateString);
         filterByDateCalendar(dateString);
     };
 
@@ -27,10 +26,10 @@ export const Menu: React.ElementType = ({
         setSearchToggle(!searchToggle);
     };
 
-    const handleMenuToggle = (event: React.MouseEvent<HTMLAnchorElement>) => {
-        event.preventDefault();
-        setMenuToggle(!menuToggle);
-    };
+    // const handleMenuToggle = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    //     event.preventDefault();
+    //     setMenuToggle(!menuToggle);
+    // };
 
     const handleSearchClick = (event: React.MouseEvent<HTMLInputElement>) => {
         event.preventDefault();
@@ -50,6 +49,9 @@ export const Menu: React.ElementType = ({
                         />
                     </a>
                     <div className="right menu">
+                        {/* <a href="/today" className="item">
+                            Tonight
+                        </a> */}
                         <a
                             href="/"
                             className="item search-button"
@@ -162,12 +164,20 @@ export const Menu: React.ElementType = ({
 
                     <div className="menu-icon">
                         <Icon
+                            name="search"
+                            style={{
+                                color: "#f4f4f4",
+                                margin: "10px 10px 0px 0px",
+                            }}
+                            onClick={handleSearchToggle}
+                        ></Icon>
+                        <Icon
                             name="crosshairs"
                             //size={"la"}
                             style={{
                                 color: "#f4f4f4",
                                 borderLeft: "black",
-                                margin: "-10px 14px 0px 0px",
+                                margin: "-2px 14px 0px 0px",
                             }}
                             onClick={filterByLocation}
                         />
@@ -196,7 +206,8 @@ export const Menu: React.ElementType = ({
                                 onChange={onChange}
                             />
                         </Space>
-                        <Icon
+
+                        {/* <Icon
                             name="sidebar"
                             style={{
                                 color: "#f4f4f4",
@@ -204,26 +215,26 @@ export const Menu: React.ElementType = ({
                                 margin: "-10px 0px 0px 0px",
                             }}
                             onClick={handleMenuToggle}
-                        ></Icon>
+                        ></Icon> */}
                     </div>
 
                     <div
                         className="mobile-links"
-                        style={
-                            menuToggle
-                                ? { display: "block" }
-                                : { display: "none" }
-                        }
+                        // style={
+                        //     menuToggle
+                        //         ? { display: "block" }
+                        //         : { display: "none" }
+                        // }
                     >
                         <ul>
                             <li>
-                                <a
+                                {/* <a
                                     href="/"
                                     className="item search-mobile"
                                     onClick={handleSearchToggle}
                                 >
                                     Search
-                                </a>
+                                </a> */}
                                 {searchToggle && (
                                     <div
                                         className="ui inverted form search-form-mobile"
@@ -271,11 +282,11 @@ export const Menu: React.ElementType = ({
                                     Gigmap
                                 </a>
                             </li> */}
-                            <li>
+                            {/* <li>
                                 <a className="item" href="/submit">
                                     Submit
                                 </a>
-                            </li>
+                            </li> */}
                             {/* <li>
                                 <a className="item" href="shop.php">
                                     Shop
