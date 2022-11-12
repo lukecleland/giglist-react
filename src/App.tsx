@@ -85,7 +85,7 @@ export const App = () => {
             let lat = position.coords.latitude;
             let lng = position.coords.longitude;
             console.log(lat, lng);
-            const kms = 5;
+            const kms = 50;
             const distance = (1 / 60) * 0.621371 * kms;
 
             const newListings = giglistFeed.filter((date) =>
