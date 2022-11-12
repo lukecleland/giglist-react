@@ -80,6 +80,31 @@ export const App = () => {
             });
     };
 
+    const filterByLocation = () => {
+        navigator.geolocation.getCurrentPosition((position) => {
+            let lat = position.coords.latitude;
+            let lng = position.coords.longitude;
+            console.log(lat, lng);
+            const kms = 5;
+            const distance = (1 / 60) * 0.621371 * kms;
+
+            const newListings = giglistFeed.filter((date) =>
+                date.listings.filter(
+                    (gig) =>
+                        parseFloat(gig.lat) < lat + distance &&
+                        parseFloat(gig.lat) > lat - distance &&
+                        parseFloat(gig.lng) < lng + distance &&
+                        parseFloat(gig.lng) > lng - distance
+                )
+            );
+
+            setGiglist({
+                ...giglistFeed,
+                ...newListings,
+            });
+        });
+    };
+
     const filterByDateCalendar = (datetime: string) => {
         console.log(datetime);
         setGiglist(giglistFeed.filter((gig) => gig.datetime === datetime));
@@ -131,17 +156,19 @@ export const App = () => {
     return (
         !!giglist && (
             <>
+                {/* {!giglist.length && <div>No Gigs Found</div>} */}
                 <Loader />
                 <main>
                     <div
                         ref={myRef}
                         className="ui page grid"
-                        style={{ marginTop: "0px;" }}
+                        style={{ marginTop: "0px" }}
                     >
                         <BrowserRouter>
                             <Menu
                                 doSearch={doSearch}
                                 filterByDateCalendar={filterByDateCalendar}
+                                filterByLocation={filterByLocation}
                             />
                             <Routing
                                 giglist={giglist}

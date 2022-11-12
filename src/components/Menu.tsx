@@ -4,10 +4,15 @@ import type { DatePickerProps } from "antd";
 import { DatePicker, Space } from "antd";
 import "antd/dist/antd.css";
 
-export const Menu: React.ElementType = ({ doSearch, filterByDateCalendar }) => {
+export const Menu: React.ElementType = ({
+    doSearch,
+    filterByDateCalendar,
+    filterByLocation,
+}) => {
     const [searchToggle, setSearchToggle] = useState<boolean>(false);
     const [menuToggle, setMenuToggle] = useState<boolean>(false);
     const [datePickerOpen, setDatePickerOpen] = useState(false);
+    const [datePickerOpenMobile, setDatePickerOpenMobile] = useState(false);
 
     const onChange: DatePickerProps["onChange"] = (
         date: any,
@@ -157,8 +162,47 @@ export const Menu: React.ElementType = ({ doSearch, filterByDateCalendar }) => {
 
                     <div className="menu-icon">
                         <Icon
+                            name="crosshairs"
+                            //size={"la"}
+                            style={{
+                                color: "#f4f4f4",
+                                borderLeft: "black",
+                                margin: "-10px 14px 0px 0px",
+                            }}
+                            onClick={filterByLocation}
+                        />
+
+                        <Space
+                            direction="vertical"
+                            style={{
+                                backgroundColor: "black",
+                                color: "white",
+                            }}
+                        >
+                            <Icon
+                                name="calendar alternate outline"
+                                onClick={() => setDatePickerOpenMobile(true)}
+                                style={{
+                                    color: "#f4f4f4",
+                                    borderLeft: "black",
+                                    margin: "-10px 0px 0px 0px",
+                                }}
+                            />
+
+                            <DatePicker
+                                className={"datePicker"}
+                                open={datePickerOpenMobile}
+                                onOpenChange={setDatePickerOpenMobile}
+                                onChange={onChange}
+                            />
+                        </Space>
+                        <Icon
                             name="sidebar"
-                            style={{ color: "white", borderLeft: "black" }}
+                            style={{
+                                color: "#f4f4f4",
+                                borderLeft: "black",
+                                margin: "-10px 0px 0px 0px",
+                            }}
                             onClick={handleMenuToggle}
                         ></Icon>
                     </div>

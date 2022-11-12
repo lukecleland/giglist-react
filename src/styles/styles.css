@@ -42,6 +42,11 @@ body {
 .sidebar {
     border-left: 1px solid #666;
 }
+
+.sidebar.icon {
+    top: 0;
+}
+
 .ui.grid > * {
     padding-left: 0 !important;
 }
@@ -919,6 +924,7 @@ header ul {
 main section {
     padding-top: 0px;
 }
+
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 768px) {
     main section {
@@ -1104,6 +1110,15 @@ a {
     .modal-content-header {
         padding: 10px;
         font-size: 20px;
+    }
+
+    .event-venue,
+    .event-time {
+        font-size: 12px;
+    }
+
+    .event-title {
+        font-size: 14px;
     }
 }
 
