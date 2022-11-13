@@ -1040,12 +1040,12 @@ a {
 
 .modal-content {
     background: rgba(0, 0, 0, 0.8);
-    border-top-right-radius: 10px;
+    border-top-right-radius: 5px;
     padding: 15px;
     color: white;
     position: absolute;
     font-size: 18px;
-    bottom: 50;
+    bottom: 22;
     left: 22;
     font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
@@ -1055,15 +1055,15 @@ a {
     padding: 6px;
     position: absolute;
     right: 22;
-    bottom: 50;
+    bottom: 22;
 }
 
 .modal-content-header {
     background: rgba(0, 0, 0, 0.9);
     font-family: carbontyperegular;
-    letter-spacing: -2px;
+    letter-spacing: -3px;
     line-height: 1.2;
-    padding: 20px;
+    padding: 10px 20px 10px 20px;
     font-size: 24px;
 }
 
@@ -1106,6 +1106,9 @@ a {
         left: 14;
         width: 92.5%;
         border-radius: 0;
+    }
+    .ui.modal .content {
+        margin-top: -170px !important;
     }
     .modal-qr-code {
         right: 30%;
@@ -1170,4 +1173,8 @@ svg text {
     outline: none !important;
     border: none !important;
     border-radius: 0;
+}
+
+.ui.modal .actions {
+    display: none;
 }

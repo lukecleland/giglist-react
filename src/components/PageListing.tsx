@@ -134,9 +134,7 @@ export const PageListing = ({
                             {gig.name.replace(/&amp;/g, "&")}
                         </div>
                         <div className="address" style={{ fontFamily: "" }}>
-                            {gig.address}
-                            <br />
-                            {gig.suburb}
+                            {gig.address} {gig.suburb}
                         </div>
                         <div style={{ float: "right" }}>
                             <a
