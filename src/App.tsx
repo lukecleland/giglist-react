@@ -83,7 +83,7 @@ export const App = () => {
         navigator.geolocation.getCurrentPosition((position) => {
             let lat = position.coords.latitude;
             let lng = position.coords.longitude;
-            const kms = 50;
+            const kms = 5;
             const distance = (1 / 60) * 0.621371 * kms;
 
             giglistFeed.filter(
@@ -96,6 +96,11 @@ export const App = () => {
                             parseFloat(gig.lng) > lng - distance
                     ))
             );
+
+            if (!giglistFeed.length) {
+                alert("No gigs found in your area");
+                return false;
+            }
 
             setGiglist([...giglistFeed]);
         });

@@ -5,7 +5,6 @@ import { TDate, TListing } from "../types/types";
 import moment from "moment";
 import { Icon, Modal } from "semantic-ui-react";
 import PageListing from "./PageListing";
-import { Listing } from "./Listing";
 
 type Word = {
     text: string;
@@ -38,42 +37,28 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
     return (
         <>
             <div style={{ position: "relative", textAlign: "center" }}>
-                <h1
-                    style={{
-                        position: "absolute",
-                        backgroundColor: "white",
-                        padding: 10,
-                        marginTop: 45,
-                        color: "black",
-                        fontFamily: "carbontyperegular",
-                        fontSize: "20px",
-                        left: 10,
-                    }}
-                >
-                    {`${moment().format("dddd D MMMM")}`}
-                </h1>
                 <div
                     style={{
                         position: "relative",
                         margin: 0,
                         backgroundColor: "white",
-                        padding: 10,
+                        padding: "0px",
                         color: "black",
                         fontFamily: "carbontyperegular",
-                        fontSize: "30px",
+                        fontSize: "25px",
                     }}
-                >{`${"Live Music Tonight"}`}</div>
-                <div style={{ marginTop: "-30px" }}>
+                >{`Gigs ${moment().format("dddd MMM D")}`}</div>
+                <div style={{ marginTop: "-70px" }}>
                     <ReactWordcloud
-                        callbacks={{
-                            onWordClick: () => {
-                                return (
-                                    <WordCloudModal
-                                        listing={giglist[0].listings[0]}
-                                    />
-                                );
-                            },
-                        }}
+                        // callbacks={{
+                        //     onWordClick: (event) => {
+                        //         event.preventDefault();
+                        //         // console.log(event);
+                        //         // <WordCloudModal
+                        //         //     listing={giglist[0].listings[0]}
+                        //         // />;
+                        //     },
+                        // }}
                         options={options}
                         words={words}
                     />
@@ -106,6 +91,8 @@ const options = {
 
 const WordCloudModal = ({ listing }: { listing: TListing }) => {
     const [open, setOpen] = React.useState(false);
+
+    console.log("word cloud modal");
 
     return (
         <Modal

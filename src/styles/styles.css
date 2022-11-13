@@ -422,6 +422,8 @@ main section p {
     font-size: 1rem;
     line-height: 2.4rem;
     padding-left: 10px;
+    border-top-left-radius: 20px;
+    display: none;
 }
 .footer .footer-outer {
     margin: 0 auto;
@@ -433,14 +435,16 @@ main section p {
     font-family: "carbontyperegular";
 }
 .footer .footer-outer a:not(:last-child) {
-    margin-right: 50px;
+    margin-right: 0px;
 }
 .footer {
     position: absolute;
     bottom: 0;
     background: #000;
     height: 45px;
-    width: 100%;
+    width: 200px;
+    position: absolute;
+    right: 0;
 }
 .mobile-view {
     display: none !important;
@@ -929,8 +933,8 @@ main section {
 @media only screen and (min-width: 768px) {
     main section {
         column-count: 5;
-        min-height: calc(100vh - 100px);
-        height: calc(100vh - 100px);
+        min-height: calc(100vh - 30px);
+        height: calc(100vh - 30px);
     }
 }
 /* Extra large devices (large laptops and desktops, 1200px and up) */
@@ -1148,4 +1152,22 @@ a {
 
 .ant-picker-footer {
     display: none;
+}
+
+[id*="tippy-"] {
+    display: none;
+}
+
+[id*="tippy-"] {
+    display: none;
+}
+
+[id*="tippy-"] {
+    display: none;
+}
+
+svg text {
+    outline: none !important;
+    border: none !important;
+    border-radius: 0;
 }
