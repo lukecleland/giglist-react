@@ -121,9 +121,13 @@ export const PageListing = ({
                             letterSpacing: "0.5px",
                         }}
                     >
-                        {gig.start}
-                        <br />
-                        {gig.date_formatted.toString().toUpperCase()}
+                        <>
+                            {moment(gig.datestamp.date).format(
+                                "dddd, MMMM Do YYYY"
+                            )}
+                            <br />
+                            {gig.start}
+                        </>
                     </div>
                     <div>
                         <div style={{ fontWeight: "" }}>
