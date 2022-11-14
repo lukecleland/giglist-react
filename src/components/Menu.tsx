@@ -171,7 +171,7 @@ export const Menu: React.ElementType = ({
                             }}
                             onClick={handleSearchToggle}
                         ></Icon> */}
-                        {/* <Icon
+                        <Icon
                             name="crosshairs"
                             //size={"la"}
                             style={{
@@ -180,7 +180,7 @@ export const Menu: React.ElementType = ({
                                 margin: "-2px 14px 0px 0px",
                             }}
                             onClick={filterByLocation}
-                        /> */}
+                        />
 
                         <Space
                             direction="vertical"

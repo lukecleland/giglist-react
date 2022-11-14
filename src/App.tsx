@@ -83,7 +83,7 @@ export const App = () => {
         navigator.geolocation.getCurrentPosition((position) => {
             let lat = position.coords.latitude;
             let lng = position.coords.longitude;
-            const kms = 5;
+            const kms = 10;
             const distance = (1 / 60) * 0.621371 * kms;
 
             giglistFeed.filter(
