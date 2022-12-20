@@ -1,8 +1,9 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { TDate, TListing } from "../types/types";
 import { GigAd, GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
 import { isMobile } from "react-device-detect";
+import { useScrollPosition } from "./ScrollDetect";
 
 type Props = {
     giglist: TDate[];
@@ -26,23 +27,42 @@ export const DateList = ({
         return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
+    const [daysToShow, setDaysToShow] = useState<number>(7);
+
     const adStart = getRandomInt(0, 100);
 
     let numberOfAdsToShow = 28;
 
     if (isMobile) {
-        numberOfAdsToShow = 0;
+        numberOfAdsToShow = 7;
     }
+
+    const getCondition = (index: number) => {
+        if (isMobile) {
+            if (index < daysToShow) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const handleLoadMoreClick = () => {
+        setDaysToShow(daysToShow + 7);
+    };
 
     return (
         <>
             {giglist.length &&
-                giglist.map((date, index) => {
-                    const adId = (index + adStart) % gigAds.length;
+                giglist
+                    .filter((d, index) => getCondition(index))
+                    .map((date, index) => {
+                        const adId = (index + adStart) % gigAds.length;
 
-                    return (
-                        <ul className="day" key={index}>
-                            {/* <a
+                        return (
+                            <ul className="day" key={index}>
+                                {/* <a
                                     href="/"
                                     style={{
                                         position: "relative",
@@ -67,31 +87,48 @@ export const DateList = ({
                                     alt="Giglist"
                                 />
                                 </a> */}
-                            <div
-                                className="date"
-                                onClick={() => {
-                                    filterByDate(date);
-                                }}
-                            >
-                                <span
-                                    style={{
-                                        letterSpacing: "-0.2rem",
+                                <div
+                                    className="date"
+                                    onClick={() => {
+                                        filterByDate(date);
                                     }}
                                 >
-                                    {date.datestring}
-                                    {/* <span style={{ fontSize: "12px" }}>
+                                    <span
+                                        style={{
+                                            letterSpacing: "-0.2rem",
+                                        }}
+                                    >
+                                        {date.datestring}
+                                        {/* <span style={{ fontSize: "12px" }}>
                                             {moment(date.datetime).year()}
                                         </span> */}
-                                </span>
-                            </div>
-                            <Listings listings={date.listings} />
+                                    </span>
+                                </div>
+                                <Listings listings={date.listings} />
 
-                            {!searchMode && index < numberOfAdsToShow && (
-                                <GigAds adId={adId} gigAds={gigAds} />
-                            )}
-                        </ul>
-                    );
-                })}
+                                {!searchMode && index < numberOfAdsToShow && (
+                                    <GigAds adId={adId} gigAds={gigAds} />
+                                )}
+
+                                {isMobile && index + 1 === daysToShow && (
+                                    <div
+                                        style={{
+                                            height: 400,
+                                            color: "white",
+                                            fontFamily: "carbontyperegular",
+                                            marginTop: "40px",
+                                            textAlign: "center",
+                                            width: "100%",
+                                            fontSize: "16px",
+                                        }}
+                                        onClick={handleLoadMoreClick}
+                                    >
+                                        Load More Gigs...
+                                    </div>
+                                )}
+                            </ul>
+                        );
+                    })}
         </>
     );
 };

@@ -8,6 +8,7 @@ import { Routing } from "./components/Routing";
 import Menu from "./components/Menu";
 import { isMobile } from "react-device-detect";
 import { GigAd } from "./components/GigAds";
+import { useScrollPosition } from "./components/ScrollDetect";
 
 const Loader = () => {
     const [loading, setLoading] = useState(true);
