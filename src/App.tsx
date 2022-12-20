@@ -79,7 +79,6 @@ export const App = () => {
                     (ad: GigAd) => ad.Active
                 );
                 setGigAds([...validAds]);
-                console.log(validAds, gigAds);
             });
 
         axios.get(feedLink).then((response) => {
