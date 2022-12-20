@@ -21,11 +21,11 @@ export const GigAds = ({ adId }: { adId: number }) => {
                 }
             )
             .then((response) => {
-                response.data.results[adId].active &&
+                response.data.results[adId].Active &&
                     setGigAds({
                         image: response.data.results[adId].Image_Updload[0].url,
                         link: response.data.results[adId].url_forward,
-                        active: response.data.results[adId].active,
+                        active: response.data.results[adId].Active,
                     });
             });
     }, [adId]);
