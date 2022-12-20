@@ -65,11 +65,6 @@ export const App = () => {
     }
 
     useEffect(() => {
-        axios.get(feedLink).then((response) => {
-            setGiglistFeed(response.data);
-            setGiglist(response.data);
-        });
-
         axios
             .get(
                 "https://api.baserow.io/api/database/rows/table/108866/?user_field_names=true",
@@ -83,8 +78,13 @@ export const App = () => {
                 const validAds: GigAd[] = response.data.results.filter(
                     (ad: GigAd) => ad.Active
                 );
-                setGigAds(validAds);
+                setGigAds([...validAds]);
             });
+
+        axios.get(feedLink).then((response) => {
+            setGiglistFeed(response.data);
+            setGiglist(response.data);
+        });
     }, []);
 
     const filterByDate = (date: TDate) => {
@@ -165,45 +165,41 @@ export const App = () => {
         }
     };
 
-    return (
-        !!giglist &&
-        gigAds && (
-            <>
-                {/* {!giglist.length && <div>No Gigs Found</div>} */}
-                <Loader />
-                <main>
-                    <div
-                        ref={myRef}
-                        className="ui page grid"
-                        style={{ marginTop: "0px" }}
-                    >
-                        <BrowserRouter>
-                            <Menu
-                                doSearch={doSearch}
-                                filterByDateCalendar={filterByDateCalendar}
-                                filterByLocation={filterByLocation}
-                            />
-                            <Routing
-                                giglist={giglist}
-                                gigAds={gigAds}
-                                filterByDate={filterByDate}
-                                searchMode={searchMode}
-                            />
-                        </BrowserRouter>
+    return !!giglist && gigAds.length ? (
+        <>
+            {/* {!giglist.length && <div>No Gigs Found</div>} */}
+            <Loader />
+            <main>
+                <div
+                    ref={myRef}
+                    className="ui page grid"
+                    style={{ marginTop: "0px" }}
+                >
+                    <BrowserRouter>
+                        <Menu
+                            doSearch={doSearch}
+                            filterByDateCalendar={filterByDateCalendar}
+                            filterByLocation={filterByLocation}
+                        />
+                        <Routing
+                            giglist={giglist}
+                            gigAds={gigAds}
+                            filterByDate={filterByDate}
+                            searchMode={searchMode}
+                        />
+                    </BrowserRouter>
+                </div>
+                <div className="footer">
+                    <div className="footer-outer">
+                        <a href="/" className="item float-right giglist-copy">
+                            <span className="copy">&copy;</span>Giglist 2022
+                        </a>
                     </div>
-                    <div className="footer">
-                        <div className="footer-outer">
-                            <a
-                                href="/"
-                                className="item float-right giglist-copy"
-                            >
-                                <span className="copy">&copy;</span>Giglist 2022
-                            </a>
-                        </div>
-                    </div>
-                </main>
-            </>
-        )
+                </div>
+            </main>
+        </>
+    ) : (
+        <></>
     );
 };
 
