@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-type GigAd = {
+export type GigAd = {
     image: string;
     link: string;
-    active: boolean;
+    Active: boolean;
 };
 
 export const GigAds = ({ adId }: { adId: number }) => {
@@ -21,12 +21,15 @@ export const GigAds = ({ adId }: { adId: number }) => {
                 }
             )
             .then((response) => {
-                response.data.results[adId].Active &&
-                    setGigAds({
-                        image: response.data.results[adId].Image_Updload[0].url,
-                        link: response.data.results[adId].url_forward,
-                        active: response.data.results[adId].Active,
-                    });
+                const validAds = response.data.results.filter(
+                    (ad: GigAd) => ad.Active
+                );
+
+                setGigAds({
+                    image: validAds[adId].Image_Updload[0].url,
+                    link: validAds[adId].url_forward,
+                    Active: validAds[adId].Active,
+                });
             });
     }, [adId]);
 

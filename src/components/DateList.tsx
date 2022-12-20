@@ -1,8 +1,9 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { TDate, TListing } from "../types/types";
-import { GigAds } from "./GigAds";
+import { GigAd, GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
 import { isMobile } from "react-device-detect";
+import axios from "axios";
 
 type Props = {
     giglist: TDate[];
@@ -20,6 +21,24 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
+    const [numberOfValidAds, setNumberOfValidAds] = useState<number>(28);
+
+    axios
+        .get(
+            "https://api.baserow.io/api/database/rows/table/108866/?user_field_names=true",
+            {
+                headers: {
+                    Authorization: "Token oBtxXLOu03SJmaB8O8TNh3c8M6dbMobB",
+                },
+            }
+        )
+        .then((response) => {
+            const validAds: GigAd[] = response.data.results.filter(
+                (ad: GigAd) => ad.Active
+            );
+            setNumberOfValidAds(validAds.length);
+        });
+
     const adStart = getRandomInt(0, 100);
 
     let numberOfAdsToShow = 28;
@@ -32,7 +51,7 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
         <>
             {giglist.length &&
                 giglist.map((date, index) => {
-                    const adId = (index + adStart) % 6;
+                    const adId = (index + adStart) % numberOfValidAds;
                     return (
                         <ul className="day" key={index}>
                             {/* <a
