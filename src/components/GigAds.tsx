@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 type GigAd = {
     image: string;
     link: string;
+    active: boolean;
 };
 
 export const GigAds = ({ adId }: { adId: number }) => {
@@ -20,10 +21,12 @@ export const GigAds = ({ adId }: { adId: number }) => {
                 }
             )
             .then((response) => {
-                setGigAds({
-                    image: response.data.results[adId].Image_Updload[0].url,
-                    link: response.data.results[adId].url_forward,
-                });
+                response.data.results[adId].active &&
+                    setGigAds({
+                        image: response.data.results[adId].Image_Updload[0].url,
+                        link: response.data.results[adId].url_forward,
+                        active: response.data.results[adId].active,
+                    });
             });
     }, [adId]);
 
