@@ -1,17 +1,22 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { TDate, TListing } from "../types/types";
 import { GigAd, GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
 import { isMobile } from "react-device-detect";
-import axios from "axios";
 
 type Props = {
     giglist: TDate[];
+    gigAds: GigAd[];
     searchMode: boolean;
     filterByDate: (date: TDate) => void;
 };
 
-export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
+export const DateList = ({
+    giglist,
+    gigAds,
+    searchMode,
+    filterByDate,
+}: Props) => {
     /**
      * a function that returns a random integer between min (included) and max (included)
      */
@@ -20,24 +25,6 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
     };
-
-    const [numberOfValidAds, setNumberOfValidAds] = useState<number>(28);
-
-    axios
-        .get(
-            "https://api.baserow.io/api/database/rows/table/108866/?user_field_names=true",
-            {
-                headers: {
-                    Authorization: "Token oBtxXLOu03SJmaB8O8TNh3c8M6dbMobB",
-                },
-            }
-        )
-        .then((response) => {
-            const validAds: GigAd[] = response.data.results.filter(
-                (ad: GigAd) => ad.Active
-            );
-            setNumberOfValidAds(validAds.length);
-        });
 
     const adStart = getRandomInt(0, 100);
 
@@ -51,7 +38,8 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
         <>
             {giglist.length &&
                 giglist.map((date, index) => {
-                    const adId = (index + adStart) % numberOfValidAds;
+                    const adId = (index + adStart) % gigAds.length;
+
                     return (
                         <ul className="day" key={index}>
                             {/* <a
@@ -99,7 +87,7 @@ export const DateList = ({ giglist, searchMode, filterByDate }: Props) => {
                             <Listings listings={date.listings} />
 
                             {!searchMode && index < numberOfAdsToShow && (
-                                <GigAds adId={adId} />
+                                <GigAds adId={adId} gigAds={gigAds} />
                             )}
                         </ul>
                     );

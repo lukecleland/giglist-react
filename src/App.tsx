@@ -7,6 +7,7 @@ import "./styles/styles.css";
 import { Routing } from "./components/Routing";
 import Menu from "./components/Menu";
 import { isMobile } from "react-device-detect";
+import { GigAd } from "./components/GigAds";
 
 const Loader = () => {
     const [loading, setLoading] = useState(true);
@@ -52,6 +53,7 @@ const Loader = () => {
 
 export const App = () => {
     const [giglist, setGiglist] = useState<TDate[]>([]);
+    const [gigAds, setGigAds] = useState<GigAd[]>([]);
     const [giglistFeed, setGiglistFeed] = useState<TDate[]>([]);
     const [searchMode, setSearchMode] = useState<boolean>(false);
     const myRef = useRef<HTMLDivElement>(null);
@@ -67,16 +69,26 @@ export const App = () => {
             setGiglistFeed(response.data);
             setGiglist(response.data);
         });
+
+        axios
+            .get(
+                "https://api.baserow.io/api/database/rows/table/108866/?user_field_names=true",
+                {
+                    headers: {
+                        Authorization: "Token oBtxXLOu03SJmaB8O8TNh3c8M6dbMobB",
+                    },
+                }
+            )
+            .then((response) => {
+                const validAds: GigAd[] = response.data.results.filter(
+                    (ad: GigAd) => ad.Active
+                );
+                setGigAds(validAds);
+            });
     }, []);
 
     const filterByDate = (date: TDate) => {
         setGiglist(giglistFeed.filter((gig) => gig.datetime === date.datetime));
-        // myRef &&
-        //     myRef.current &&
-        //     myRef.current.scrollIntoView({
-        //         behavior: "smooth",
-        //         block: "start",
-        //     });
     };
 
     const filterByLocation = () => {
@@ -154,7 +166,8 @@ export const App = () => {
     };
 
     return (
-        !!giglist && (
+        !!giglist &&
+        gigAds && (
             <>
                 {/* {!giglist.length && <div>No Gigs Found</div>} */}
                 <Loader />
@@ -172,6 +185,7 @@ export const App = () => {
                             />
                             <Routing
                                 giglist={giglist}
+                                gigAds={gigAds}
                                 filterByDate={filterByDate}
                                 searchMode={searchMode}
                             />

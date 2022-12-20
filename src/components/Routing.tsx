@@ -5,16 +5,19 @@ import { Navigate } from "react-router-dom";
 import { Routes } from "react-router-dom";
 import { TDate, TGiglist } from "../types/types";
 import { DateList } from "./DateList";
+import { GigAd } from "./GigAds";
 import { LocationGraphic } from "./LocationGraphic";
 import PageListing from "./PageListing";
 import { WordCloud } from "./WordCloud";
 
 export const Routing = ({
     giglist,
+    gigAds,
     searchMode,
     filterByDate,
 }: {
     giglist: TGiglist;
+    gigAds: GigAd[];
     searchMode: boolean;
     filterByDate: (date: TDate) => void;
 }) => {
@@ -71,6 +74,7 @@ export const Routing = ({
                             <section>
                                 <DateList
                                     giglist={giglist}
+                                    gigAds={gigAds}
                                     filterByDate={filterByDate}
                                     searchMode={searchMode}
                                 />
@@ -278,6 +282,7 @@ export const Routing = ({
                         <section>
                             <DateList
                                 giglist={giglist}
+                                gigAds={gigAds}
                                 filterByDate={Date}
                                 searchMode={searchMode}
                             />
