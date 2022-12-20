@@ -79,6 +79,7 @@ export const App = () => {
                     (ad: GigAd) => ad.Active
                 );
                 setGigAds([...validAds]);
+                console.log(validAds, gigAds);
             });
 
         axios.get(feedLink).then((response) => {
@@ -165,41 +166,45 @@ export const App = () => {
         }
     };
 
-    return !!giglist && gigAds.length ? (
-        <>
-            {/* {!giglist.length && <div>No Gigs Found</div>} */}
-            <Loader />
-            <main>
-                <div
-                    ref={myRef}
-                    className="ui page grid"
-                    style={{ marginTop: "0px" }}
-                >
-                    <BrowserRouter>
-                        <Menu
-                            doSearch={doSearch}
-                            filterByDateCalendar={filterByDateCalendar}
-                            filterByLocation={filterByLocation}
-                        />
-                        <Routing
-                            giglist={giglist}
-                            gigAds={gigAds}
-                            filterByDate={filterByDate}
-                            searchMode={searchMode}
-                        />
-                    </BrowserRouter>
-                </div>
-                <div className="footer">
-                    <div className="footer-outer">
-                        <a href="/" className="item float-right giglist-copy">
-                            <span className="copy">&copy;</span>Giglist 2022
-                        </a>
+    return (
+        !!giglist &&
+        gigAds && (
+            <>
+                {/* {!giglist.length && <div>No Gigs Found</div>} */}
+                <Loader />
+                <main>
+                    <div
+                        ref={myRef}
+                        className="ui page grid"
+                        style={{ marginTop: "0px" }}
+                    >
+                        <BrowserRouter>
+                            <Menu
+                                doSearch={doSearch}
+                                filterByDateCalendar={filterByDateCalendar}
+                                filterByLocation={filterByLocation}
+                            />
+                            <Routing
+                                giglist={giglist}
+                                gigAds={gigAds}
+                                filterByDate={filterByDate}
+                                searchMode={searchMode}
+                            />
+                        </BrowserRouter>
                     </div>
-                </div>
-            </main>
-        </>
-    ) : (
-        <></>
+                    <div className="footer">
+                        <div className="footer-outer">
+                            <a
+                                href="/"
+                                className="item float-right giglist-copy"
+                            >
+                                <span className="copy">&copy;</span>Giglist 2022
+                            </a>
+                        </div>
+                    </div>
+                </main>
+            </>
+        )
     );
 };
 
