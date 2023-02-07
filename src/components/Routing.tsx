@@ -98,7 +98,7 @@ export const Routing = ({
                             <iframe
                                 style={{
                                     position: "absolute",
-                                    top: 62,
+                                    top: 0,
                                     left: 0,
                                     bottom: 0,
                                     right: 0,
@@ -109,7 +109,8 @@ export const Routing = ({
                                     margin: 0,
                                     padding: 0,
                                     overflow: "hidden",
-                                    zIndex: 10,
+                                    zIndex: -1,
+                                    scrollbarWidth: "none",
                                 }}
                                 frameBorder="0"
                                 height={"100%"}
