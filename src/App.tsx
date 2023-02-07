@@ -198,7 +198,7 @@ export const App = () => {
                                 href="/"
                                 className="item float-right giglist-copy"
                             >
-                                <span className="copy">&copy;</span>Giglist 2022
+                                <span className="copy">&copy;</span>Giglist 2023
                             </a>
                         </div>
                     </div>

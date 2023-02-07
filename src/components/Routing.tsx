@@ -48,14 +48,47 @@ export const Routing = ({
                 path="/"
                 element={
                     <Fragment>
-                        {/* <Helmet>
+                        <Helmet>
+                            <base href="/" />
                             <link
                                 rel="canonical"
-                                href="https://giglist.com.au/"
+                                href="https://giglist.com.au"
+                            />
+                            <meta charSet="utf-8" />
+                            <meta
+                                name="viewport"
+                                content="width=device-width, initial-scale=1"
+                            />
+                            <meta name="theme-color" content="#000000" />
+                            <meta
+                                itemProp="name"
+                                content="Gigs. In a list. Giglist."
                             />
                             <meta
+                                itemProp="description"
+                                content="WA’s largest live music gig guide. Driven by the music community, created and maintained by locals. Features include easy search & gig map. Submit a gig to Giglist."
+                            />
+                            <meta
+                                name="description"
+                                content="WA’s largest live music gig guide. Driven by the music community, created and maintained by locals. Features include easy search & gig map. Submit a gig to Giglist."
+                            />
+
+                            <link
+                                rel="shortcut icon"
+                                type="image/x-icon"
+                                href="https://giglist.com.au/wp-content/uploads/2018/08/favicon-1.ico"
+                            />
+
+                            <link
+                                rel="stylesheet"
+                                href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
+                                integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt"
+                                crossOrigin="anonymous"
+                            />
+
+                            <meta
                                 property="og:title"
-                                content="Giglist. Gigs in a list."
+                                content="Giglist. Perth Live Music Gig Guide"
                             />
                             <meta property="og:site_name" content="Giglist" />
                             <meta
@@ -64,16 +97,30 @@ export const Routing = ({
                             />
                             <meta
                                 property="og:description"
-                                content="Perth's most comprehensive live music gig guide. Driven by the music community, created and maintained by locals."
+                                content="Gigs in a list. Giglist."
                             />
                             <meta property="og:type" content="website" />
                             <meta
                                 property="og:image"
-                                content="https://giglist.com.au/giglistlogo.png"
+                                content="assets/logo_web.png"
                             />
+
+                            <link rel="manifest" href="./manifest.json" />
+
+                            <link
+                                rel="shortcut icon"
+                                type="image/x-icon"
+                                href="https://giglist.com.au/wp-content/uploads/2018/08/favicon-1.ico"
+                            />
+                            <link
+                                rel="stylesheet"
+                                href="./fontawesome.css"
+                                integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt"
+                                crossOrigin="anonymous"
+                            />
+
+                            <title>Giglist. Gigs in a List</title>
                         </Helmet>
-                         */}
-                        <Head />
                         <div className="side-scroll ">
                             <section>
                                 <DateList

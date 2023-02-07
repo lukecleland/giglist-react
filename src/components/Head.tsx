@@ -2,9 +2,8 @@ import { Helmet } from "react-helmet";
 
 export const Head = () => {
     return (
-        <Helmet>
+        <>
             <base href="/" />
-            <title>Giglist. Gigs in a List</title>
             <meta charSet="utf-8" />
             <meta
                 name="viewport"
@@ -47,7 +46,22 @@ export const Head = () => {
             <meta property="og:type" content="website" />
             <meta property="og:image" content="assets/logo_web.png" />
 
-            <title>Giglist</title>
-        </Helmet>
+            <link rel="stylesheet" href="./semantic.min.css" />
+            <link rel="manifest" href="./manifest.json" />
+
+            <link
+                rel="shortcut icon"
+                type="image/x-icon"
+                href="https://giglist.com.au/wp-content/uploads/2018/08/favicon-1.ico"
+            />
+            <link
+                rel="stylesheet"
+                href="./fontawesome.css"
+                integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt"
+                crossOrigin="anonymous"
+            />
+
+            <title>Giglist. Gigs in a List</title>
+        </>
     );
 };
