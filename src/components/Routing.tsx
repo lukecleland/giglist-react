@@ -10,6 +10,7 @@ import { LocationGraphic } from "./LocationGraphic";
 import PageListing from "./PageListing";
 import { WordCloud } from "./WordCloud";
 import Geolocation from "./Geolocation";
+import { Head } from "./Head";
 
 export const Routing = ({
     giglist,
@@ -47,7 +48,7 @@ export const Routing = ({
                 path="/"
                 element={
                     <Fragment>
-                        <Helmet>
+                        {/* <Helmet>
                             <link
                                 rel="canonical"
                                 href="https://giglist.com.au/"
@@ -71,6 +72,8 @@ export const Routing = ({
                                 content="https://giglist.com.au/giglistlogo.png"
                             />
                         </Helmet>
+                         */}
+                        <Head />
                         <div className="side-scroll ">
                             <section>
                                 <DateList
