@@ -9,6 +9,7 @@ import { GigAd } from "./GigAds";
 import { LocationGraphic } from "./LocationGraphic";
 import PageListing from "./PageListing";
 import { WordCloud } from "./WordCloud";
+import Geolocation from "./Geolocation";
 
 export const Routing = ({
     giglist,
@@ -239,12 +240,30 @@ export const Routing = ({
                     </div>
                 }
             />
+            <Route
+                path="/locations"
+                element={
+                    <div className="gigtools">
+                        <script>
+                            location.href='https://giglist.com.au/locations.php'
+                        </script>
+                    </div>
+                }
+            />
             {routes}
             <Route
                 path="/locationimagecollage"
                 element={
                     <div>
                         <LocationGraphic giglist={giglist}></LocationGraphic>
+                    </div>
+                }
+            />
+            <Route
+                path="/geolocation"
+                element={
+                    <div>
+                        <Geolocation />
                     </div>
                 }
             />
