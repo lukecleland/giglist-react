@@ -137,9 +137,9 @@ export const PageListing = ({
                             {gig.address} {gig.suburb}
                         </div>
                         <div style={{ float: "right" }}>
-                            <a href={event_url} target="_blank">
+                            {/* <a href={event_url} target="_blank">
                                 Share Link
-                            </a>
+                            </a> */}
                             <a
                                 title="Add to Google Calendar"
                                 target="_blank"
