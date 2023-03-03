@@ -14,7 +14,9 @@ type Props = {
 export const Main = ({ giglist, gigAds, filterByDate, searchMode }: Props) => {
     return (
         <>
-            <Helmet></Helmet>
+            <Helmet>
+                <link rel="canonical" href="https://giglist.com.au/" />
+            </Helmet>
             <div className="side-scroll ">
                 <section>
                     <DateList
