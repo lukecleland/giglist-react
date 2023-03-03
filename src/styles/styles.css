@@ -13,12 +13,15 @@ Text Domain: giglist
 html {
     height: 100%;
     width: 100%;
+    background-color: #000;
 }
 
 body {
     /* font-family: "Merriweather", serif; */
     height: 100%;
     width: 100%;
+    rotate: 0.1deg;
+    overflow: hidden;
 }
 
 .advert {
@@ -26,7 +29,7 @@ body {
 }
 
 .event-time {
-    color: 979797;
+    color: #979797;
 }
 
 .search_event {
@@ -93,7 +96,7 @@ li .listingTrigger {
 } */
 
 li.event-wrapper > .event-venue > .name {
-    color: AEAEAE;
+    color: #aeaeae;
 }
 
 /* li.event-wrapper > .event-title:hover {

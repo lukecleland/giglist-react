@@ -16,5 +16,5 @@
         "noEmit": true,
         "jsx": "react-jsx"
     },
-    "include": ["src", "src/sitemap-builder.js"]
+    "include": ["src", "src/sitemap-builder.js", "src/index.d.ts"]
 }

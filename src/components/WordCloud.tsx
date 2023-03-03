@@ -20,12 +20,12 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
 
             giglist[0].listings.forEach((listing) => {
                 const sourceObject = {
-                    text: listing.artist,
-                    value: getRandomInt(10, 16),
+                    text: listing.artist + ". " + listing.name,
+                    value: getRandomInt(15, 26),
                     id: listing.id,
                     rotationAngles: [0, 0],
                     rotations: 0,
-                    fontWeight: 700,
+                    fontWeight: 100,
                 };
                 wordArray.push(sourceObject);
             });
@@ -36,33 +36,51 @@ export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
 
     return (
         <>
-            <div style={{ position: "relative", textAlign: "center" }}>
-                <div
-                    style={{
-                        position: "relative",
-                        margin: 0,
-                        backgroundColor: "white",
-                        padding: "0px",
-                        color: "black",
-                        fontFamily: "carbontyperegular",
-                        fontSize: "25px",
-                    }}
-                >{`Gigs ${moment().format("dddd MMM D")}`}</div>
-                <div style={{ marginTop: "-70px" }}>
-                    <ReactWordcloud
-                        // callbacks={{
-                        //     onWordClick: (event) => {
-                        //         event.preventDefault();
-                        //         // console.log(event);
-                        //         // <WordCloudModal
-                        //         //     listing={giglist[0].listings[0]}
-                        //         // />;
-                        //     },
-                        // }}
-                        options={options}
-                        words={words}
-                    />
-                </div>
+            <div
+                style={{
+                    position: "absolute",
+                    margin: 0,
+                    backgroundColor: "white",
+                    padding: "0px",
+                    color: "black",
+                    fontFamily: "carbontyperegular",
+                    fontSize: "25px",
+                    width: "100%",
+                    textAlign: "center",
+                }}
+            >{`Gigs ${moment().format("dddd MMM D")}`}</div>
+            <div
+                style={{
+                    display: "flex",
+                    textAlign: "center",
+                    //alignItems: "center",
+                    margin: 0,
+                    backgroundColor: "black",
+                    padding: "0px",
+
+                    paddingLeft: "300px",
+                    paddingRight: "0px",
+                    marginTop: "-190px",
+                    marginBottom: "132px",
+                    color: "black",
+                    fontFamily: "carbontyperegular",
+                    fontSize: "25px",
+                    width: "80%",
+                }}
+            >
+                <ReactWordcloud
+                    // callbacks={{
+                    //     onWordClick: (event) => {
+                    //         event.preventDefault();
+                    //         // console.log(event);
+                    //         // <WordCloudModal
+                    //         //     listing={giglist[0].listings[0]}
+                    //         // />;
+                    //     },
+                    // }}
+                    options={options}
+                    words={words}
+                />
             </div>
         </>
     );

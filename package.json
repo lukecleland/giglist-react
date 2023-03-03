@@ -5,6 +5,7 @@
     "private": true,
     "dependencies": {
         "@extrawest/service-worker-generator": "^1.4.0",
+        "@react-google-maps/api": "^2.18.1",
         "@types/node": "^16.11.26",
         "@types/react": "^18.0.25",
         "@types/react-dom": "^17.0.14",
