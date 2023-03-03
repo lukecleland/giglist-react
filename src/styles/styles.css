@@ -1089,7 +1089,7 @@ a {
     background-color: none;
     background-size: cover;
     width: 100%;
-    min-height: 500px;
+    min-height: 400px;
     z-index: 9999;
 }
 
