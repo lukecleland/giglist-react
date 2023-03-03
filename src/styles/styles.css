@@ -1046,8 +1046,8 @@ a {
     color: white;
     position: absolute;
     font-size: 18px;
-    bottom: 22;
-    left: 22;
+    bottom: 22px;
+    left: 22px;
     font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
 
@@ -1055,8 +1055,8 @@ a {
     background: rgba(0, 0, 0, 0.7);
     padding: 6px;
     position: absolute;
-    right: 22;
-    bottom: 22;
+    right: 22px;
+    bottom: 22px;
 }
 
 .modal-content-header {
@@ -1113,7 +1113,7 @@ a {
     }
     .modal-qr-code {
         right: 30%;
-        bottom: -145;
+        bottom: -145px;
     }
     .modal-content-header {
         padding: 10px;
