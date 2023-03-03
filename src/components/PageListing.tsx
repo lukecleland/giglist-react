@@ -51,8 +51,9 @@ export const PageListing = ({
                 <meta property="og:description" content={event.title} />
                 <meta property="og:type" content="website" />
                 <meta property="og:image" content={gig.location_image_url} />
+                <EventSchema gig={gig} />
             </Helmet>
-            <EventSchema gig={gig} />
+
             <div
                 className="page-modal-listing"
                 style={{ backgroundImage: gigBackground }}
