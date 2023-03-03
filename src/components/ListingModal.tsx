@@ -24,13 +24,6 @@ export const ListingModal = ({ listing }: { listing: TListing }) => {
             <Modal.Actions>
                 <Icon
                     onClick={() => setOpen(false)}
-                    style={{
-                        position: "absolute",
-                        top: -10,
-                        right: -10,
-                        backgroundColor: "white",
-                        cursor: "pointer",
-                    }}
                     name={"window close"}
                     size={"big"}
                 ></Icon>

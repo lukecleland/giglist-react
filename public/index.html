@@ -13,7 +13,7 @@
 
         <base href="/" />
 
-        <meta itemprop="name" content="Gigs. In a list." />
+        <meta itemprop="name" content="Gigs. In a List." />
         <meta
             name="description"
             content="WA’s largest live music gig guide. Driven by the music community, created and maintained by locals. Features include easy search & gig map. Submit a gig to Giglist."
@@ -71,7 +71,25 @@
                         event.preventDefault();
                     }
                 });
+
+                // if mobile, add sticky class to first date class found, wait until react loads
+                if ($(window).width() < 600) {
+                    setTimeout(function () {
+                        $(".day:first-child .date").addClass("sticky");
+                    }, 1000);
+                }
             });
+
+            window.onscroll = function () {
+                // loop through each day class and if in view add sticky class to the .date child of that day use offset. we don't want to switch until the next day scolls to top. add some buffer tot he action so it doesn't switch too early.
+                $(".day").each(function () {
+                    if ($(this).offset().top - $(window).scrollTop() < 100) {
+                        $(this).find(".date").addClass("sticky");
+                    } else {
+                        $(this).find(".date").removeClass("sticky");
+                    }
+                });
+            };
         </script>
     </head>
     <body>

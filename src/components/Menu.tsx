@@ -187,6 +187,7 @@ export const Menu: React.ElementType = ({
                             style={{
                                 backgroundColor: "black",
                                 color: "white",
+                                height: 30,
                             }}
                         >
                             <Icon
@@ -277,11 +278,11 @@ export const Menu: React.ElementType = ({
                                     </div>
                                 )}
                             </li>
-                            {/* <li>
+                            <li>
                                 <a className="item" href="/gigmap">
                                     Gigmap
                                 </a>
-                            </li> */}
+                            </li>
                             <li>
                                 <a className="item" href="/submit">
                                     Submit

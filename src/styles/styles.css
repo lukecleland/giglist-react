@@ -20,8 +20,8 @@ body {
     /* font-family: "Merriweather", serif; */
     height: 100%;
     width: 100%;
-    rotate: 0.1deg;
-    overflow: hidden;
+    /* rotate: 0.1deg; */
+    background-color: #000 !important;
 }
 
 .advert {
@@ -472,14 +472,14 @@ main section p {
     padding-top: 30px;
     margin-bottom: -20px;
 }
-.rotate {
+/* .rotate {
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     -o-transform: rotate(90deg);
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-}
+} */
 /* mobile view */
 
 li {
@@ -665,8 +665,8 @@ header ul {
 
 @media only screen and (max-width: 767px) and (orientation: landscape) {
     html {
-        transform: rotate(-90deg);
-        transform-origin: left top;
+        /* transform: rotate(-90deg);
+        transform-origin: left top; */
         width: 100vh;
         overflow-x: hidden;
         position: absolute;
@@ -699,6 +699,17 @@ header ul {
 @media only screen and (max-width: 767px) {
     ul {
         background-image: none !important;
+    }
+
+    .sticky {
+        position: fixed;
+        top: 60px;
+        width: 95%;
+        z-index: 98;
+    }
+
+    main section {
+        padding-top: 30px !important;
     }
 
     .ui.container.submission {
@@ -759,14 +770,15 @@ header ul {
     }
 
     .ui.inverted.menu.navbar {
-        display: block;
+        /* display: block; */
         position: fixed;
         border-radius: 0px;
         margin-top: 0px;
         height: 60px;
-        float: left;
+        /* float: left; */
         width: 100%;
-        padding: 0;
+        padding: 0px;
+        top: 0px;
         z-index: 999;
     }
 
@@ -788,12 +800,12 @@ header ul {
     .mobile-links {
         /* display: none; */
         background-color: #000;
-        /* position:absolute; */
+        position: fixed;
         /* top:62px;
       left:0; */
-        margin-top: -10px;
+        top: 60px;
         width: 100%;
-        z-index: 99999;
+        z-index: 99;
     }
 
     .main {
@@ -809,11 +821,16 @@ header ul {
         margin-top: 0px;
     }
 
+    .mobile-links ul {
+        list-style: none;
+        border-bottom: 1px solid #222;
+    }
+
     .mobile-links li {
         background-color: #000;
         width: 100%;
         margin: 0;
-        padding-left: 20px;
+        padding-right: 20px;
     }
 
     .mobile-links li div {
@@ -1105,15 +1122,14 @@ a {
         padding: 10px;
         bottom: 30;
         left: 14;
-        width: 92.5%;
+        width: 90%;
         border-radius: 0;
     }
     .ui.modal .content {
         margin-top: -150px !important;
     }
     .modal-qr-code {
-        right: 30%;
-        bottom: -145px;
+        bottom: -155px;
     }
     .modal-content-header {
         padding: 10px;
@@ -1177,7 +1193,12 @@ svg text {
 }
 
 .ui.modal .actions {
-    display: none;
+    position: absolute;
+    background-color: "white";
+    cursor: "pointer";
+    width: 32px;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 ::-webkit-scrollbar {
     height: 12px;

@@ -17,7 +17,7 @@ export const Main = ({ giglist, gigAds, filterByDate, searchMode }: Props) => {
             <Helmet>
                 <link rel="canonical" href="https://giglist.com.au/" />
             </Helmet>
-            <div className="side-scroll ">
+            <div className="side-scroll">
                 <section>
                     <DateList
                         giglist={giglist}
