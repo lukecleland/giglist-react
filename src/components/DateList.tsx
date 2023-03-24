@@ -109,9 +109,19 @@ export const Listings = ({ listings }: { listings: TListing[] }) => {
                         listing.artist === listings[index - 1].artist &&
                         listing.date_formatted ===
                             listings[index - 1].date_formatted;
+
+                    const gig = listing;
+
+                    const event_url =
+                        `https://giglist.com.au/gig-${gig.artist}-${gig.name}-${gig.date}`
+                            .replace(/\s+/g, "-")
+                            .toLowerCase();
                     return (
                         !duplicateListing && (
                             <Fragment key={index}>
+                                <a style={{ display: "none" }} href={event_url}>
+                                    Event Link
+                                </a>
                                 <ListingModal listing={listing} />
                             </Fragment>
                         )
