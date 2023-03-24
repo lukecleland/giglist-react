@@ -3,7 +3,6 @@ import { TDate, TListing } from "../types/types";
 import { GigAd, GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
 import { isMobile } from "react-device-detect";
-import { useScrollPosition } from "./ScrollDetect";
 
 type Props = {
     giglist: TDate[];
@@ -18,9 +17,6 @@ export const DateList = ({
     searchMode,
     filterByDate,
 }: Props) => {
-    /**
-     * a function that returns a random integer between min (included) and max (included)
-     */
     const getRandomInt = (min: number, max: number) => {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -28,9 +24,7 @@ export const DateList = ({
     };
 
     const [daysToShow, setDaysToShow] = useState<number>(7);
-
     const adStart = getRandomInt(0, 100);
-
     let numberOfAdsToShow = 28;
 
     if (isMobile) {
@@ -62,31 +56,6 @@ export const DateList = ({
 
                         return (
                             <ul className="day" key={index}>
-                                {/* <a
-                                    href="/"
-                                    style={{
-                                        position: "relative",
-                                        fontFamily: "carbontyperegular",
-                                        color: "white",
-                                        fontSize: "48px",
-                                        marginLeft: "12px",
-                                        paddingTop: "200px",
-                                        // backgroundColor: "black",
-                                    }}
-                                >
-                                    <br />
-                                    <br />
-                                    Giglist
-                                    <img
-                                    style={{
-                                        paddingTop: "20px",
-                                        marginLeft: "0px",
-                                    }}
-                                    className="main-logo"
-                                    src={require("../styles/assets/newLogoGiglist.png")}
-                                    alt="Giglist"
-                                />
-                                </a> */}
                                 <div
                                     className="date"
                                     onClick={() => {
@@ -99,9 +68,6 @@ export const DateList = ({
                                         }}
                                     >
                                         {date.datestring}
-                                        {/* <span style={{ fontSize: "12px" }}>
-                                            {moment(date.datetime).year()}
-                                        </span> */}
                                     </span>
                                 </div>
                                 <Listings listings={date.listings} />
