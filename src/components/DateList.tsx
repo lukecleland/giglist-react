@@ -31,16 +31,16 @@ export const DateList = ({
         numberOfAdsToShow = 7;
     }
 
-    const getCondition = (index: number) => {
-        if (isMobile) {
-            if (index < daysToShow) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return true;
-    };
+    // const getCondition = (index: number) => {
+    //     if (isMobile) {
+    //         if (index < daysToShow) {
+    //             return true;
+    //         } else {
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // };
 
     const handleLoadMoreClick = () => {
         setDaysToShow(daysToShow + 7);
@@ -52,7 +52,7 @@ export const DateList = ({
         <>
             {giglist.length &&
                 giglist
-                    .filter((d, index) => getCondition(index))
+                    //.filter((d, index) => getCondition(index))
                     .map((date, index) => {
                         const adId = (index + adStart) % gigAds.length;
 
