@@ -23,12 +23,12 @@ export const DateList = ({
         return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
-    const [daysToShow, setDaysToShow] = useState<number>(365);
+    const [daysToShow, setDaysToShow] = useState<number>(7);
     const adStart = getRandomInt(0, 100);
     let numberOfAdsToShow = 28;
 
     if (isMobile) {
-        numberOfAdsToShow = 28;
+        numberOfAdsToShow = 7;
     }
 
     const getCondition = (index: number) => {
@@ -78,7 +78,7 @@ export const DateList = ({
                                     <GigAds adId={adId} gigAds={gigAds} />
                                 )}
 
-                                {/* {isMobile && index + 1 === daysToShow && (
+                                {isMobile && index + 1 === daysToShow && (
                                     <div
                                         style={{
                                             height: 400,
@@ -93,7 +93,7 @@ export const DateList = ({
                                     >
                                         Load More Gigs...
                                     </div>
-                                )} */}
+                                )}
                             </ul>
                         );
                     })}
