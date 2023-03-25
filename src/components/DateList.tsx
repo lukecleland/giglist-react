@@ -120,17 +120,12 @@ export const Listings = ({ listings }: { listings: TListing[] }) => {
                             .toLowerCase();
                     return (
                         !duplicateListing && (
-                            <Suspense fallback={<div>Loading...</div>}>
-                                <Fragment key={index}>
-                                    <a
-                                        style={{ display: "none" }}
-                                        href={event_url}
-                                    >
-                                        Event Link
-                                    </a>
-                                    <ListingModal listing={listing} />
-                                </Fragment>
-                            </Suspense>
+                            <div>
+                                <a style={{ display: "none" }} href={event_url}>
+                                    Event Link
+                                </a>
+                                <ListingModal listing={listing} />
+                            </div>
                         )
                     );
                 })}
