@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { TDate, TListing } from "./types/types";
 import axios from "axios";
@@ -6,9 +6,7 @@ import "semantic-ui-css/semantic.min.css";
 import "./styles/styles.css";
 import { Routing } from "./components/Routing";
 import Menu from "./components/Menu";
-import { isMobile } from "react-device-detect";
 import { GigAd } from "./components/GigAds";
-import { useScrollPosition } from "./components/ScrollDetect";
 
 const Loader = () => {
     const [loading, setLoading] = useState(true);
@@ -60,10 +58,6 @@ export const App = () => {
     const myRef = useRef<HTMLDivElement>(null);
 
     let feedLink = "https://giglist.com.au/feed.php";
-
-    if (isMobile) {
-        feedLink = "https://giglist.com.au/feed.php?mobile";
-    }
 
     useEffect(() => {
         axios
@@ -121,12 +115,6 @@ export const App = () => {
 
     const filterByDateCalendar = (datetime: string) => {
         setGiglist(giglistFeed.filter((gig) => gig.datetime === datetime));
-        // myRef &&
-        //     myRef.current &&
-        //     myRef.current.scrollIntoView({
-        //         behavior: "smooth",
-        //         block: "start",
-        //     });
     };
 
     const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {
@@ -170,7 +158,6 @@ export const App = () => {
         !!giglist &&
         gigAds && (
             <>
-                {/* {!giglist.length && <div>No Gigs Found</div>} */}
                 <Loader />
                 <main>
                     <div
