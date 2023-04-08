@@ -7,7 +7,13 @@ export const Listing = ({ listing }: { listing: TListing }) => {
     return (
         <>
             {gig.id <= 300 && <EventSchema gig={gig} />}
-            <li className="event-wrapper listing">
+            <li
+                className={
+                    gig.answer !== "Yes"
+                        ? "event-wrapper listing"
+                        : "event-wrapper listing sponsored"
+                }
+            >
                 <div className="event-title">
                     {gig.artist.replace(/&amp;/g, "&")}
                 </div>

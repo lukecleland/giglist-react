@@ -76,8 +76,13 @@ li.event-wrapper:hover {
 }
 
 li.event-wrapper.sponsored {
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    /* border image of star in bottom right hand corner */
+    background-image: url(./assets/star-32.png);
+    background-repeat: no-repeat;
     padding: 10px 10px 10px 10px;
-    width: 96%;
+    margin: 10px 0 0 -5px;
 }
 
 li .listingTrigger {
@@ -575,6 +580,7 @@ header ul {
     font-family: carbontyperegular;
     font-size: 16px;
     margin-bottom: 0;
+    height: 46px;
 }
 .ui.vertical.menu {
     margin-top: 0px !important;
