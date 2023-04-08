@@ -164,6 +164,11 @@ export const PageListing = ({
                         </div>
                     </div>
                 </div>
+                <div className={"mini-map"}>
+                    <img
+                        src={`https://maps.googleapis.com/maps/api/staticmap?center=${gig.lat},${gig.lng}&zoom=10&size=135x135&key=AIzaSyDTkZauLKxFmJ3qW2jKsgjLvgt30kqJ3AM`}
+                    />
+                </div>
             </div>
         </>
     );

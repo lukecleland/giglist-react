@@ -75,7 +75,8 @@ li.event-wrapper:hover {
     /* border: 1px solid #ccc; */
 }
 
-li.event-wrapper.sponsored {
+li.event-wrapper.sponsored,
+li.event-wrapper.patreon {
     border-top: 1px solid grey;
     border-bottom: 1px solid grey;
     /* border image of star in bottom right hand corner */
@@ -83,6 +84,14 @@ li.event-wrapper.sponsored {
     background-repeat: no-repeat;
     padding: 10px 10px 10px 10px;
     margin: 10px 0 0 -5px;
+}
+
+li.event-wrapper.patreon {
+    border-top: 1px solid #ff5900;
+    border-bottom: 1px solid #ff5900;
+    background-image: url(./assets/patreon.png);
+    background-size: 18px;
+    background-position: right 10px bottom 10px;
 }
 
 li .listingTrigger {
@@ -905,10 +914,12 @@ header ul {
         text-align: center;
     }
 
-    .sponsored {
+    .sponsored,
+    .patreon {
         margin-top: 15px;
         margin-bottom: 15px;
     }
+
     .event-title {
         float: left;
         clear: right;
@@ -1071,7 +1082,7 @@ a {
     font-size: 18px;
     bottom: 22px;
     left: 22px;
-    font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
+    font-family: Lato;
 }
 
 .modal-qr-code {
@@ -1084,8 +1095,7 @@ a {
 
 .modal-content-header {
     background: rgba(0, 0, 0, 0.9);
-    font-family: carbontyperegular;
-    letter-spacing: -3px;
+    font-family: Lato;
     line-height: 1.2;
     padding: 10px 20px 10px 20px;
     font-size: 24px;
@@ -1123,7 +1133,17 @@ a {
     bottom: 0;
 }
 
+.mini-map {
+    top: 274px;
+    right: 160px;
+    position: absolute;
+    border: 6px solid black;
+}
+
 @media only screen and (max-width: 767px) {
+    .mini-map {
+        top: 282px;
+    }
     .modal-content {
         padding: 10px;
         bottom: 30;
