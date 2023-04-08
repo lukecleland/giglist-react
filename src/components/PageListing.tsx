@@ -112,25 +112,23 @@ export const PageListing = ({
                 </li>
 
                 <div className={"modal-content"}>
-                    {/* <p><a href={event_url}>Link to this event</a></p> */}
-
-                    {/* <div>{ gig.artist.replace(/&amp;/g, '&') }</div> */}
                     <div
                         style={{
                             fontFamily:
                                 "Lato,'Helvetica Neue',Arial,Helvetica,sans-serif",
                             letterSpacing: "0.5px",
+                            backgroundColor: "black",
+                            float: "left",
+                            display: "inline-block",
+                            padding: "20px",
                         }}
                     >
-                        <>
-                            {moment(gig.datestamp.date).format(
-                                "dddd, MMMM Do YYYY"
-                            )}
-                            <br />
-                            {gig.start}
-                        </>
-                    </div>
-                    <div>
+                        {moment(gig.datestamp.date).format(
+                            "dddd, MMMM Do YYYY"
+                        )}
+                        <br />
+                        {gig.start}
+
                         <div style={{ fontWeight: "" }}>
                             {gig.name.replace(/&amp;/g, "&")}
                         </div>

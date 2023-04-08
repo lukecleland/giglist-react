@@ -1074,15 +1074,15 @@ a {
 }
 
 .modal-content {
-    background: rgba(0, 0, 0, 0.8);
+    /* background: rgba(0, 0, 0, 0.6); */
     border-top-right-radius: 5px;
-    padding: 15px;
     color: white;
     position: absolute;
     font-size: 18px;
     bottom: 22px;
     left: 22px;
     font-family: Lato;
+    width: 80%;
 }
 
 .modal-qr-code {
