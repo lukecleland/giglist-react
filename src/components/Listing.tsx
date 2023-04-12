@@ -5,7 +5,7 @@ import { EventSchema } from "./EventSchema";
 export const Listing = ({ listing }: { listing: TListing }) => {
     const gig = listing;
     const cname =
-        gig.answer === "Yes"
+        gig.answer === "sponsored"
             ? "event-wrapper listing sponsored"
             : gig.answer === "patreon_artist"
             ? "event-wrapper listing patreon"
