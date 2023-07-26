@@ -790,8 +790,8 @@ header ul {
         background-image: url("./assets/logo.png");
         background-size: cover;
         margin-top: 0px;
-        width: 200px;
-        /* height: 65px; */
+
+        height: 45px;
     }
 
     .ui.inverted.menu.navbar > .menu-icon {
