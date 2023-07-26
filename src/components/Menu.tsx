@@ -121,6 +121,9 @@ export const Menu: React.ElementType = ({
                         <a href="/submit" className="item">
                             Submit
                         </a>
+                        {/* <a href="/supporters" className="item">
+                            Supporters
+                        </a> */}
                         {/* <a href="shop.php" className="item">
                             Shop
                         </a> */}
@@ -137,11 +140,10 @@ export const Menu: React.ElementType = ({
                             <Icon
                                 name="calendar alternate outline"
                                 onClick={() => setDatePickerOpen(true)}
-                                size={"large"}
                                 style={{
                                     color: "white",
-                                    marginTop: 13,
-                                    marginRight: 15,
+                                    marginTop: 9,
+                                    marginRight: 16,
                                     cursor: "pointer",
                                 }}
                             />

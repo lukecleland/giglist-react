@@ -12,6 +12,7 @@ import Geolocation from "./Geolocation";
 import { Main } from "../pages/Main";
 import { GigMap } from "../pages/GigMap";
 import { Submit } from "../pages/Submit";
+import { Supporters } from "./Supporters";
 
 export const Routing = ({
     giglist,
@@ -59,6 +60,7 @@ export const Routing = ({
             <Route path="/gigmap" element={<GigMap />} />
             <Route path="/qr" element={<Navigate to="/" />} />
             <Route path="/submit" element={<Submit />} />
+            <Route path="/supporters" element={<Supporters />} />
             <Route
                 path="/gigtools"
                 element={

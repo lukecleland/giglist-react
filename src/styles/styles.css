@@ -110,7 +110,7 @@ li .listingTrigger {
 } */
 
 li.event-wrapper > .event-venue > .name {
-    color: #aeaeae;
+    color: #a8a8a8;
 }
 
 /* li.event-wrapper > .event-title:hover {
@@ -157,6 +157,7 @@ ul li {
     width: 100%;
     /* height:100%; */
     float: left;
+    margin-top: -10px;
 }
 .email {
     cursor: pointer;
@@ -568,10 +569,8 @@ i.icon.hide-sidebar {
 .main-logo {
     margin-top: 8px;
     margin-left: -5px;
-}
-
-.main-logo {
-    width: 60%;
+    padding: 5px;
+    width: 40%;
 }
 
 header ul {
@@ -589,7 +588,7 @@ header ul {
     font-family: carbontyperegular;
     font-size: 16px;
     margin-bottom: 0;
-    height: 46px;
+    height: 26px !important;
 }
 .ui.vertical.menu {
     margin-top: 0px !important;
@@ -602,16 +601,6 @@ header ul {
 }
 .item {
     height: 100%;
-}
-.ui.menu {
-    height: 55px;
-    /* padding-right: 10px; */
-    border-radius: 0;
-}
-.ui.menu .item {
-    font-size: 1.2rem;
-    height: 55px;
-    /* padding-top: 25px; */
 }
 
 .bounce {
@@ -754,9 +743,9 @@ header ul {
         min-width: 100%;
     }
 
-    .ui.menu .item {
+    /* .ui.menu .item {
         height: 46px;
-    }
+    } */
 
     .footer {
         display: none;
@@ -789,7 +778,7 @@ header ul {
         position: fixed;
         border-radius: 0px;
         margin-top: 0px;
-        height: 60px;
+        /* height: 50px; */
         /* float: left; */
         width: 100%;
         padding: 0px;
@@ -802,7 +791,7 @@ header ul {
         background-size: cover;
         margin-top: 0px;
         width: 200px;
-        height: 60px;
+        /* height: 65px; */
     }
 
     .ui.inverted.menu.navbar > .menu-icon {
