@@ -10,6 +10,10 @@ Text Domain: giglist
 
 @import url("https://fonts.googleapis.com/css?family=Merriweather&display=swap");
 
+#root {
+    height: 100%;
+}
+
 html {
     height: 100%;
     width: 100%;
@@ -661,6 +665,55 @@ header ul {
     margin-left: 10px !important;
 }
 
+.location-outer-content {
+    margin: auto;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    min-height: 500px;
+}
+
+.location-inner-content {
+    margin: auto;
+    width: 60%;
+    justify-content: center;
+}
+
+.location-inner-content,
+.location-inner-content h1 {
+    color: white;
+}
+
+.location-inner-content .ui.form {
+    padding: 30px;
+    color: white;
+}
+
+.location-inner-content div > p {
+    margin-block-end: 0;
+    padding: 0;
+}
+
+.location-inner-content .ui.form .field label {
+    color: white;
+}
+
+.location-inner-content .ui.form .field input {
+    font-size: 30px;
+    border-radius: 30px;
+    text-align: center;
+    width: 150px;
+    background-color: black;
+    border-color: white;
+    color: white;
+    padding: 5px;
+    margin-bottom: 20px;
+}
+
+::placeholder {
+    color: grey;
+}
+
 .mobile.only.row > .ui.inverted.menu.navbar > a {
     width: 200px;
     height: 50px;
@@ -813,6 +866,7 @@ header ul {
     }
 
     .main {
+        height: 100%;
         margin-top: 60px;
     }
 

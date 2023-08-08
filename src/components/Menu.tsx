@@ -116,7 +116,7 @@ export const Menu: React.ElementType = ({
                             </div>
                         )}
                         <a href="/gigmap" className="item">
-                            Gigmap
+                            Map
                         </a>
                         <a href="/submit" className="item">
                             Submit

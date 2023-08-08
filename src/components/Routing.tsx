@@ -13,6 +13,7 @@ import { Main } from "../pages/Main";
 import { GigMap } from "../pages/GigMap";
 import { Submit } from "../pages/Submit";
 import { Supporters } from "./Supporters";
+import { Location } from "./Location";
 
 export const Routing = ({
     giglist,
@@ -57,6 +58,7 @@ export const Routing = ({
                     />
                 }
             />
+            <Route path="/location" element={<Location />} />
             <Route path="/gigmap" element={<GigMap />} />
             <Route path="/qr" element={<Navigate to="/" />} />
             <Route path="/submit" element={<Submit />} />
