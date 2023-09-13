@@ -13,7 +13,7 @@ export const GigAds = ({ adId, gigAds }: { adId: number; gigAds: GigAd[] }) => {
         `?utm_source=giglist.com.au&utm_medium=cpc&utm_campaign=${gigAds[adId].Name}]}`;
     return gigAds[adId] ? (
         <div className="advert">
-            <a href={gigAds[adId].link} target="_blank" rel="noreferrer">
+            <a href={link} target="_blank" rel="noreferrer">
                 <img src={gigAds[adId].image[0].url} alt="" />
             </a>
         </div>
