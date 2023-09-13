@@ -1,29 +1,58 @@
 <!-- Giglist Widget Example -->
+<!-- render giglist-widget into date-listing columns with css grid-template -->
+<style>
+    .giglist-widget {
+        display: flex;
+        flex-direction: row;
+        font-family: sans-serif;
+    }
+    .giglist-widget__date-listing {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        width: 30%;
+    }
+    .giglist-widget__footer {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 20px;
+    }
+</style>
+
 <div class="giglist-widget"></div>
+
 <script>
     const url = "https://giglist.com.au/feed.php?location_id=130";
     const giglistWidget = document.querySelector(".giglist-widget");
+    let generatedHTML = "";
 
     fetch(url)
         .then((response) => response.json())
         .then((data) => {
             data.map((date) => {
-                giglistWidget.innerHTML += `<h2>${date.datestring}</h2>`;
+                generatedHTML += `<div class="giglist-widget__date-listing"><h2>${date.datestring}</h2>`;
                 date.listings.map((listing) => {
-                    giglistWidget.innerHTML += `
+                    generatedHTML += `
                         <div class="giglist-widget__listing">
                             <h3>${listing.start} ${listing.artist}</h3>
                         </div>
                     `;
+                    // on last listing, close date listing
+                    if (listing === date.listings[date.listings.length - 1]) {
+                        generatedHTML += `</div>`;
+                    }
                 });
+                // if (listing === listing[listing.length - 1]) {
+                //     generatedHTML += `</div>`;
+                // }
             });
         })
         .finally(() => {
-            giglistWidget.innerHTML += `
-                <div class="giglist-widget__footer">
-                    <a href="https://giglist.com.au">Powered by Giglist</a>
-                </div>
-            `;
+            giglistWidget.innerHTML = generatedHTML;
         });
 </script>
+<div class="giglist-widget__footer">
+    <a href="https://giglist.com.au">Powered by Giglist</a>
+</div>
 <!-- // Giglist Widget Example -->
