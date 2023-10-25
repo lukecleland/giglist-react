@@ -101,6 +101,14 @@ export const Routing = ({
                 }
             />
             <Route
+                path="/redirect"
+                element={
+                    <div>
+                        <Navigate to="/" />
+                    </div>
+                }
+            />
+            <Route
                 path="/today"
                 element={
                     <>

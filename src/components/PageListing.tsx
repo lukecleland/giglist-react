@@ -83,9 +83,9 @@ export const PageListing = ({
                     /> */}
                 </div>
 
-                <div className={"modal-qr-code"}>
+                {/* <div className={"modal-qr-code"}>
                     <QRCode level={"L"} size={130} value={event_url} />
-                </div>
+                </div> */}
 
                 {/* <img src={ gig.location_image_url } width="400" alt="" /> */}
                 {/* <img style={ {position: 'absolute', right: 122, bottom: 50}} src={`${googlemapsurl}?size=100x100&key=${apiKey}
@@ -139,20 +139,20 @@ export const PageListing = ({
                             {/* <a href={event_url} target="_blank">
                                 Share Link
                             </a> */}
-                            <a
+                            {/* <a
                                 title="Add to Google Calendar"
                                 target="_blank"
                                 rel="noreferrer"
                                 href={google(event)}
                             >
                                 <Icon name="google" />
-                            </a>
-                            <EmailShareButton url={event_url}>
+                            </a> */}
+                            {/* <EmailShareButton url={event_url}>
                                 <Icon name="mail" />
                             </EmailShareButton>
                             <FacebookShareButton url={event_url}>
                                 <Icon name="facebook" />
-                            </FacebookShareButton>
+                            </FacebookShareButton> */}
 
                             {/* <Icon size="large" name="map" />
                             &nbsp;&nbsp;&nbsp;
@@ -162,11 +162,11 @@ export const PageListing = ({
                         </div>
                     </div>
                 </div>
-                <div className={"mini-map"}>
+                {/* <div className={"mini-map"}>
                     <img
                         src={`https://maps.googleapis.com/maps/api/staticmap?center=${gig.lat},${gig.lng}&zoom=10&size=135x135&key=AIzaSyDTkZauLKxFmJ3qW2jKsgjLvgt30kqJ3AM`}
                     />
-                </div>
+                </div> */}
             </div>
         </>
     );
