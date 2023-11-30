@@ -1,42 +1,110 @@
-import React from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { Dropdown, Button, Popup } from "semantic-ui-react";
+import postcodeData from "./output";
 
-const radiusOptions = [
-    { key: "1", text: "1km", value: "1" },
-    { key: "2", text: "2km", value: "2" },
-    { key: "3", text: "3km", value: "3" },
-    { key: "4", text: "4km", value: "4" },
-    { key: "5", text: "5km", value: "5" },
-];
+const raddii = [50, 20, 10, 5, 1];
+
+const radiusOptions = raddii.map((radius) => ({
+    key: radius,
+    text: `${radius}km`,
+    value: radius,
+}));
+
+interface PostcodeInfo {
+    postcode: number;
+    lat: number;
+    long: number;
+}
 
 export const Location = () => {
+    const [postcode, setPostcode] = useState<string>("6000");
+    const [lat, setLat] = useState<number | null>(null);
+    const [long, setLong] = useState<number | null>(null);
+    const [radius, setRadius] = useState<number>(radiusOptions[0].value);
+    const [disabled, setDisabled] = useState<boolean>(true);
+
+    const handlePostcodeChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const inputPostcode = e.target.value;
+        setPostcode(inputPostcode);
+
+        const postcodeInfo: PostcodeInfo | undefined = postcodeData.find(
+            (row: PostcodeInfo) => row.postcode === parseInt(inputPostcode)
+        );
+
+        if (postcodeInfo) {
+            setLat(postcodeInfo.lat);
+            setLong(postcodeInfo.long);
+            setDisabled(false);
+        } else {
+            setLat(null);
+            setLong(null);
+            setDisabled(true);
+        }
+    };
+
+    useEffect(() => {
+        const location = window.localStorage.getItem("location");
+
+        if (location) {
+            const locationObj = JSON.parse(location);
+            setPostcode(locationObj.postcode);
+            setLat(locationObj.lat);
+            setLong(locationObj.long);
+            setRadius(100);
+            setDisabled(false);
+        }
+    }, []);
+
     return (
         <div className="location-outer-content">
             <div className="location-inner-content">
-                <h1>
-                    Tell us where you want to see gigs
-                    <Popup
-                        content="This information is saved locally to your browser for
-                        your convenience using localStorage, not cookies.
-                        We do not have access to track your location by completing this
-                        step."
-                        trigger={<sup>*</sup>}
-                    />
-                </h1>
+                <h1>Set Your Giglist Location</h1>
+                <p>
+                    You can change this at any time, also we just add it to your
+                    browser. We don't track it
+                </p>
 
                 <div className="ui form">
                     <div className="field">
                         <label>Postcode</label>
-                        <input type="text" maxLength={4} />
+                        <input
+                            type="text"
+                            value={postcode}
+                            onChange={handlePostcodeChange}
+                        />
+
+                        {lat === null && long === null ? (
+                            <p>Invalid postcode</p>
+                        ) : (
+                            <></>
+                        )}
                     </div>
-                    <div className="field">
+                    {/* <div className="field">
                         <label>Range</label>
                         <Dropdown
                             className="ui inverted dropdown radius-dropdown"
                             options={radiusOptions}
                             defaultValue={radiusOptions[0].value}
                         />
-                    </div>
+                    </div> */}
+                    <Button
+                        className="ui button"
+                        disabled={disabled}
+                        onClick={() => {
+                            window.localStorage.setItem(
+                                "location",
+                                JSON.stringify({
+                                    postcode,
+                                    lat,
+                                    long,
+                                    radius,
+                                })
+                            );
+                            window.location.href = "/";
+                        }}
+                    >
+                        Update
+                    </Button>
                 </div>
             </div>
         </div>

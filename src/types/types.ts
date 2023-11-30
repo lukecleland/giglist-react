@@ -36,6 +36,13 @@ export type TDate = {
 
 export type TGiglist = TDate[];
 
+export type GigAd = {
+    Name: string;
+    image: { url: string }[];
+    link: string;
+    Active: boolean;
+};
+
 declare global {
     interface JQuery {
         printArea(): void;

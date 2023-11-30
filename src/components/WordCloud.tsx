@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { TDate, TListing } from "../types/types";
 import moment from "moment";
 import { Icon, Modal } from "semantic-ui-react";
-import PageListing from "./PageListing";
+import { PageListing } from "./PageListing";
 
 type Word = {
     text: string;

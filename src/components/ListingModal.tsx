@@ -1,5 +1,5 @@
 import React from "react";
-import PageListing from "./PageListing";
+import { PageListing } from "./PageListing";
 import { Icon, Modal } from "semantic-ui-react";
 import { TListing } from "../types/types";
 import { Listing } from "./Listing";

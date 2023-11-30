@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { TDate, TListing } from "../types/types";
-import { GigAd, GigAds } from "./GigAds";
+import { GigAd, TDate, TListing } from "../types/types";
+import { GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
 import { isMobile } from "react-device-detect";
 

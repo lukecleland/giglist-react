@@ -1,35 +1,28 @@
 import { Fragment, Suspense, useState } from "react";
-import { TDate, TListing } from "../types/types";
-import { GigAd, GigAds } from "./GigAds";
+import { GigAd, TDate, TListing } from "../types/types";
+import { GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
 import { isMobile } from "react-device-detect";
 
-type Props = {
-    giglist: TDate[];
-    gigAds: GigAd[];
-    searchMode: boolean;
-    filterByDate: (date: TDate) => void;
-};
+import { useContext } from "react";
+import {
+    CustomContext,
+    CustomContextType,
+} from "../components/GiglistProvider";
+import { filter } from "lodash";
 
-export const DateList = ({
-    giglist,
-    gigAds,
-    searchMode,
-    filterByDate,
-}: Props) => {
+export const DateList = () => {
+    const { giglist, gigAds } = useContext(CustomContext) as CustomContextType;
+    const [daysToShow, setDaysToShow] = useState<number>(14);
+
     const getRandomInt = (min: number, max: number) => {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
-    const [daysToShow, setDaysToShow] = useState<number>(14);
     const adStart = getRandomInt(0, 100);
     let numberOfAdsToShow = 28;
-
-    if (isMobile) {
-        numberOfAdsToShow = 7;
-    }
 
     const getCondition = (index: number) => {
         if (isMobile) {
@@ -46,6 +39,12 @@ export const DateList = ({
         setDaysToShow(358);
     };
 
+    const filterByDate = (date: TDate) => {
+        return date.listings && date.listings.length > 0;
+    };
+
+    const searchMode = false;
+
     // lazy load the
 
     return (
@@ -55,6 +54,10 @@ export const DateList = ({
                     .filter((d, index) => getCondition(index))
                     .map((date, index) => {
                         const adId = (index + adStart) % gigAds.length;
+
+                        if (date.listings.length === 0) {
+                            return;
+                        }
 
                         return (
                             <ul className="day" key={index}>
@@ -74,7 +77,7 @@ export const DateList = ({
                                 </div>
                                 <Listings listings={date.listings} />
 
-                                {!searchMode && index < numberOfAdsToShow && (
+                                {date.listings.length > 3 && (
                                     <GigAds adId={adId} gigAds={gigAds} />
                                 )}
 

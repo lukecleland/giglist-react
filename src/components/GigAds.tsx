@@ -1,11 +1,4 @@
-import { useEffect, useState } from "react";
-
-export type GigAd = {
-    Name: string;
-    image: { url: string }[];
-    link: string;
-    Active: boolean;
-};
+import { GigAd } from "../types/types";
 
 export const GigAds = ({ adId, gigAds }: { adId: number; gigAds: GigAd[] }) => {
     const link =

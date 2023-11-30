@@ -1,63 +1,25 @@
-import React, { Fragment, ReactElement } from "react";
+import { useContext } from "react";
 import { Route } from "react-router";
 import { Navigate } from "react-router-dom";
 import { Routes } from "react-router-dom";
-import { TDate, TGiglist } from "../types/types";
 import { DateList } from "./DateList";
-import { GigAd } from "./GigAds";
 import { LocationGraphic } from "./LocationGraphic";
-import PageListing from "./PageListing";
 import { WordCloud } from "./WordCloud";
-import Geolocation from "./Geolocation";
+import { Geolocation } from "./Geolocation";
 import { Main } from "../pages/Main";
 import { GigMap } from "../pages/GigMap";
 import { Submit } from "../pages/Submit";
 import { Supporters } from "./Supporters";
+import { GiglistEditor } from "./GiglistEditor";
+import { CustomContext, CustomContextType } from "./GiglistProvider";
 import { Location } from "./Location";
 
-export const Routing = ({
-    giglist,
-    gigAds,
-    searchMode,
-    filterByDate,
-}: {
-    giglist: TGiglist;
-    gigAds: GigAd[];
-    searchMode: boolean;
-    filterByDate: (date: TDate) => void;
-}) => {
-    const routes =
-        !!giglist &&
-        giglist.length &&
-        giglist
-            .map(
-                (date, i) =>
-                    date.listings &&
-                    date.listings.length &&
-                    date.listings.map((gig, j) => {
-                        const gigurl =
-                            `/gig-${gig.artist}-${gig.name}-${gig.date}`
-                                .replace(/\s+/g, "-")
-                                .toLowerCase();
-                        const el: ReactElement = <PageListing listing={gig} />;
-                        return <Route path={gigurl} element={el} key={i * j} />;
-                    })
-            )
-            .flat();
+export const Routing = () => {
+    const { giglist } = useContext(CustomContext) as CustomContextType;
 
     return (
         <Routes>
-            <Route
-                path="/"
-                element={
-                    <Main
-                        giglist={giglist}
-                        gigAds={gigAds}
-                        filterByDate={filterByDate}
-                        searchMode={searchMode}
-                    />
-                }
-            />
+            <Route path="/" element={<Main />} />
             <Route path="/location" element={<Location />} />
             <Route path="/gigmap" element={<GigMap />} />
             <Route path="/qr" element={<Navigate to="/" />} />
@@ -83,7 +45,6 @@ export const Routing = ({
                     </div>
                 }
             />
-            {routes}
             <Route
                 path="/locationimagecollage"
                 element={
@@ -97,6 +58,14 @@ export const Routing = ({
                 element={
                     <div>
                         <Geolocation />
+                    </div>
+                }
+            />
+            <Route
+                path="/editor"
+                element={
+                    <div>
+                        <GiglistEditor />
                     </div>
                 }
             />
@@ -140,12 +109,7 @@ export const Routing = ({
                 element={
                     <div className="side-scroll ">
                         <section>
-                            <DateList
-                                giglist={giglist}
-                                gigAds={gigAds}
-                                filterByDate={Date}
-                                searchMode={searchMode}
-                            />
+                            <DateList />
                         </section>
                     </div>
                 }

@@ -171,5 +171,3 @@ export const PageListing = ({
         </>
     );
 };
-
-export default PageListing;

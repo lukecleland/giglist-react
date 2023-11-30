@@ -1,7 +1,7 @@
 import React from "react";
 import { useGeolocated } from "react-geolocated";
 
-const Geolocation = () => {
+export const Geolocation = () => {
     const { coords, isGeolocationAvailable, isGeolocationEnabled } =
         useGeolocated({
             positionOptions: {
@@ -43,5 +43,3 @@ const Geolocation = () => {
         <div>Getting the location data&hellip; </div>
     );
 };
-
-export default Geolocation;

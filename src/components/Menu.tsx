@@ -1,18 +1,69 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Icon } from "semantic-ui-react";
 import type { DatePickerProps } from "antd";
 import { DatePicker, Space } from "antd";
 import "antd/dist/antd.css";
+import { CustomContext, CustomContextType } from "./GiglistProvider";
+import { TGiglist, TListing } from "../types/types";
 
-export const Menu: React.ElementType = ({
-    doSearch,
-    filterByDateCalendar,
-    filterByLocation,
-}) => {
+export const Menu: React.ElementType = () => {
     const [searchToggle, setSearchToggle] = useState<boolean>(false);
     const [menuToggle, setMenuToggle] = useState<boolean>(false);
     const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [datePickerOpenMobile, setDatePickerOpenMobile] = useState(false);
+    const [postcode, setPostcode] = useState<string>("6000");
+    const { giglist, setGiglist, giglistFull } = useContext(
+        CustomContext
+    ) as CustomContextType;
+
+    useEffect(() => {
+        const location = window.localStorage.getItem("location");
+        if (location) {
+            setPostcode(JSON.parse(location).postcode);
+        }
+    }, []);
+
+    const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {
+        if (!e || e.target.value.length < 2) {
+            return;
+        }
+
+        const input = e.target.value;
+
+        if (input.length > 2) {
+            const newGiglist: TGiglist = [];
+            giglist.forEach((el) => {
+                const foundObjects = el.listings.filter(
+                    (l) =>
+                        l.artist.toLowerCase().includes(input.toLowerCase()) ||
+                        l.name.toLowerCase().includes(input.toLowerCase())
+                );
+                if (foundObjects.length) {
+                    newGiglist.push({
+                        datestring: el.datestring,
+                        datetime: el.datetime,
+                        listings: [...(foundObjects as TListing[])],
+                    });
+                }
+            });
+
+            if (!newGiglist.length) {
+                newGiglist.push({
+                    datestring: "No Gigs Found",
+                    datetime: "",
+                    listings: [],
+                });
+            }
+            setGiglist(newGiglist as TGiglist);
+        } else {
+            setGiglist(giglistFull);
+        }
+    };
+
+    const filterByDateCalendar = (datetime: string) => {
+        setGiglist(giglistFull);
+        setGiglist(giglist.filter((gig) => gig.datetime === datetime));
+    };
 
     const onChange: DatePickerProps["onChange"] = (
         date: any,
@@ -31,10 +82,14 @@ export const Menu: React.ElementType = ({
         setMenuToggle(!menuToggle);
     };
 
-    const handleSearchClick = (event: React.MouseEvent<HTMLInputElement>) => {
-        event.preventDefault();
-        setSearchToggle(false);
-        setMenuToggle(false);
+    const handleSearchEnter = (
+        event: React.KeyboardEvent<HTMLInputElement>
+    ) => {
+        console.log(event.key);
+        if (event.key === "Enter") {
+            setSearchToggle(false);
+            setMenuToggle(false);
+        }
     };
 
     return (
@@ -48,12 +103,23 @@ export const Menu: React.ElementType = ({
                             alt="Giglist"
                         />
                     </a>
+                    <a href="/location" className="item small">
+                        <Icon
+                            name="crosshairs"
+                            style={{
+                                color: "#f4f4f4",
+                                borderLeft: "black",
+                                margin: "-2px 14px 0px 0px",
+                            }}
+                        />
+                        {postcode}
+                    </a>
                     <div className="right menu">
                         {/* <a href="/today" className="item">
                             Tonight
                         </a> */}
                         <a
-                            href="/"
+                            href="#"
                             className="item search-button"
                             onClick={handleSearchToggle}
                         >
@@ -71,7 +137,7 @@ export const Menu: React.ElementType = ({
                             >
                                 <Icon
                                     onClick={() => {
-                                        doSearch(null);
+                                        setGiglist(giglistFull);
                                         return setSearchToggle(false);
                                     }}
                                     style={{
@@ -84,43 +150,30 @@ export const Menu: React.ElementType = ({
                                     name={"window close"}
                                     size={"large"}
                                 />
-                                <form
-                                    className="search_event"
-                                    name="search_event"
-                                    action=""
-                                    method="post"
-                                >
-                                    <div className="field pad">
-                                        <label>Artist / Venue / Suburb</label>
-                                        <input
-                                            autoComplete="off"
-                                            name="searchq"
-                                            type="text"
-                                            placeholder="Search Artist / Venue / Suburb"
-                                            id="event_name_search"
-                                            autoFocus={false}
-                                            onChange={(e) => doSearch(e)}
-                                        />
-                                    </div>
-                                    {/* <div className="field pad">
-                                        <input
-                                            name="submit"
-                                            type="submit"
-                                            value="Search"
-                                            className="ui button"
-                                            id="eventSearchBtn"
-                                            onClick={handleSearchClick}
-                                        />
-                                    </div> */}
-                                </form>
+
+                                <div className="field pad">
+                                    <label>Artist / Venue / Suburb</label>
+                                    <input
+                                        autoComplete="off"
+                                        name="searchq"
+                                        type="text"
+                                        placeholder="Search Artist / Venue / Suburb"
+                                        id="event_name_search"
+                                        autoFocus={true}
+                                        onChange={(e) => {
+                                            doSearch(e);
+                                        }}
+                                    />
+                                </div>
                             </div>
                         )}
                         <a href="/gigmap" className="item">
-                            Map
+                            Gigmap
                         </a>
                         <a href="/submit" className="item">
                             Submit
                         </a>
+
                         {/* <a href="/supporters" className="item">
                             Supporters
                         </a> */}
@@ -165,25 +218,9 @@ export const Menu: React.ElementType = ({
                     </a>
 
                     <div className="menu-icon">
-                        {/* <Icon
-                            name="search"
-                            style={{
-                                color: "#f4f4f4",
-                                margin: "10px 10px 0px 0px",
-                            }}
-                            onClick={handleSearchToggle}
-                        ></Icon> */}
-                        <Icon
-                            name="crosshairs"
-                            //size={"la"}
-                            style={{
-                                color: "#f4f4f4",
-                                borderLeft: "black",
-                                margin: "-2px 14px 0px 0px",
-                            }}
-                            onClick={filterByLocation}
-                        />
-
+                        <a href="/location" className="location-icon">
+                            <Icon name="crosshairs" />
+                        </a>
                         <Space
                             direction="vertical"
                             style={{
@@ -243,40 +280,23 @@ export const Menu: React.ElementType = ({
                                         className="ui inverted form search-form-mobile"
                                         id="search-form-mobile"
                                     >
-                                        <form
-                                            className="search_event"
-                                            name="search_event"
-                                            action=""
-                                            method="post"
-                                            autoComplete="off"
-                                        >
-                                            <div className="field pad">
-                                                <label>
-                                                    Artist / Venue / Suburb
-                                                </label>
-                                                <input
-                                                    autoComplete="off"
-                                                    name="searchq"
-                                                    type="text"
-                                                    placeholder="Search Artist / Venue / Suburb"
-                                                    id="event_name_search"
-                                                    autoFocus={false}
-                                                    onChange={(e) =>
-                                                        doSearch(e)
-                                                    }
-                                                />
-                                            </div>
-                                            <div className="field pad">
-                                                <input
-                                                    name="submit"
-                                                    type="submit"
-                                                    value="Search"
-                                                    className="ui button"
-                                                    id="eventSearchBtn"
-                                                    onClick={handleSearchClick}
-                                                />
-                                            </div>
-                                        </form>
+                                        <div className="field pad">
+                                            <label>
+                                                Artist / Venue / Suburb
+                                            </label>
+                                            <input
+                                                autoComplete="off"
+                                                name="searchq"
+                                                type="text"
+                                                placeholder="Search Artist / Venue / Suburb"
+                                                id="event_name_search"
+                                                autoFocus={false}
+                                                onChange={(e) => doSearch(e)}
+                                                onKeyDown={(e) => {
+                                                    handleSearchEnter(e);
+                                                }}
+                                            />
+                                        </div>
                                     </div>
                                 )}
                             </li>
@@ -288,6 +308,11 @@ export const Menu: React.ElementType = ({
                             <li>
                                 <a className="item" href="/submit">
                                     Submit
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/location" className="item">
+                                    Set Location
                                 </a>
                             </li>
                             {/* <li>
@@ -307,5 +332,3 @@ export const Menu: React.ElementType = ({
         </>
     );
 };
-
-export default Menu;
