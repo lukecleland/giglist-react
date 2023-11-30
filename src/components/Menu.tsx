@@ -11,7 +11,7 @@ export const Menu: React.ElementType = () => {
     const [menuToggle, setMenuToggle] = useState<boolean>(false);
     const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [datePickerOpenMobile, setDatePickerOpenMobile] = useState(false);
-    const [postcode, setPostcode] = useState<string>("6000");
+    const [postcode, setPostcode] = useState<string>("0000");
     const { giglist, setGiglist, giglistFull } = useContext(
         CustomContext
     ) as CustomContextType;

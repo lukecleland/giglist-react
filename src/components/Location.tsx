@@ -17,7 +17,7 @@ interface PostcodeInfo {
 }
 
 export const Location = () => {
-    const [postcode, setPostcode] = useState<string>("6000");
+    const [postcode, setPostcode] = useState<string>("0000");
     const [lat, setLat] = useState<number | null>(null);
     const [long, setLong] = useState<number | null>(null);
     const [radius, setRadius] = useState<number>(radiusOptions[0].value);
