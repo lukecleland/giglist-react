@@ -99,7 +99,7 @@ export const Routing = () => {
                                 backgroundColor: "black",
                             }}
                         >
-                            <WordCloud giglist={giglist}></WordCloud>
+                            <WordCloud />
                         </div>
                     </>
                 }

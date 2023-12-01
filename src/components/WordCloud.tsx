@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
 import ReactWordcloud from "react-wordcloud";
 import { useEffect, useState } from "react";
 import { TDate, TListing } from "../types/types";
 import moment from "moment";
 import { Icon, Modal } from "semantic-ui-react";
 import { PageListing } from "./PageListing";
+import { CustomContext, CustomContextType } from "./GiglistProvider";
 
 type Word = {
     text: string;
     value: number;
 };
 
-export const WordCloud = ({ giglist }: { giglist: TDate[] }) => {
+export const WordCloud = () => {
+    const { giglist } = useContext(CustomContext) as CustomContextType;
     const [words, setWords] = useState<{ text: string; value: number }[]>([]);
 
     useEffect(() => {

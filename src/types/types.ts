@@ -41,6 +41,7 @@ export type GigAd = {
     image: { url: string }[];
     link: string;
     Active: boolean;
+    Postcode_Prefixes: string;
 };
 
 declare global {

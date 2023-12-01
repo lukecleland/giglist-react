@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from "react";
 import { TGiglist, GigAd } from "../types/types";
 import axios from "axios";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
-import { set } from "lodash";
 
 const filterByLocationFromStorage = (giglist: TGiglist) => {
     const location = window.localStorage.getItem("location");
@@ -30,6 +29,16 @@ const filterByLocationFromStorage = (giglist: TGiglist) => {
     }
 };
 
+const getPostcode = () => {
+    const location = window.localStorage.getItem("location");
+    let postcode = 0;
+    if (location) {
+        const locationObj = JSON.parse(location);
+        postcode = parseInt(locationObj.postcode);
+    }
+    return postcode;
+};
+
 const Data = () => {
     console.log("Data component");
 
@@ -51,9 +60,18 @@ const Data = () => {
                 }
             )
             .then((response) => {
-                const validAds: GigAd[] = response.data.results.filter(
-                    (ad: GigAd) => ad.Active
-                );
+                const validAds: GigAd[] = response.data.results
+                    .filter((ad: GigAd) => ad.Active)
+                    .filter((ad: GigAd) => {
+                        const postcodeFirstChar = getPostcode().toString()[0];
+                        const postPrefixes = ad.Postcode_Prefixes.split(",");
+                        if (
+                            postPrefixes.includes(postcodeFirstChar) ||
+                            postPrefixes.includes("0")
+                        ) {
+                            return true;
+                        }
+                    });
                 setGigAds(validAds);
             })
             .catch((error) => {
