@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { TGiglist, GigAd } from "../types/types";
 import axios from "axios";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
+import { post } from "jquery";
 
 const filterByLocationFromStorage = (giglist: TGiglist) => {
     const location = window.localStorage.getItem("location");
@@ -13,6 +14,11 @@ const filterByLocationFromStorage = (giglist: TGiglist) => {
         const long = parseFloat(locationObj.long);
         const kms = parseInt(locationObj.radius);
         const distance = (1 / 60) * 0.621371 * kms;
+        const postcode = parseInt(locationObj.postcode);
+
+        if (postcode === 0) {
+            return giglist;
+        }
 
         return giglist.filter(
             (date, index) =>
@@ -26,6 +32,8 @@ const filterByLocationFromStorage = (giglist: TGiglist) => {
                     );
                 }))
         );
+    } else {
+        return giglist;
     }
 };
 
