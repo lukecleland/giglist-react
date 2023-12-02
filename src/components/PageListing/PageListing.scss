@@ -1,0 +1,13 @@
+li.event-wrapper {
+    padding: 20px 10px 10px 5px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    max-width: 98%;
+    margin: 0;
+    margin-bottom: -12px;
+}
+
+li.event-wrapper:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    /* border: 1px solid #ccc; */
+}

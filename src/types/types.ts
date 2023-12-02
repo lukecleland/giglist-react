@@ -44,6 +44,11 @@ export type GigAd = {
     Postcode_Prefixes: string;
 };
 
+export type TAllTimeCount = {
+    count: number;
+};
+
+
 declare global {
     interface JQuery {
         printArea(): void;

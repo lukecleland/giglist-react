@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { TGiglist, GigAd } from "../types/types";
+import { TGiglist, GigAd, TAllTimeCount } from "../types/types";
 import axios from "axios";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
 import { post } from "jquery";
@@ -48,9 +48,8 @@ const getPostcode = () => {
 const Data = () => {
     console.log("Data component");
 
-    const { setGiglist, setGigAds, setGiglistFull } = useContext(
-        CustomContext
-    ) as CustomContextType;
+    const { setGiglist, setGigAds, setGiglistFull, setAllTimeCount } =
+        useContext(CustomContext) as CustomContextType;
 
     const feedLink = "https://giglist.com.au/feed_national.php";
 
@@ -94,6 +93,17 @@ const Data = () => {
                     );
                     setGiglist(filteredGiglist as TGiglist);
                     setGiglistFull(filteredGiglist as TGiglist);
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching giglist data:", error);
+            });
+
+        axios
+            .get("https://giglist.com.au/feed_all_time_count.php")
+            .then((response) => {
+                if (setAllTimeCount) {
+                    setAllTimeCount(response.data as TAllTimeCount);
                 }
             })
             .catch((error) => {

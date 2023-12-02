@@ -1,0 +1,108 @@
+.event-title {
+    float: left;
+    clear: right;
+    width: 100%;
+    font-size: 20px;
+}
+
+.event-time,
+.event-venue {
+    font-size: 26px;
+    line-height: 1.4;
+    color: #979797;
+}
+
+.event-time {
+    margin-top: -2px;
+    font-size: 14px;
+    margin-right: 2px;
+    text-transform: lowercase;
+}
+
+.event-title {
+    /* margin-top:10px; */
+    font-weight: 100;
+    font-size: 14px;
+    line-height: 1.2;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    font-family: "Lato";
+    font-weight: 100;
+    margin-bottom: 2px;
+    color: #f4f4f4;
+}
+
+.event-venue .address,
+.event-wrapper .event-links,
+.event-date {
+    display: none;
+}
+.event-wrapper.active .address,
+.event-wrapper.active .event-links {
+    display: block;
+}
+
+// li.event-wrapper.sponsored,
+// li.event-wrapper.patreon {
+//     border-top: 1px solid grey;
+//     border-bottom: 1px solid grey;
+//     /* border image of star in bottom right hand corner */
+//     background-image: url(./assets/star-32.png);
+//     background-repeat: no-repeat;
+//     padding: 10px 10px 10px 10px;
+//     margin: 10px 0 0 -5px;
+// }
+
+// li.event-wrapper.patreon {
+//     border-top: 1px solid #ff5900;
+//     border-bottom: 1px solid #ff5900;
+//     background-image: url(./assets/patreon.png);
+//     background-size: 18px;
+//     background-position: right 10px bottom 10px;
+// }
+
+li .listingTrigger {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    visibility: hidden;
+    /* background-color: transparent; */
+}
+
+/* li.event-wrapper > .event-venue > .name:hover {
+  cursor: pointer;
+  background:black;
+  color:white;
+} */
+
+li.event-wrapper > .event-venue > .name {
+    color: #a8a8a8;
+}
+
+/* li.event-wrapper > .event-title:hover {
+  cursor: pointer;
+  background:black;
+  color:white;
+} */
+
+.event-links {
+    margin-top: 5px;
+}
+.event-lat,
+.event-lng {
+    display: none;
+}
+/* .event-wrapper a {
+     font-size:12px;
+     color: #000;
+     text-decoration: underline;
+} */
+.header-link.giglist {
+    cursor: pointer;
+}
+
+.listing {
+    page-break-inside: avoid !important;
+    width: 100%;
+}

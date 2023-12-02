@@ -45,8 +45,6 @@ export const DateList = () => {
 
     const searchMode = false;
 
-    // lazy load the
-
     return (
         <>
             {giglist &&
@@ -78,7 +76,7 @@ export const DateList = () => {
                                 </div>
                                 <Listings listings={date.listings} />
 
-                                {date.listings.length > 3 && (
+                                {date.listings.length > 20 && (
                                     <GigAds adId={adId} gigAds={gigAds} />
                                 )}
 

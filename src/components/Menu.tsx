@@ -91,6 +91,8 @@ export const Menu: React.ElementType = () => {
         }
     };
 
+    const path = window.location.pathname;
+
     return (
         <>
             <div className="computer tablet only row">
@@ -114,16 +116,15 @@ export const Menu: React.ElementType = () => {
                         {postcode}
                     </a>
                     <div className="right menu">
-                        {/* <a href="/today" className="item">
-                            Tonight
-                        </a> */}
-                        <a
-                            href="#"
-                            className="item search-button"
-                            onClick={handleSearchToggle}
-                        >
-                            Search
-                        </a>
+                        {path != "/gigmap" && path != "/submit" && (
+                            <a
+                                href="#"
+                                className="item search-button"
+                                onClick={handleSearchToggle}
+                            >
+                                Search
+                            </a>
+                        )}
 
                         {searchToggle && (
                             <div
@@ -163,6 +164,39 @@ export const Menu: React.ElementType = () => {
                                             doSearch(e);
                                         }}
                                     />
+                                    <br />
+                                    <br />
+                                    <label>
+                                        Filter by Date{" "}
+                                        <Space
+                                            direction="vertical"
+                                            style={{
+                                                backgroundColor: "black",
+                                                color: "white",
+                                            }}
+                                        >
+                                            <Icon
+                                                name="calendar alternate outline"
+                                                onClick={() =>
+                                                    setDatePickerOpen(true)
+                                                }
+                                                size="large"
+                                                style={{
+                                                    color: "white",
+                                                    marginTop: 0,
+                                                    marginRight: 16,
+                                                    cursor: "pointer",
+                                                }}
+                                            />
+
+                                            <DatePicker
+                                                className={"datePicker"}
+                                                open={datePickerOpen}
+                                                onOpenChange={setDatePickerOpen}
+                                                onChange={onChange}
+                                            />
+                                        </Space>
+                                    </label>
                                 </div>
                             </div>
                         )}
@@ -182,31 +216,6 @@ export const Menu: React.ElementType = () => {
                         {/* <a href="/musoswanted" className="item">
                             Musos Wanted!
                         </a> */}
-                        <Space
-                            direction="vertical"
-                            style={{
-                                backgroundColor: "black",
-                                color: "white",
-                            }}
-                        >
-                            <Icon
-                                name="calendar alternate outline"
-                                onClick={() => setDatePickerOpen(true)}
-                                style={{
-                                    color: "white",
-                                    marginTop: 9,
-                                    marginRight: 16,
-                                    cursor: "pointer",
-                                }}
-                            />
-
-                            <DatePicker
-                                className={"datePicker"}
-                                open={datePickerOpen}
-                                onOpenChange={setDatePickerOpen}
-                                onChange={onChange}
-                            />
-                        </Space>
                     </div>
                 </div>
             </div>

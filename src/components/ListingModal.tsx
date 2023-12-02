@@ -1,8 +1,8 @@
 import React from "react";
-import { PageListing } from "./PageListing";
+import { PageListing } from "./PageListing/PageListing";
 import { Icon, Modal } from "semantic-ui-react";
 import { TListing } from "../types/types";
-import { Listing } from "./Listing";
+import { Listing } from "./Listing/Listing";
 
 export const ListingModal = ({ listing }: { listing: TListing }) => {
     const [open, setOpen] = React.useState(false);

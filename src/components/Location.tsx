@@ -1,6 +1,8 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
 import { Dropdown, Button, Popup } from "semantic-ui-react";
 import postcodeData from "./output";
+import { useContext } from "react";
+import { CustomContext, CustomContextType } from "./GiglistProvider";
 
 const raddii = [50, 20, 10, 5, 1];
 
@@ -22,6 +24,7 @@ export const Location = () => {
     const [long, setLong] = useState<number | null>(null);
     const [radius, setRadius] = useState<number>(radiusOptions[0].value);
     const [disabled, setDisabled] = useState<boolean>(true);
+    const { allTimeCount } = useContext(CustomContext) as CustomContextType;
 
     const handlePostcodeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const inputPostcode = e.target.value;
@@ -58,11 +61,10 @@ export const Location = () => {
     return (
         <div className="location-outer-content">
             <div className="location-inner-content">
-                <h1>Set Your Giglist Location</h1>
-                <p>
-                    You can change this at any time, also we just add it to your
-                    browser. We don't track it
-                </p>
+                <h1>
+                    Welcome to Giglist. Live music gigs, in a list. <br />
+                    Let us know where you are...
+                </h1>
 
                 <div className="ui form">
                     <div className="field">
@@ -105,6 +107,18 @@ export const Location = () => {
                     >
                         Update
                     </Button>
+
+                    <p>
+                        You can change this at any time. <br />
+                        This information is stored in your browser cache.
+                        <br />
+                        We do not store your location data.
+                    </p>
+
+                    <p style={{ fontSize: "22px" }}>
+                        {allTimeCount && allTimeCount.count} gigs listed since
+                        2017. <br />
+                    </p>
                 </div>
             </div>
         </div>

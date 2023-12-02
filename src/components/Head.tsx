@@ -33,10 +33,7 @@ export const Head = () => {
                 crossOrigin="anonymous"
             />
 
-            <meta
-                property="og:title"
-                content="Giglist. Perth Live Music Gig Guide"
-            />
+            <meta property="og:title" content="Giglist. Live Music Gig Guide" />
             <meta property="og:site_name" content="Giglist" />
             <meta property="og:url" content="https://giglist.com.au" />
             <meta
