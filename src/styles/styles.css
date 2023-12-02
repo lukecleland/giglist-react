@@ -56,6 +56,17 @@ body {
     padding-left: 0 !important;
 }
 
+.gm-style-iw.gm-style-iw-c .gm-style-iw-d .event-wrapper {
+    background: #000 !important;
+    padding: 10px;
+    margin-bottom: 0;
+    list-style-type: none !important;
+}
+
+.gm-style-iw.gm-style-iw-c .gm-style-iw-d .event-wrapper::marker {
+    display: none !important;
+}
+
 .event-venue .address,
 .event-wrapper .event-links,
 .event-date {
@@ -1281,14 +1292,13 @@ svg text {
     border-radius: 0;
 }
 
-.ui.modal .actions {
-    position: absolute;
-    background-color: "white";
-    cursor: "pointer";
+/* .ui.modal .actions {
+    background-color: white;
+    cursor: pointer;
     width: 32px;
     padding: 0 !important;
     margin: 0 !important;
-}
+} */
 ::-webkit-scrollbar {
     height: 12px;
     width: 12px;
@@ -1347,4 +1357,43 @@ svg text {
     > ul:nth-child(1)
     > div:nth-child(34) {
     transition: all 1.5s ease-in-out;
+}
+
+.date-control {
+    padding: 0px 0 7px 0;
+    font-family: courier;
+    color: black;
+    font-size: 15px;
+    background-color: #ffffff;
+    width: 100%;
+    z-index: 999;
+    border-bottom: 1px solid #ccc;
+}
+
+.date-control > div {
+    display: flex;
+    flex-direction: row;
+    min-width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+.date-control p {
+    padding-top: 16px;
+}
+
+.date-control button {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.date-control .next img,
+.date-control .previous img {
+    height: 12px;
+    padding: 0 20px;
+    top: 0px;
+}
+.date-control .previous {
+    transform: rotate(180deg);
+    padding-top: 0px;
 }

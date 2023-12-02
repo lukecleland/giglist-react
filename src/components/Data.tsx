@@ -6,7 +6,6 @@ import { post } from "jquery";
 
 const filterByLocationFromStorage = (giglist: TGiglist) => {
     const location = window.localStorage.getItem("location");
-    console.log(location);
 
     if (location) {
         const locationObj = JSON.parse(location);
@@ -23,7 +22,6 @@ const filterByLocationFromStorage = (giglist: TGiglist) => {
         return giglist.filter(
             (date, index) =>
                 (giglist[index].listings = date.listings.filter((gig) => {
-                    console.log(gig.lat, gig.lng, lat, long, distance);
                     return (
                         parseFloat(gig.lat) < lat + distance &&
                         parseFloat(gig.lat) > lat - distance &&
@@ -94,7 +92,6 @@ const Data = () => {
                     const filteredGiglist = filterByLocationFromStorage(
                         response.data as TGiglist
                     );
-                    console.log(filteredGiglist);
                     setGiglist(filteredGiglist as TGiglist);
                     setGiglistFull(filteredGiglist as TGiglist);
                 }

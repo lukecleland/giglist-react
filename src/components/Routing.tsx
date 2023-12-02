@@ -7,7 +7,7 @@ import { LocationGraphic } from "./LocationGraphic";
 import { WordCloud } from "./WordCloud";
 import { Geolocation } from "./Geolocation";
 import { Main } from "../pages/Main";
-import { GigMap } from "../pages/GigMap";
+import GigMap from "../pages/GigMap";
 import { Submit } from "../pages/Submit";
 import { Supporters } from "./Supporters";
 import { GiglistEditor } from "./GiglistEditor";
@@ -21,7 +21,7 @@ export const Routing = () => {
         <Routes>
             <Route path="/" element={<Main />} />
             <Route path="/location" element={<Location />} />
-            <Route path="/gigmap" element={<GigMap />} />
+            <Route path="/gigmap" element={<GigMap giglist={giglist} />} />
             <Route path="/qr" element={<Navigate to="/" />} />
             <Route path="/submit" element={<Submit />} />
             <Route path="/supporters" element={<Supporters />} />

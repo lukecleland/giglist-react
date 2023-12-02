@@ -61,8 +61,7 @@ export const Menu: React.ElementType = () => {
     };
 
     const filterByDateCalendar = (datetime: string) => {
-        setGiglist(giglistFull);
-        setGiglist(giglist.filter((gig) => gig.datetime === datetime));
+        setGiglist(giglistFull.filter((gig) => gig.datetime === datetime));
     };
 
     const onChange: DatePickerProps["onChange"] = (

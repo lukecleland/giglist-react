@@ -9,6 +9,7 @@ export const ListingModal = ({ listing }: { listing: TListing }) => {
 
     return (
         <Modal
+            closeIcon
             onClose={() => setOpen(false)}
             onOpen={() => setOpen(true)}
             open={open}
@@ -21,13 +22,6 @@ export const ListingModal = ({ listing }: { listing: TListing }) => {
             <Modal.Content>
                 <PageListing listing={listing} />
             </Modal.Content>
-            <Modal.Actions>
-                <Icon
-                    onClick={() => setOpen(false)}
-                    name={"window close"}
-                    size={"big"}
-                ></Icon>
-            </Modal.Actions>
         </Modal>
     );
 };
