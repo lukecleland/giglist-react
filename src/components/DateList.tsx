@@ -1,5 +1,5 @@
-import { Fragment, Suspense, useState } from "react";
-import { GigAd, TDate, TListing } from "../types/types";
+import { useState } from "react";
+import { TDate, TListing } from "../types/types";
 import { GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
 import { isMobile } from "react-device-detect";
@@ -9,7 +9,6 @@ import {
     CustomContext,
     CustomContextType,
 } from "../components/GiglistProvider";
-import { filter } from "lodash";
 
 export const DateList = () => {
     const { giglist, gigAds } = useContext(CustomContext) as CustomContextType;

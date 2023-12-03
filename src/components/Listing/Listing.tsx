@@ -12,13 +12,20 @@ export const Listing = ({ listing }: { listing: TListing }) => {
             ? "event-wrapper listing patreon"
             : "event-wrapper listing";
 
+    const gigarist = gig.artist.replace(/&amp;/g, "&").replace(/,/g, "<br />");
+    // .replace(
+    //     /:/g,
+    //     "  <i class='ui icon angle right'></i><br /><i class='ui tiny icon circle'></i>"
+    // );
+
     return (
         <>
             {gig.id <= 300 && <EventSchema gig={gig} />}
             <li className={cname}>
-                <div className="event-title">
-                    {gig.artist.replace(/&amp;/g, "&")}
-                </div>
+                <div
+                    dangerouslySetInnerHTML={{ __html: gigarist }}
+                    className="event-title"
+                ></div>
                 <div className="event-venue">
                     <div className="name">
                         {gig.name.replace(/&amp;/g, "&")}, {gig.suburb}

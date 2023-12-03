@@ -12,6 +12,7 @@ export const ListingModal = ({ listing }: { listing: TListing }) => {
             closeIcon
             onClose={() => setOpen(false)}
             onOpen={() => setOpen(true)}
+            size="large"
             open={open}
             trigger={
                 <div>

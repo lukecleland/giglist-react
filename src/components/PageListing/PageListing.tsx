@@ -7,6 +7,7 @@ import { Helmet } from "react-helmet";
 import { google } from "calendar-link";
 import { EmailShareButton, FacebookShareButton } from "react-share";
 import moment from "moment";
+import "./PageListing.scss";
 
 // // Then fetch the link
 // google(event); // https://calendar.google.com/calendar/render...
@@ -120,20 +121,26 @@ export const PageListing = ({
                             backgroundColor: "black",
                             float: "left",
                             display: "inline-block",
+                            borderTopRightRadius: "6px",
                             padding: "20px",
                         }}
                     >
-                        {moment(gig.datestamp.date).format(
-                            "dddd, MMMM Do YYYY"
-                        )}
-                        <br />
-                        {gig.start}
+                        {moment(gig.datestamp.date).format("dddd, MMMM Do, ")}
 
-                        <div style={{ fontWeight: "" }}>
-                            {gig.name.replace(/&amp;/g, "&")}
-                        </div>
-                        <div className="address" style={{ fontFamily: "" }}>
+                        {gig.start.toLowerCase()}
+
+                        <div>{gig.name.replace(/&amp;/g, "&")}</div>
+                        <div className="address">
                             {gig.address} {gig.suburb}
+                        </div>
+                        <div className="address" style={{ marginTop: 10 }}>
+                            <a href={gig.artist_url} target="_blank">
+                                Artist/Event Link{" "}
+                            </a>{" "}
+                            |&nbsp;
+                            <a href={gig.location_url} target="_blank">
+                                Venue Link{" "}
+                            </a>
                         </div>
                         <div style={{ float: "right" }}>
                             {/* <a href={event_url} target="_blank">

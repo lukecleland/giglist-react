@@ -42,24 +42,24 @@
     display: block;
 }
 
-// li.event-wrapper.sponsored,
-// li.event-wrapper.patreon {
-//     border-top: 1px solid grey;
-//     border-bottom: 1px solid grey;
-//     /* border image of star in bottom right hand corner */
-//     background-image: url(./assets/star-32.png);
-//     background-repeat: no-repeat;
-//     padding: 10px 10px 10px 10px;
-//     margin: 10px 0 0 -5px;
-// }
+li.event-wrapper.sponsored,
+li.event-wrapper.patreon {
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    /* border image of star in bottom right hand corner */
+    background-image: url(../../styles/assets/star-32.png);
+    background-repeat: no-repeat;
+    padding: 10px 10px 10px 10px;
+    margin: 10px 0 0 -5px;
+}
 
-// li.event-wrapper.patreon {
-//     border-top: 1px solid #ff5900;
-//     border-bottom: 1px solid #ff5900;
-//     background-image: url(./assets/patreon.png);
-//     background-size: 18px;
-//     background-position: right 10px bottom 10px;
-// }
+li.event-wrapper.patreon {
+    border-top: 1px solid #ff5900;
+    border-bottom: 1px solid #ff5900;
+    background-image: url(../../styles/assets/patreon.png);
+    background-size: 18px;
+    background-position: right 10px bottom 10px;
+}
 
 li .listingTrigger {
     position: absolute;
@@ -75,6 +75,13 @@ li .listingTrigger {
   background:black;
   color:white;
 } */
+
+.sponsored {
+    border-radius: 5px;
+    background-size: 20px 20px;
+    background-position: bottom 10px right 10px;
+    background-repeat: no-repeat;
+}
 
 li.event-wrapper > .event-venue > .name {
     color: #a8a8a8;
@@ -105,4 +112,5 @@ li.event-wrapper > .event-venue > .name {
 .listing {
     page-break-inside: avoid !important;
     width: 100%;
+    cursor: pointer;
 }
