@@ -10,23 +10,21 @@ Text Domain: giglist
 
 @import url("https://fonts.googleapis.com/css?family=Merriweather&display=swap");
 
-#root {
-    height: 100%;
-}
+// #root {
+//     height: 100%;
+// }
 
-html {
-    height: 100%;
-    width: 100%;
-    background-color: #000;
-}
+// html {
+//     height: 100%;
+//     width: 100%;
+// }
 
 body {
     /* font-family: "Merriweather", serif; */
     height: 100%;
     width: 100%;
     /* rotate: 0.1deg; */
-    background: rgba(0, 0, 0, 0.1);
-    opacity: 0.9;
+    background: rgba(0, 0, 0, 0.96);
 }
 
 .advert {
@@ -69,6 +67,7 @@ body {
     /* height:100%; */
     float: left;
     margin-top: -10px;
+    padding-top: 5px;
 }
 .email {
     cursor: pointer;
@@ -110,10 +109,8 @@ body {
 }
 
 .date {
-    break-before: always !important;
     font-size: 20px;
     font-family: "carbontyperegular";
-    /* margin-bottom: -10px; */
     margin-right: 10px;
     background: white;
     color: black;
@@ -122,6 +119,7 @@ body {
     line-height: 1.2;
     height: 35px;
     color: black;
+    margin-top: -10px;
 }
 
 .date span {
@@ -203,14 +201,8 @@ body {
 }
 html,
 body {
-    /* width: calc(100vw-0px) !important;
-     */
     margin: 0;
     padding: 0;
-}
-body {
-    /* font-family: 'Merriweather', serif; */
-    margin: 0;
 }
 
 .ui.page.grid {
@@ -382,16 +374,9 @@ ul {
     list-style: none !important;
     padding-inline-start: 10px;
     background-image: url(./assets/column_bg5.png);
-    opacity: 1;
-    background-size: 250% 15%;
     background-position: 0px 0;
+}
 
-    /* display: inline-block; */
-}
-/* ul {
-    list-style-type: disc;
-}
-*/
 ol#list {
     margin-left: 10px;
     padding: 10px;
@@ -426,7 +411,7 @@ header ul {
     font-family: carbontyperegular;
     font-size: 16px;
     margin-bottom: 0;
-    height: 26px !important;
+    height: 26px;
 }
 .ui.vertical.menu {
     margin-top: 0px !important;
@@ -686,7 +671,7 @@ header ul {
         position: fixed;
         border-radius: 0px;
         margin-top: 0px;
-        /* height: 50px; */
+        height: 50px;
         /* float: left; */
         width: 100%;
         padding: 0px;
@@ -757,13 +742,7 @@ header ul {
     .mobile-links.active {
         display: block;
     }
-    /* .side-scroll {
-         margin-top:0px;
-    }
-     */
-    /* .event-title, .event-venue div, .event-time {
-         display:inline-block;
-    } */
+
     .event-venue > .suburb {
         /* margin-left:-4px; */
         float: left;
