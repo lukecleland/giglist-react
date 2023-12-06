@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { ReactElement, useContext } from "react";
 import { Route } from "react-router";
 import { Navigate } from "react-router-dom";
 import { Routes } from "react-router-dom";
@@ -12,13 +12,34 @@ import { Submit } from "../pages/Submit";
 import { Supporters } from "./Supporters";
 import { GiglistEditor } from "./GiglistEditor";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
-import { Location } from "./Location";
+import { Location } from "./Location/Location";
+import { PageListing } from "./PageListing/PageListing";
 
 export const Routing = () => {
     const { giglist } = useContext(CustomContext) as CustomContextType;
 
+    const routes =
+        !!giglist &&
+        giglist.length &&
+        giglist
+            .map(
+                (date, i) =>
+                    date.listings &&
+                    date.listings.length &&
+                    date.listings.map((gig, j) => {
+                        const gigurl =
+                            `/gig-${gig.artist}-${gig.name}-${gig.date}`
+                                .replace(/\s+/g, "-")
+                                .toLowerCase();
+                        const el: ReactElement = <PageListing listing={gig} />;
+                        return <Route path={gigurl} element={el} key={i * j} />;
+                    })
+            )
+            .flat();
+
     return (
         <Routes>
+            {routes}
             <Route path="/" element={<Main />} />
             <Route path="/location" element={<Location />} />
             <Route path="/gigmap" element={<GigMap giglist={giglist} />} />

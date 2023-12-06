@@ -1,0 +1,79 @@
+.location-outer-content {
+    background-color: black;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    min-height: 100%;
+    padding: 30px;
+}
+
+.location-inner-content {
+    margin: auto;
+    width: 60%;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+}
+
+.location-inner-content .ui.button {
+    margin: 10px;
+    font-family: "carbontyperegular";
+}
+
+.location-inner-content .ui.form .field {
+    clear: both;
+    margin: 20px 0 0;
+    font-size: 20px;
+}
+
+.location-inner-content .ui.form .field input::selection {
+    color: #d2d2d2;
+}
+
+.location-inner-content {
+    h1,
+    h2 {
+        color: white;
+        font-family: "Merriweather";
+        padding: 0px;
+        margin: 5px;
+    }
+    h2 {
+        font-size: 15px;
+    }
+}
+
+.location-inner-content {
+    color: white;
+}
+
+.location-inner-content .ui.form {
+    padding: 0px;
+    color: white;
+}
+
+.location-inner-content div > p {
+    margin-block-end: 0;
+    margin-bottom: 10px;
+    padding: 0;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.location-inner-content .ui.form .field label {
+    color: white;
+}
+
+.location-inner-content .ui.form .field input {
+    font-size: 30px;
+    border-radius: 30px;
+    text-align: center;
+    width: 150px;
+    background-color: black;
+    border-color: white;
+    color: white;
+    padding: 5px;
+    margin-bottom: 20px;
+}

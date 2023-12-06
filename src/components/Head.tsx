@@ -8,14 +8,17 @@ export const Head = () => {
                 content="width=device-width, initial-scale=1"
             />
             <meta name="theme-color" content="#000000" />
-            <meta itemProp="name" content="Gigs. In a list. Giglist." />
+            <meta
+                itemProp="name"
+                content="Giglist. Live music gigs, in a list."
+            />
             <meta
                 itemProp="description"
-                content="WA’s largest live music gig guide. Driven by the music community, created and maintained by locals. Features include easy search & gig map. Submit a gig to Giglist."
+                content="Australia’s largest live music gig guide. Driven by the music community, created and maintained by locals. Submit a gig to Giglist."
             />
             <meta
                 name="description"
-                content="WA’s largest live music gig guide. Driven by the music community, created and maintained by locals. Features include easy search & gig map. Submit a gig to Giglist."
+                content="Australia’s largest live music gig guide. Driven by the music community, created and maintained by locals. Submit a gig to Giglist."
             />
 
             <link
@@ -31,7 +34,10 @@ export const Head = () => {
                 crossOrigin="anonymous"
             />
 
-            <meta property="og:title" content="Giglist. Live Music Gig Guide" />
+            <meta
+                property="og:title"
+                content="Giglist. Live music gigs, in a list."
+            />
             <meta property="og:site_name" content="Giglist" />
             <meta property="og:url" content="https://giglist.com.au" />
             <meta
@@ -56,7 +62,7 @@ export const Head = () => {
                 crossOrigin="anonymous"
             />
 
-            <title>Giglist. Gigs in a List</title>
+            <title>Giglist. Live music gigs, in a list.</title>
         </>
     );
 };

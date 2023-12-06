@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Icon, Modal } from "semantic-ui-react";
-import { Location } from "./Location";
+import { Location } from "./Location/Location";
 
 type Props = {
     userDriven?: Boolean;

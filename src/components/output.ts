@@ -1,5 +1,6 @@
 const postcodeData = [
     { postcode: 200, long: 149.119, lat: -35.2777 },
+    { postcode: 0, long: 149.119, lat: -35.2777 },
     { postcode: 800, long: 130.83668, lat: -12.458684 },
     { postcode: 801, long: 130.83668, lat: -12.458684 },
     { postcode: 804, long: 130.873315, lat: -12.428017 },

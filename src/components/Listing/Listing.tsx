@@ -12,15 +12,7 @@ export const Listing = ({ listing }: { listing: TListing }) => {
             ? "event-wrapper listing patreon"
             : "event-wrapper listing";
 
-    const gigarist = gig.artist
-        .replace(/&amp;/g, "&")
-        .replace(/,/g, "<br />")
-        .replace(/:/g, ":<br />");
-
-    // .replace(
-    //     /:/g,
-    //     "  <i class='ui icon angle right'></i><br /><i class='ui tiny icon circle'></i>"
-    // );
+    const gigarist = gig.artist.replace(/&amp;/g, "&");
 
     return (
         <>
