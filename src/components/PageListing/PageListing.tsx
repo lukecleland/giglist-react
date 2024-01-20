@@ -3,7 +3,7 @@ import QRCode from "react-qr-code";
 import { TListing } from "../../types/types";
 import { Icon } from "semantic-ui-react";
 import { EventSchema } from "../EventSchema";
-import { Head } from "../Head";
+import { Helmet } from "react-helmet";
 import { google } from "calendar-link";
 import { EmailShareButton, FacebookShareButton } from "react-share";
 import moment from "moment";
@@ -45,12 +45,14 @@ export const PageListing = ({
 
     return (
         <>
-            <Head
-                title={event.title}
-                description={event.title}
-                image={gig.location_image_url}
-                url={event_url}
-            />
+            <Helmet>
+                <link rel="canonical" href={event_url} />
+                <meta property="og:site_name" content="Giglist" />
+                <meta property="og:url" content={event_url} />
+                <meta property="og:description" content={event.title} />
+                <meta property="og:type" content="website" />
+                <meta property="og:image" content={gig.location_image_url} />
+            </Helmet>
             <EventSchema gig={gig} />
 
             <div
