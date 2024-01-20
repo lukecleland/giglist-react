@@ -1,7 +1,7 @@
 import { Event } from "schema-dts";
 import { helmetJsonLdProp, jsonLdScriptProps } from "react-schemaorg";
 import { TListing } from "../types/types";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import moment from "moment";
 
 export const EventSchema = ({ gig }: { gig: TListing }) => {
