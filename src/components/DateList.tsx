@@ -75,7 +75,7 @@ export const DateList = () => {
                                 </div>
                                 <Listings listings={date.listings} />
 
-                                {date.listings.length > 20 && (
+                                {date.listings.length > 5 && (
                                     <GigAds adId={adId} gigAds={gigAds} />
                                 )}
 

@@ -12,14 +12,15 @@ export const Listing = ({ listing }: { listing: TListing }) => {
             ? "event-wrapper listing patreon"
             : "event-wrapper listing";
 
-    const gigarist = gig.artist.replace(/&amp;/g, "&");
+    let gigartist = gig.artist.replace(/&amp;/g, "&");
+    gigartist = decodeURIComponent(escape(gigartist));
 
     return (
         <>
             {gig.id <= 300 && <EventSchema gig={gig} />}
             <li className={cname}>
                 <div
-                    dangerouslySetInnerHTML={{ __html: gigarist }}
+                    dangerouslySetInnerHTML={{ __html: gigartist }}
                     className="event-title"
                 ></div>
                 <div className="event-venue">
