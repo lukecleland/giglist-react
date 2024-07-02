@@ -84,9 +84,15 @@ export const PageListing = ({
                     /> */}
                 </div>
 
-                {/* <div className={"modal-qr-code"}>
-                    <QRCode level={"L"} size={130} value={event_url} />
-                </div> */}
+                <div className={"modal-qr-code"}>
+                    <QRCode
+                        level={"L"}
+                        size={130}
+                        value={event_url}
+                        bgColor="#fff"
+                        fgColor="#000"
+                    />
+                </div>
 
                 {/* <img src={ gig.location_image_url } width="400" alt="" /> */}
                 {/* <img style={ {position: 'absolute', right: 122, bottom: 50}} src={`${googlemapsurl}?size=100x100&key=${apiKey}

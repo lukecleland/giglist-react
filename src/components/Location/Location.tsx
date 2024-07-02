@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from "react";
+import React, { useState, ChangeEvent, useEffect, FocusEvent } from "react";
 import { Dropdown, Button, Popup } from "semantic-ui-react";
 import postcodeData from "../output";
 import { useContext } from "react";
@@ -46,6 +46,10 @@ export const Location = () => {
         }
     };
 
+    const handlePostcodeFocus = (e: FocusEvent<HTMLInputElement>) => {
+        setPostcode("");
+    };
+
     useEffect(() => {
         const location = window.localStorage.getItem("location");
 
@@ -78,6 +82,7 @@ export const Location = () => {
                             type="text"
                             value={postcode}
                             onChange={handlePostcodeChange}
+                            onFocus={handlePostcodeFocus}
                         />
 
                         {lat === null && long === null ? (
