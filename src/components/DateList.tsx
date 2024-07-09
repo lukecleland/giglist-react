@@ -51,11 +51,11 @@ export const DateList = () => {
                 giglist
                     .filter((d, index) => getCondition(index))
                     .map((date, index) => {
-                        const adId = (index + adStart) % gigAds.length;
-
-                        if (date.listings.length === 0) {
+                        if (date.listings.length < 3) {
                             return;
                         }
+
+                        const adId = (index + adStart) % gigAds.length;
 
                         return (
                             <ul className="day" key={index}>
@@ -75,9 +75,7 @@ export const DateList = () => {
                                 </div>
                                 <Listings listings={date.listings} />
 
-                                {date.listings.length > 5 && (
-                                    <GigAds adId={adId} gigAds={gigAds} />
-                                )}
+                                <GigAds adId={adId} gigAds={gigAds} />
 
                                 {isMobile && index + 1 === daysToShow && (
                                     <div
