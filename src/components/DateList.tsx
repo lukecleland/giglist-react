@@ -21,7 +21,6 @@ export const DateList = () => {
     };
 
     const adStart = getRandomInt(0, 100);
-    let numberOfAdsToShow = 28;
 
     const getCondition = (index: number) => {
         if (isMobile) {
@@ -42,8 +41,6 @@ export const DateList = () => {
         return date.listings && date.listings.length > 0;
     };
 
-    const searchMode = false;
-
     return (
         <>
             {giglist &&
@@ -51,7 +48,7 @@ export const DateList = () => {
                 giglist
                     .filter((d, index) => getCondition(index))
                     .map((date, index) => {
-                        if (date.listings.length < 3) {
+                        if (date.listings.length < 1) {
                             return;
                         }
 

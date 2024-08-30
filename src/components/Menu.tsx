@@ -5,6 +5,7 @@ import { DatePicker, Space } from "antd";
 import "antd/dist/antd.css";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
 import { TGiglist, TListing } from "../types/types";
+import { cp } from "fs";
 
 export const Menu: React.ElementType = () => {
     const [searchToggle, setSearchToggle] = useState<boolean>(false);
@@ -24,40 +25,30 @@ export const Menu: React.ElementType = () => {
     }, []);
 
     const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {
+        // Is this needed?
         if (!e || e.target.value.length < 2) {
+            //setGiglist(giglistFull);
             return;
         }
 
         const input = e.target.value;
 
-        if (input.length > 2) {
-            const newGiglist: TGiglist = [];
-            giglist.forEach((el) => {
+        setGiglist(
+            giglistFull.map((el) => {
                 const foundObjects = el.listings.filter(
                     (l) =>
                         l.artist.toLowerCase().includes(input.toLowerCase()) ||
-                        l.name.toLowerCase().includes(input.toLowerCase())
+                        l.name.toLowerCase().includes(input.toLowerCase()) ||
+                        l.suburb.toLowerCase().includes(input.toLowerCase())
                 );
-                if (foundObjects.length) {
-                    newGiglist.push({
-                        datestring: el.datestring,
-                        datetime: el.datetime,
-                        listings: [...(foundObjects as TListing[])],
-                    });
-                }
-            });
 
-            if (!newGiglist.length) {
-                newGiglist.push({
-                    datestring: "No Gigs Found",
-                    datetime: "",
-                    listings: [],
-                });
-            }
-            setGiglist(newGiglist as TGiglist);
-        } else {
-            setGiglist(giglistFull);
-        }
+                return {
+                    datestring: el.datestring,
+                    datetime: el.datetime,
+                    listings: [...foundObjects],
+                };
+            })
+        );
     };
 
     const filterByDateCalendar = (datetime: string) => {

@@ -54,7 +54,7 @@ const Data = () => {
     const feedLink = "https://giglist.com.au/feed_national.php";
 
     useEffect(() => {
-        // Fetch gig ads from an API and update the state
+        // Fetch GIGADS from an API and update the state
         axios
             .get(
                 "https://api.baserow.io/api/database/rows/table/108866/?user_field_names=true",
@@ -83,7 +83,7 @@ const Data = () => {
                 console.error("Error fetching gig ads:", error);
             });
 
-        // Fetch giglist data from another API and update the context
+        // Fetch giglist data from the national API and update the context
         axios
             .get(feedLink)
             .then((response) => {
@@ -109,9 +109,8 @@ const Data = () => {
             .catch((error) => {
                 console.error("Error fetching giglist data:", error);
             });
-    }, [setGiglist, setGigAds]); // Make sure to include setGigAds in the dependency array
+    }, [setGiglist, setGigAds]);
 
-    // You can replace the following `return` statement with your component JSX
     return null;
 };
 

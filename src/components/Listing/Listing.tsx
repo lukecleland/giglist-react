@@ -17,7 +17,7 @@ export const Listing = ({ listing }: { listing: TListing }) => {
 
     return (
         <>
-            {gig.id <= 300 && <EventSchema gig={gig} />}
+            {gig.id <= 50 && <EventSchema gig={gig} />}
             <li className={cname}>
                 <div
                     dangerouslySetInnerHTML={{ __html: gigartist }}
