@@ -6,6 +6,9 @@ import "antd/dist/antd.css";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
 import { TGiglist, TListing } from "../types/types";
 import { cp } from "fs";
+import dayjs from "dayjs";
+
+const dateFormat = "YYYY-MM-DD";
 
 export const Menu: React.ElementType = () => {
     const [searchToggle, setSearchToggle] = useState<boolean>(false);
