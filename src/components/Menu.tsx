@@ -27,7 +27,7 @@ export const Menu: React.ElementType = () => {
     const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {
         // Is this needed?
         if (!e || e.target.value.length < 2) {
-            //setGiglist(giglistFull);
+            setGiglist(giglistFull);
             return;
         }
 
