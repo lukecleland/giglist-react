@@ -71,8 +71,9 @@ export const DateList = () => {
                                     </span>
                                 </div>
                                 <Listings listings={date.listings} />
-
-                                <GigAds adId={adId} gigAds={gigAds} />
+                                {date.listings.length > 1 && (
+                                    <GigAds adId={adId} gigAds={gigAds} />
+                                )}
 
                                 {isMobile && index + 1 === daysToShow && (
                                     <div
