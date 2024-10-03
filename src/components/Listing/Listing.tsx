@@ -13,7 +13,13 @@ export const Listing = ({ listing }: { listing: TListing }) => {
             : "event-wrapper listing";
 
     let gigartist = gig.artist.replace(/&amp;/g, "&");
-    gigartist = decodeURIComponent(escape(gigartist));
+
+    try {
+        gigartist = decodeURIComponent(escape(gigartist));
+    } catch (e) {
+        console.error(e);
+        gigartist = escape(gigartist);
+    }
 
     return (
         <>
