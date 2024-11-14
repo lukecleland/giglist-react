@@ -197,6 +197,9 @@ export const Menu: React.ElementType = () => {
                         <a href="/gigmap" className="item">
                             Gigmap
                         </a>
+                        <a href="/store" className="item">
+                            Store
+                        </a>
                         <a href="/submit" className="item">
                             Submit
                         </a>
@@ -305,6 +308,11 @@ export const Menu: React.ElementType = () => {
                             <li>
                                 <a className="item" href="/gigmap">
                                     Gigmap
+                                </a>
+                            </li>
+                            <li>
+                                <a className="item" href="/store">
+                                    Store
                                 </a>
                             </li>
                             <li>

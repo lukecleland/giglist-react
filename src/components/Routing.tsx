@@ -83,6 +83,16 @@ export const Routing = () => {
                 }
             />
             <Route
+                path="/store"
+                element={
+                    <div className="gigtools">
+                        <script>
+                            location.href='https://giglist.deco-apparel.com/'
+                        </script>
+                    </div>
+                }
+            />
+            <Route
                 path="/editor"
                 element={
                     <div>
