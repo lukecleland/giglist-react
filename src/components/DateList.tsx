@@ -46,7 +46,7 @@ export const DateList = () => {
             {giglist &&
                 giglist.length &&
                 giglist
-                    .filter((d, index) => getCondition(index))
+                    //.filter((d, index) => getCondition(index))
                     .map((date, index) => {
                         if (date.listings.length < 1) {
                             return;

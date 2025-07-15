@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import { Routes } from "react-router-dom";
 import { DateList } from "./DateList";
 import { LocationGraphic } from "./LocationGraphic";
-import { WordCloud } from "./WordCloud";
+import { Today } from "./Today";
 import { Geolocation } from "./Geolocation";
 import { Main } from "../pages/Main";
 import GigMap from "../pages/GigMap";
@@ -130,7 +130,7 @@ export const Routing = () => {
                                 backgroundColor: "black",
                             }}
                         >
-                            <WordCloud />
+                            <Today />
                         </div>
                     </>
                 }
