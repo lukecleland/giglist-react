@@ -9,6 +9,7 @@ import { Geolocation } from "./Geolocation";
 import { Main } from "../pages/Main";
 import GigMap from "../pages/GigMap";
 import { Submit } from "../pages/Submit";
+import { About } from "../pages/About";
 import { Supporters } from "./Supporters";
 import { GiglistEditor } from "./GiglistEditor";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
@@ -33,7 +34,7 @@ export const Routing = () => {
                                 .toLowerCase();
                         const el: ReactElement = <PageListing listing={gig} />;
                         return <Route path={gigurl} element={el} key={i * j} />;
-                    })
+                    }),
             )
             .flat();
 
@@ -45,6 +46,7 @@ export const Routing = () => {
             <Route path="/gigmap" element={<GigMap giglist={giglist} />} />
             <Route path="/qr" element={<Navigate to="/" />} />
             <Route path="/submit" element={<Submit />} />
+            <Route path="/about" element={<About />} />
             <Route path="/supporters" element={<Supporters />} />
             <Route
                 path="/gigtools"
