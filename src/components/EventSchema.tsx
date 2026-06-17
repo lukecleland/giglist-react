@@ -13,11 +13,11 @@ export const EventSchema = ({ gig }: { gig: TListing }) => {
                     "@type": "Event",
                     name: gig.artist,
                     startDate: moment(gig.datestamp.date).format(
-                        "YYYY-MM-DD HH:mm:ss +0800"
+                        "YYYY-MM-DDTHH:mm:ssZ",
                     ),
                     endDate: moment(gig.datestamp.date)
                         .add(1, "hours")
-                        .format("YYYY-MM-DD HH:mm:ss +0800"),
+                        .format("YYYY-MM-DDTHH:mm:ssZ"),
                     eventStatus: "https://schema.org/EventScheduled",
                     eventAttendanceMode:
                         "https://schema.org/OfflineEventAttendanceMode",
@@ -25,12 +25,14 @@ export const EventSchema = ({ gig }: { gig: TListing }) => {
                     organizer: {
                         "@type": "Organization",
                         name: gig.name,
-                        url: gig.location_url || "",
+                        ...(gig.location_url ? { url: gig.location_url } : {}),
                     },
-                    image: gig.location_image_url || "",
+                    ...(gig.location_image_url
+                        ? { image: gig.location_image_url }
+                        : {}),
                     location: {
                         "@type": "Place",
-                        url: gig.location_url || "",
+                        ...(gig.location_url ? { url: gig.location_url } : {}),
                         name: gig.name,
                         address: {
                             "@type": "PostalAddress",
@@ -52,7 +54,7 @@ export const EventSchema = ({ gig }: { gig: TListing }) => {
                         priceCurrency: "AUD",
                         // validFrom:
                         //     moment().format("YYYY-MM-DD HH:mm:ss") + ".000000",
-                        url: gig.location_url || "",
+                        ...(gig.location_url ? { url: gig.location_url } : {}),
                         availability: "https://schema.org/InStock",
                     },
                 })}
