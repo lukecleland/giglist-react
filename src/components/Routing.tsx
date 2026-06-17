@@ -15,6 +15,7 @@ import { GiglistEditor } from "./GiglistEditor";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
 import { Location } from "./Location/Location";
 import { PageListing } from "./PageListing/PageListing";
+import { buildGigPath, buildLegacyGigPath } from "../utils/gigUrl";
 
 export const Routing = () => {
     const { giglist } = useContext(CustomContext) as CustomContextType;
@@ -28,12 +29,31 @@ export const Routing = () => {
                     date.listings &&
                     date.listings.length &&
                     date.listings.map((gig, j) => {
-                        const gigurl =
-                            `/gig-${gig.artist}-${gig.name}-${gig.date}`
-                                .replace(/\s+/g, "-")
-                                .toLowerCase();
+                        const canonicalPath = buildGigPath(gig);
+                        const legacyPath = buildLegacyGigPath(gig);
                         const el: ReactElement = <PageListing listing={gig} />;
-                        return <Route path={gigurl} element={el} key={i * j} />;
+
+                        const routeList: ReactElement[] = [
+                            <Route
+                                path={canonicalPath}
+                                element={el}
+                                key={`canonical-${gig.id}`}
+                            />,
+                        ];
+
+                        if (legacyPath !== canonicalPath) {
+                            routeList.push(
+                                <Route
+                                    path={legacyPath}
+                                    element={
+                                        <Navigate to={canonicalPath} replace />
+                                    }
+                                    key={`legacy-${gig.id}`}
+                                />,
+                            );
+                        }
+
+                        return routeList;
                     }),
             )
             .flat();

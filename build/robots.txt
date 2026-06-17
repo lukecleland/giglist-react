@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://giglist.com.au/sitemap.xml

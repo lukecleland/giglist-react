@@ -9,6 +9,7 @@ import {
     CustomContext,
     CustomContextType,
 } from "../components/GiglistProvider";
+import { buildGigUrl } from "../utils/gigUrl";
 
 export const DateList = () => {
     const { giglist, gigAds } = useContext(CustomContext) as CustomContextType;
@@ -52,7 +53,9 @@ export const DateList = () => {
                             return;
                         }
 
-                        const adId = (index + adStart) % gigAds.length;
+                        const adId = gigAds.length
+                            ? (index + adStart) % gigAds.length
+                            : -1;
 
                         return (
                             <ul className="day" key={index}>
@@ -71,9 +74,10 @@ export const DateList = () => {
                                     </span>
                                 </div>
                                 <Listings listings={date.listings} />
-                                {date.listings.length > 1 && (
-                                    <GigAds adId={adId} gigAds={gigAds} />
-                                )}
+                                {date.listings.length > 1 &&
+                                    gigAds.length > 0 && (
+                                        <GigAds adId={adId} gigAds={gigAds} />
+                                    )}
 
                                 {isMobile && index + 1 === daysToShow && (
                                     <div
@@ -111,13 +115,10 @@ export const Listings = ({ listings }: { listings: TListing[] }) => {
 
                     const gig = listing;
 
-                    const event_url =
-                        `https://giglist.com.au/gig-${gig.artist}-${gig.name}-${gig.date}`
-                            .replace(/\s+/g, "-")
-                            .toLowerCase();
+                    const event_url = buildGigUrl(gig);
                     return (
                         !duplicateListing && (
-                            <div>
+                            <div key={`${listing.id}-${index}`}>
                                 <a style={{ display: "none" }} href={event_url}>
                                     Event Link
                                 </a>

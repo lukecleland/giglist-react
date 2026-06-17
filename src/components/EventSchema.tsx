@@ -3,14 +3,18 @@ import { helmetJsonLdProp, jsonLdScriptProps } from "react-schemaorg";
 import { TListing } from "../types/types";
 import { Helmet } from "react-helmet-async";
 import moment from "moment";
+import { buildGigUrl } from "../utils/gigUrl";
 
 export const EventSchema = ({ gig }: { gig: TListing }) => {
+    const eventUrl = buildGigUrl(gig);
+
     return (
         <Helmet>
             <script
                 {...helmetJsonLdProp<Event>({
                     "@context": "https://schema.org",
                     "@type": "Event",
+                    url: eventUrl,
                     name: gig.artist,
                     startDate: moment(gig.datestamp.date).format(
                         "YYYY-MM-DDTHH:mm:ssZ",

@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from "react";
 import { TGiglist, GigAd, TAllTimeCount } from "../types/types";
 import axios from "axios";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
-import { post } from "jquery";
 
 const filterByLocationFromStorage = (giglist: TGiglist) => {
     const location = window.localStorage.getItem("location");
@@ -28,7 +27,7 @@ const filterByLocationFromStorage = (giglist: TGiglist) => {
                         parseFloat(gig.lng) < long + distance &&
                         parseFloat(gig.lng) > long - distance
                     );
-                }))
+                })),
         );
     } else {
         return giglist;
@@ -46,8 +45,6 @@ const getPostcode = () => {
 };
 
 const Data = () => {
-    console.log("Data component");
-
     const { setGiglist, setGigAds, setGiglistFull, setAllTimeCount } =
         useContext(CustomContext) as CustomContextType;
 
@@ -62,21 +59,29 @@ const Data = () => {
                     headers: {
                         Authorization: "Token oBtxXLOu03SJmaB8O8TNh3c8M6dbMobB",
                     },
-                }
+                },
             )
             .then((response) => {
-                const validAds: GigAd[] = response.data.results
-                    .filter((ad: GigAd) => ad.Active)
-                    .filter((ad: GigAd) => {
-                        const postcodeFirstChar = getPostcode().toString()[0];
-                        const postPrefixes = ad.Postcode_Prefixes.split(",");
-                        if (
-                            postPrefixes.includes(postcodeFirstChar) ||
-                            postPrefixes.includes("0")
-                        ) {
-                            return true;
-                        }
-                    });
+                const activeAds: GigAd[] = response.data.results.filter(
+                    (ad: GigAd) => ad.Active,
+                );
+
+                const postcodeFirstChar = getPostcode().toString()[0];
+
+                const validAds: GigAd[] =
+                    postcodeFirstChar === "0"
+                        ? activeAds
+                        : activeAds.filter((ad: GigAd) => {
+                              const postPrefixes = (ad.Postcode_Prefixes || "")
+                                  .split(",")
+                                  .map((prefix) => prefix.trim());
+
+                              return (
+                                  postPrefixes.includes(postcodeFirstChar) ||
+                                  postPrefixes.includes("0")
+                              );
+                          });
+
                 setGigAds(validAds);
             })
             .catch((error) => {
@@ -89,7 +94,7 @@ const Data = () => {
             .then((response) => {
                 if (setGiglist) {
                     const filteredGiglist = filterByLocationFromStorage(
-                        response.data as TGiglist
+                        response.data as TGiglist,
                     );
                     setGiglist(filteredGiglist as TGiglist);
                     setGiglistFull(filteredGiglist as TGiglist);

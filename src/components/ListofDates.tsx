@@ -2,6 +2,7 @@ import { useState } from "react";
 import { GigAd, TDate, TListing } from "../types/types";
 import { GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
+import { buildGigUrl } from "../utils/gigUrl";
 import { isMobile } from "react-device-detect";
 
 type Props = {
@@ -111,10 +112,7 @@ export const Listings = ({
 
                     const gig = listing;
 
-                    const event_url =
-                        `https://giglist.com.au/gig-${gig.artist}-${gig.name}-${gig.date}`
-                            .replace(/\s+/g, "-")
-                            .toLowerCase();
+                    const event_url = buildGigUrl(gig);
                     return (
                         !duplicateListing && (
                             <div className="date-event-wrapper">

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <!-- Google tag (gtag.js) and Google AdSense -->
@@ -18,7 +18,7 @@
             }
             gtag("js", new Date());
 
-            gtag("config", "G-LYZJCC9SS0", { debug_mode: true });
+            gtag("config", "G-LYZJCC9SS0");
         </script>
         <meta charset="utf-8" />
         <link
@@ -26,6 +26,7 @@
             href="https://giglist.com.au/wp-content/uploads/2018/08/favicon-1.ico"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="index, follow" />
         <meta name="theme-color" content="#000000" />
 
         <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
@@ -35,7 +36,7 @@
         <meta itemprop="name" content="Gigs. In a List." />
         <meta
             name="description"
-            content="WA’s largest live music gig guide. Driven by the music community, created and maintained by locals. Features include easy search & gig map. Submit a gig to Giglist."
+            content="Australia's live music gig guide. Browse upcoming gigs, search by artist or venue, and explore shows on the Gig Map."
             data-rh="true"
         />
 
@@ -46,12 +47,28 @@
             crossorigin="anonymous"
         />
 
-        <meta property="og:title" content="Giglist. Live Music Gig Guide" />
+        <meta property="og:title" content="Giglist | Live Music Gig Guide" />
         <meta property="og:site_name" content="Giglist" />
-        <meta property="og:url" content="https://giglist.com.au" />
-        <meta property="og:description" content="Gigs in a list. Giglist." />
+        <meta property="og:url" content="https://giglist.com.au/" />
+        <meta
+            property="og:description"
+            content="Australia's live music gig guide. Search by artist, venue, suburb, or browse on the Gig Map."
+        />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="assets/logo_web.png" />
+        <meta
+            property="og:image"
+            content="https://giglist.com.au/giglistLogo_512.png"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Giglist | Live Music Gig Guide" />
+        <meta
+            name="twitter:description"
+            content="Australia's live music gig guide. Search by artist, venue, suburb, or browse on the Gig Map."
+        />
+        <meta
+            name="twitter:image"
+            content="https://giglist.com.au/giglistLogo_512.png"
+        />
 
         <link
             rel="shortcut icon"
@@ -65,7 +82,7 @@
             crossorigin="anonymous"
         />
 
-        <title>Giglist. Gigs in a List</title>
+        <title>Giglist | Live Music Gig Guide Australia</title>
         <script>
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("./service-worker.js");

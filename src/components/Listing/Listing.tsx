@@ -9,17 +9,10 @@ export const Listing = ({ listing }: { listing: TListing }) => {
         gig.answer === "sponsored"
             ? "event-wrapper listing sponsored"
             : gig.answer === "patreon_artist"
-            ? "event-wrapper listing patreon"
-            : "event-wrapper listing";
+              ? "event-wrapper listing patreon"
+              : "event-wrapper listing";
 
-    let gigartist = gig.artist.replace(/&amp;/g, "&");
-
-    try {
-        gigartist = decodeURIComponent(escape(gigartist));
-    } catch (e) {
-        console.error(e);
-        gigartist = escape(gigartist);
-    }
+    const gigartist = gig.artist.replace(/&amp;/g, "&");
 
     return (
         <>

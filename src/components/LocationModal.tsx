@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Icon, Modal } from "semantic-ui-react";
+import React from "react";
+import { Modal } from "semantic-ui-react";
 import { Location } from "./Location/Location";
 
 type Props = {
@@ -8,20 +8,6 @@ type Props = {
 
 export const LocationModal = ({ userDriven }: Props) => {
     const [open, setOpen] = React.useState(false);
-
-    console.log("userDriven", userDriven);
-
-    useEffect(() => {
-        if (userDriven) {
-            return;
-        }
-        const location = window.localStorage.getItem("location");
-        if (location) {
-            setOpen(false);
-        } else {
-            setOpen(true);
-        }
-    }, []);
 
     return (
         <Modal

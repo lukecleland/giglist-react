@@ -8,7 +8,7 @@ import {
 import { mapStyles } from "../styles/mapStyles";
 import { TGiglist } from "../types/types";
 import moment from "moment";
-import { ListingModal } from "../components/ListingModal";
+import { Helmet } from "react-helmet-async";
 
 const containerStyle = {
     width: "100%",
@@ -98,24 +98,29 @@ const GigMap = ({ giglist }: Props) => {
         setMap(map);
     }, []);
 
-    const onMarkerLoad = (marker: any) => {
-        // console.log("marker: ", marker);
-    };
-
     const onUnmount = React.useCallback(function callback(map: any) {
         setMap(null);
     }, []);
 
-    const handleCloseInfoWindow = () => {
-        console.log("handleCloseInfoWindow");
-    };
-
-    const onMarkerClick = (id: number) => {
-        console.log("onMarkerClick", id);
-    };
-
     return isLoaded ? (
         <>
+            <Helmet>
+                <title>Gig Map | Giglist</title>
+                <link rel="canonical" href="https://giglist.com.au/gigmap" />
+                <meta
+                    name="description"
+                    content="Explore live music gigs on the Giglist map and discover venues and shows near you."
+                />
+                <meta property="og:title" content="Gig Map | Giglist" />
+                <meta
+                    property="og:description"
+                    content="Explore live music gigs on the Giglist map and discover venues and shows near you."
+                />
+                <meta
+                    property="og:url"
+                    content="https://giglist.com.au/gigmap"
+                />
+            </Helmet>
             <DateControl />
             <GoogleMap
                 mapContainerStyle={containerStyle}
@@ -135,12 +140,11 @@ const GigMap = ({ giglist }: Props) => {
                             return date.listings
                                 .filter(
                                     (listing, index) =>
-                                        listing.date === searchDate
+                                        listing.date === searchDate,
                                 )
                                 .map((listing, index) => {
                                     return (
                                         <Marker
-                                            onLoad={onMarkerLoad}
                                             onClick={() =>
                                                 setInfoWindowId(listing.id)
                                             }
@@ -154,20 +158,45 @@ const GigMap = ({ giglist }: Props) => {
                                                 scaledSize:
                                                     new window.google.maps.Size(
                                                         30,
-                                                        30
+                                                        30,
                                                     ),
                                             }}
                                         >
                                             {infoWindowId === listing.id ? (
-                                                // Add styles to InfoWindow
                                                 <InfoWindow
                                                     onCloseClick={() =>
                                                         setInfoWindowId(0)
                                                     }
                                                 >
-                                                    <ListingModal
-                                                        listing={listing}
-                                                    />
+                                                    <div className="gigmap-preview">
+                                                        <img
+                                                            src={
+                                                                listing.location_image_url ||
+                                                                "https://giglist.com.au/newLogoGiglist.png"
+                                                            }
+                                                            alt={listing.name}
+                                                            className="gigmap-preview-image"
+                                                        />
+                                                        <div className="gigmap-preview-body">
+                                                            <div className="gigmap-preview-artist">
+                                                                {listing.artist.replace(
+                                                                    /&amp;/g,
+                                                                    "&",
+                                                                )}
+                                                            </div>
+                                                            <div className="gigmap-preview-venue">
+                                                                {listing.name.replace(
+                                                                    /&amp;/g,
+                                                                    "&",
+                                                                )}
+                                                                {", "}
+                                                                {listing.suburb}
+                                                            </div>
+                                                            <div className="gigmap-preview-time">
+                                                                {listing.start}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </InfoWindow>
                                             ) : (
                                                 <></>

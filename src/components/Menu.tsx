@@ -17,7 +17,7 @@ export const Menu: React.ElementType = () => {
     const [datePickerOpenMobile, setDatePickerOpenMobile] = useState(false);
     const [postcode, setPostcode] = useState<string>("0000");
     const { giglist, setGiglist, giglistFull } = useContext(
-        CustomContext
+        CustomContext,
     ) as CustomContextType;
 
     useEffect(() => {
@@ -42,7 +42,7 @@ export const Menu: React.ElementType = () => {
                     (l) =>
                         l.artist.toLowerCase().includes(input.toLowerCase()) ||
                         l.name.toLowerCase().includes(input.toLowerCase()) ||
-                        l.suburb.toLowerCase().includes(input.toLowerCase())
+                        l.suburb.toLowerCase().includes(input.toLowerCase()),
                 );
 
                 return {
@@ -50,7 +50,7 @@ export const Menu: React.ElementType = () => {
                     datetime: el.datetime,
                     listings: [...foundObjects],
                 };
-            })
+            }),
         );
     };
 
@@ -60,7 +60,7 @@ export const Menu: React.ElementType = () => {
 
     const onChange: DatePickerProps["onChange"] = (
         date: any,
-        dateString: any
+        dateString: any,
     ) => {
         filterByDateCalendar(dateString);
     };
@@ -76,7 +76,7 @@ export const Menu: React.ElementType = () => {
     };
 
     const handleSearchEnter = (
-        event: React.KeyboardEvent<HTMLInputElement>
+        event: React.KeyboardEvent<HTMLInputElement>,
     ) => {
         console.log(event.key);
         if (event.key === "Enter") {
@@ -86,6 +86,8 @@ export const Menu: React.ElementType = () => {
     };
 
     const path = window.location.pathname;
+    const postcodeDisplay =
+        postcode === "0000" || postcode === "0" ? "National" : postcode;
 
     return (
         <>
@@ -107,7 +109,7 @@ export const Menu: React.ElementType = () => {
                                 margin: "-2px 14px 0px 0px",
                             }}
                         />
-                        {postcode}
+                        {postcodeDisplay}
                     </a>
                     <div className="right menu">
                         {path != "/gigmap" && path != "/submit" && (

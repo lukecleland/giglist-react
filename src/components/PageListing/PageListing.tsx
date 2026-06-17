@@ -3,11 +3,12 @@ import QRCode from "react-qr-code";
 import { TListing } from "../../types/types";
 import { Icon } from "semantic-ui-react";
 import { EventSchema } from "../EventSchema";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { google } from "calendar-link";
 import { EmailShareButton, FacebookShareButton } from "react-share";
 import moment from "moment";
 import "./PageListing.scss";
+import { buildGigUrl } from "../../utils/gigUrl";
 
 // // Then fetch the link
 // google(event); // https://calendar.google.com/calendar/render...
@@ -25,18 +26,19 @@ export const PageListing = ({
 }): ReactElement => {
     const gig = listing;
 
-    const event_url =
-        `https://giglist.com.au/gig-${gig.artist}-${gig.name}-${gig.date}`
-            .replace(/\s+/g, "-")
-            .toLowerCase();
+    const event_url = buildGigUrl(gig);
 
     const bg = `url(${gig.location_image_url})`;
     const gigBackground = bg === "url()" ? `url('./placeholder-gig.jpeg')` : bg;
+    const eventImage =
+        gig.location_image_url || "https://giglist.com.au/placeholder-gig.jpeg";
+    const eventTitle = `${gig.artist} @${gig.name}`;
+    const eventDescription = `${gig.artist} live at ${gig.name}, ${gig.suburb}. ${gig.start}`;
 
     // Set event as an object
     const event = {
-        title: gig.artist + " @" + gig.name,
-        description: gig.artist + " @" + gig.name,
+        title: eventTitle,
+        description: eventDescription,
         start: moment(gig.datestamp.date).format("YYYY-MM-DD HH:mm:ss +0800"),
         end: moment(gig.datestamp.date)
             .add(1, "hours")
@@ -46,12 +48,19 @@ export const PageListing = ({
     return (
         <>
             <Helmet>
+                <title>{`${eventTitle} | Giglist`}</title>
                 <link rel="canonical" href={event_url} />
+                <meta name="description" content={eventDescription} />
+                <meta property="og:title" content={eventTitle} />
                 <meta property="og:site_name" content="Giglist" />
                 <meta property="og:url" content={event_url} />
-                <meta property="og:description" content={event.title} />
-                <meta property="og:type" content="website" />
-                <meta property="og:image" content={gig.location_image_url} />
+                <meta property="og:description" content={eventDescription} />
+                <meta property="og:type" content="event" />
+                <meta property="og:image" content={eventImage} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={eventTitle} />
+                <meta name="twitter:description" content={eventDescription} />
+                <meta name="twitter:image" content={eventImage} />
             </Helmet>
             <EventSchema gig={gig} />
 
