@@ -4,11 +4,6 @@ import type { DatePickerProps } from "antd";
 import { DatePicker, Space } from "antd";
 import "antd/dist/antd.css";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
-import { TGiglist, TListing } from "../types/types";
-import { cp } from "fs";
-import dayjs from "dayjs";
-
-const dateFormat = "YYYY-MM-DD";
 
 export const Menu: React.ElementType = () => {
     const [searchToggle, setSearchToggle] = useState<boolean>(false);
@@ -205,6 +200,9 @@ export const Menu: React.ElementType = () => {
                         >
                             Store
                         </a>
+                        <a href="/about" className="item">
+                            About
+                        </a>
                         <a href="/submit" className="item">
                             Submit
                         </a>
@@ -326,6 +324,11 @@ export const Menu: React.ElementType = () => {
                             <li>
                                 <a className="item" href="/submit">
                                     Submit
+                                </a>
+                            </li>
+                            <li>
+                                <a className="item" href="/about">
+                                    About
                                 </a>
                             </li>
                             <li>

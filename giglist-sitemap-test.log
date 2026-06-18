@@ -1,0 +1,15 @@
+
+> giglist@0.1.0 generate:sitemap
+> node scripts/generate-sitemap.js
+
+Sitemap generation failed: Error: Client network socket disconnected before secure TLS connection was established
+    at TLSSocket.onConnectEnd (node:internal/tls/wrap:1709:19)
+    at TLSSocket.emit (node:events:521:24)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'ECONNRESET',
+  path: null,
+  host: 'www.giglist.com.au',
+  port: 443,
+  localAddress: undefined
+}
