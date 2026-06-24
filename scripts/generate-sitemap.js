@@ -17,6 +17,9 @@ const STATIC_ROUTES = [
     { loc: `${SITE_URL}/supporters`, changefreq: "weekly", priority: "0.5" },
 ];
 
+const SITEMAP_OUTPUT_DIR =
+    process.env.SITEMAP_OUTPUT_DIR || "/home/giglistc/public_html/";
+
 function fetchJson(url) {
     return new Promise((resolve, reject) => {
         const client = url.startsWith("https://")
@@ -197,7 +200,12 @@ async function generate() {
         a.loc.localeCompare(b.loc),
     );
 
-    const publicDir = path.join(process.cwd(), "/home/giglistc/public_html/");
+    const publicDir = path.isAbsolute(SITEMAP_OUTPUT_DIR)
+        ? SITEMAP_OUTPUT_DIR
+        : path.resolve(process.cwd(), SITEMAP_OUTPUT_DIR);
+
+    fs.mkdirSync(publicDir, { recursive: true });
+
     const staticSitemapPath = path.join(publicDir, "sitemap-static.xml");
     const eventsSitemapPath = path.join(publicDir, "sitemap-events.xml");
     const indexSitemapPath = path.join(publicDir, "sitemap.xml");
