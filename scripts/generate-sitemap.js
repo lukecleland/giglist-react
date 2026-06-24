@@ -197,7 +197,7 @@ async function generate() {
         a.loc.localeCompare(b.loc),
     );
 
-    const publicDir = path.join(process.cwd(), "public");
+    const publicDir = path.join(process.cwd(), "/home/giglistc/public_html/");
     const staticSitemapPath = path.join(publicDir, "sitemap-static.xml");
     const eventsSitemapPath = path.join(publicDir, "sitemap-events.xml");
     const indexSitemapPath = path.join(publicDir, "sitemap.xml");
