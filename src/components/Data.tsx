@@ -49,7 +49,9 @@ const Data = () => {
     const { setGiglist, setGigAds, setGiglistFull, setAllTimeCount } =
         useContext(CustomContext) as CustomContextType;
 
-    const feedLink = "https://giglist.com.au/feed_national.php";
+    //const feedLink = "https://giglist.com.au/feed_national.php";
+    const feedLink =
+        "https://ggdnjoumpevcetavddjp.supabase.co/functions/v1/legacy-national-feed";
 
     useEffect(() => {
         // Fetch GIGADS from an API and update the state
