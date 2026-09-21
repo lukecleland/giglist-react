@@ -28,11 +28,6 @@ export const DateList = ({
 
     const [daysToShow, setDaysToShow] = useState<number>(daysToShowWindow);
     const adStart = getRandomInt(0, 100);
-    let numberOfAdsToShow = 28;
-
-    if (isMobile) {
-        numberOfAdsToShow = 28;
-    }
 
     const getCondition = (index: number) => {
         if (isMobile) {
@@ -55,7 +50,9 @@ export const DateList = ({
                 giglist
                     .filter((d, index) => getCondition(index))
                     .map((date, index) => {
-                        const adId = (index + adStart) % gigAds.length;
+                        const adId = gigAds.length
+                            ? (index + adStart) % gigAds.length
+                            : -1;
                         return (
                             <ul className="day" key={index}>
                                 <Listings
@@ -64,9 +61,11 @@ export const DateList = ({
                                     date={date}
                                 />
 
-                                {!searchMode && index < numberOfAdsToShow && (
-                                    <GigAds adId={adId} gigAds={gigAds} />
-                                )}
+                                {!searchMode &&
+                                    date.listings.length > 0 &&
+                                    gigAds.length > 0 && (
+                                        <GigAds adId={adId} gigAds={gigAds} />
+                                    )}
 
                                 {isMobile && index + 1 === daysToShow && (
                                     <div
