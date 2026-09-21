@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { TGiglist, GigAd, TAllTimeCount } from "../types/types";
 import axios from "axios";
+import { fetchGigAds } from "../utils/fetchGigAds";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
 
 const filterByLocationFromStorage = (giglist: TGiglist) => {
@@ -52,19 +53,9 @@ const Data = () => {
 
     useEffect(() => {
         // Fetch GIGADS from an API and update the state
-        axios
-            .get(
-                "https://api.baserow.io/api/database/rows/table/108866/?user_field_names=true",
-                {
-                    headers: {
-                        Authorization: "Token oBtxXLOu03SJmaB8O8TNh3c8M6dbMobB",
-                    },
-                },
-            )
-            .then((response) => {
-                const activeAds: GigAd[] = response.data.results.filter(
-                    (ad: GigAd) => ad.Active,
-                );
+        fetchGigAds("Token oBtxXLOu03SJmaB8O8TNh3c8M6dbMobB")
+            .then((ads) => {
+                const activeAds = ads.filter((ad) => ad.Active);
 
                 const postcodeFirstChar = getPostcode().toString()[0];
 

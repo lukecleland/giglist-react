@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { TDate, TListing } from "../types/types";
 import { GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
@@ -10,18 +10,16 @@ import {
     CustomContextType,
 } from "../components/GiglistProvider";
 import { buildGigUrl } from "../utils/gigUrl";
+import { buildGigAdRotation } from "../utils/gigAdRotation";
 
 export const DateList = () => {
     const { giglist, gigAds } = useContext(CustomContext) as CustomContextType;
     const [daysToShow, setDaysToShow] = useState<number>(14);
 
-    const getRandomInt = (min: number, max: number) => {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
-
-    const adStart = getRandomInt(0, 100);
+    const adRotation = useMemo(
+        () => buildGigAdRotation(giglist, gigAds.length),
+        [giglist, gigAds],
+    );
 
     const getCondition = (index: number) => {
         if (isMobile) {
@@ -53,9 +51,7 @@ export const DateList = () => {
                             return;
                         }
 
-                        const adId = gigAds.length
-                            ? (index + adStart) % gigAds.length
-                            : -1;
+                        const adId = adRotation[index];
 
                         return (
                             <ul className="day" key={index}>

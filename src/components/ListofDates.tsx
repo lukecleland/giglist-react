@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { GigAd, TDate, TListing } from "../types/types";
 import { GigAds } from "./GigAds";
 import { ListingModal } from "./ListingModal";
 import { buildGigUrl } from "../utils/gigUrl";
 import { isMobile } from "react-device-detect";
+import { buildGigAdRotation } from "../utils/gigAdRotation";
 
 type Props = {
     giglist: TDate[];
@@ -18,16 +19,13 @@ export const DateList = ({
     searchMode,
     filterByDate,
 }: Props) => {
-    const getRandomInt = (min: number, max: number) => {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
-
     const daysToShowWindow = 28;
 
     const [daysToShow, setDaysToShow] = useState<number>(daysToShowWindow);
-    const adStart = getRandomInt(0, 100);
+    const adRotation = useMemo(
+        () => buildGigAdRotation(giglist, gigAds.length),
+        [giglist, gigAds],
+    );
 
     const getCondition = (index: number) => {
         if (isMobile) {
@@ -50,9 +48,7 @@ export const DateList = ({
                 giglist
                     .filter((d, index) => getCondition(index))
                     .map((date, index) => {
-                        const adId = gigAds.length
-                            ? (index + adStart) % gigAds.length
-                            : -1;
+                        const adId = adRotation[index];
                         return (
                             <ul className="day" key={index}>
                                 <Listings
