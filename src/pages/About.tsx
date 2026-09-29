@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import "./About.css";
 
 type GigStats = {
+    currently_listed_count: number;
     all_time_count: number;
     last_month_total: number;
     total_venues: number;
@@ -17,7 +18,7 @@ export const About = () => {
 
         const loadStats = async () => {
             try {
-                const response = await fetch("https://giglist.com.au/gigstatsfeed.php", {
+                const response = await fetch("https://giglist.com.au/gigstatssimple.php", {
                     signal: controller.signal,
                 });
                 if (!response.ok) return;
@@ -25,7 +26,7 @@ export const About = () => {
                 const data = await response.json();
                 if (
                     data &&
-                    [data.all_time_count, data.last_month_total, data.total_venues].every(
+                    [data.currently_listed_count, data.all_time_count, data.last_month_total, data.total_venues].every(
                         (value) => Number.isSafeInteger(value) && value >= 0,
                     ) &&
                     !controller.signal.aborted
@@ -225,6 +226,9 @@ export const About = () => {
                     <div className="about-page__inner">
                         {stats && (
                             <div className="about-page__stats">
+                                <p className="about-page__stat">
+                                    {stats.currently_listed_count.toLocaleString("en-AU")} gigs currently listed
+                                </p>
                                 <p className="about-page__stat">
                                     {stats.last_month_total.toLocaleString("en-AU")} gigs listed last month
                                 </p>
