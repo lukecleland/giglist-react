@@ -1,9 +1,45 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import "./About.css";
 
+type GigStats = {
+    all_time_count: number;
+    last_month_total: number;
+    total_venues: number;
+};
+
 export const About = () => {
     const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+    const [stats, setStats] = useState<GigStats | null>(null);
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        const loadStats = async () => {
+            try {
+                const response = await fetch("https://giglist.com.au/gigstatsfeed.php", {
+                    signal: controller.signal,
+                });
+                if (!response.ok) return;
+
+                const data = await response.json();
+                if (
+                    data &&
+                    [data.all_time_count, data.last_month_total, data.total_venues].every(
+                        (value) => Number.isSafeInteger(value) && value >= 0,
+                    ) &&
+                    !controller.signal.aborted
+                ) {
+                    setStats(data);
+                }
+            } catch {
+                // Omit stats when the feed is unavailable or the page unmounts.
+            }
+        };
+
+        loadStats();
+        return () => controller.abort();
+    }, []);
 
     const faqItems: { question: string; answer: ReactNode }[] = [
         {
@@ -187,22 +223,19 @@ export const About = () => {
 
                 <div className="about-page__section">
                     <div className="about-page__inner">
-                        <div className="about-page__stats">
-                            <p className="about-page__stat">
-                                1,770+ gigs currently listed
-                            </p>
-                            <p className="about-page__stat">
-                                177,000+ gigs listed since 2017
-                            </p>
-                            <p className="about-page__stat">
-                                1,770+ venues currently listed
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="about-page__section">
-                    <div className="about-page__inner">
+                        {stats && (
+                            <div className="about-page__stats">
+                                <p className="about-page__stat">
+                                    {stats.last_month_total.toLocaleString("en-AU")} gigs listed last month
+                                </p>
+                                <p className="about-page__stat">
+                                    {stats.all_time_count.toLocaleString("en-AU")} gigs listed all time
+                                </p>
+                                <p className="about-page__stat">
+                                    {stats.total_venues.toLocaleString("en-AU")} venues listed
+                                </p>
+                            </div>
+                        )}
                         <h2 className="about-page__faq-title about-page__type">
                             Frequently Asked Questions
                         </h2>
@@ -344,9 +377,7 @@ export const About = () => {
                     <div className="about-page__inner about-page__inner--narrow about-page__contact-wrap">
                         <div className="about-page__contact-inner">
                             <h2 className="about-page__contact-title about-page__type">
-                                Contact
-                                <br />
-                                Giglist
+                                Contact Giglist
                             </h2>
                             <h4 className="about-page__contact-item">
                                 Edit a listing
@@ -377,7 +408,7 @@ export const About = () => {
                 <div className="about-page__section">
                     <div className="about-page__inner">
                         <h2 className="about-page__likes-title about-page__type">
-                            Giglist likes...
+                            Friends of Giglist
                         </h2>
                         <div className="about-page__likes-grid">
                             <a
