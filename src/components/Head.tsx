@@ -4,10 +4,10 @@ type Props = {
     title: string;
     description: string;
     url: string;
-    image: string;
+    image?: string;
 };
 
-export const Head = ({ title, description, url, image }: Props) => {
+export const Head = ({ title, description, url, image = "https://giglist.com.au/favicon.png" }: Props) => {
     return (
         <>
             <base href="/" />
@@ -23,8 +23,8 @@ export const Head = ({ title, description, url, image }: Props) => {
 
             <link
                 rel="shortcut icon"
-                type="image/x-icon"
-                href="https://giglist.com.au/wp-content/uploads/2018/08/favicon-1.ico"
+                type="image/png"
+                href="/favicon.png"
             />
 
             <link
@@ -40,15 +40,12 @@ export const Head = ({ title, description, url, image }: Props) => {
             <meta property="og:description" content={description} />
             <meta property="og:type" content="website" />
             <meta property="og:image" content={image} />
+            <meta name="twitter:image" content={image} />
 
             <link rel="stylesheet" href="./semantic.min.css" />
             <link rel="manifest" href="./manifest.json" />
 
-            <link
-                rel="shortcut icon"
-                type="image/x-icon"
-                href="https://giglist.com.au/wp-content/uploads/2018/08/favicon-1.ico"
-            />
+            <link rel="apple-touch-icon" href="/favicon.png" />
             <link
                 rel="stylesheet"
                 href="./fontawesome.css"

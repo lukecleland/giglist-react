@@ -11,7 +11,7 @@ const filterByLocationFromStorage = (giglist: TGiglist) => {
         const locationObj = JSON.parse(location);
         const lat = parseFloat(locationObj.lat);
         const long = parseFloat(locationObj.long);
-        const kms = parseInt(locationObj.radius);
+        const kms = 100;
         const distance = (1 / 60) * 0.621371 * kms;
         const postcode = parseInt(locationObj.postcode);
 

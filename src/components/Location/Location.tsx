@@ -1,17 +1,9 @@
 import React, { useState, ChangeEvent, useEffect, FocusEvent } from "react";
-import { Dropdown, Button, Popup } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import postcodeData from "../output";
 import { useContext } from "react";
 import { CustomContext, CustomContextType } from "../GiglistProvider";
 import "./Location.scss";
-
-const raddii = [50, 20, 10, 5, 1];
-
-const radiusOptions = raddii.map((radius) => ({
-    key: radius,
-    text: `${radius}km`,
-    value: radius,
-}));
 
 interface PostcodeInfo {
     postcode: number;
@@ -23,7 +15,6 @@ export const Location = () => {
     const [postcode, setPostcode] = useState<string>("0000");
     const [lat, setLat] = useState<number | null>(null);
     const [long, setLong] = useState<number | null>(null);
-    const [radius, setRadius] = useState<number>(radiusOptions[0].value);
     const [disabled, setDisabled] = useState<boolean>(true);
     const { allTimeCount } = useContext(CustomContext) as CustomContextType;
 
@@ -58,7 +49,6 @@ export const Location = () => {
             setPostcode(locationObj.postcode);
             setLat(locationObj.lat);
             setLong(locationObj.long);
-            setRadius(100);
             setDisabled(false);
         }
     }, []);
@@ -91,14 +81,6 @@ export const Location = () => {
                             <></>
                         )}
                     </div>
-                    {/* <div className="field">
-                        <label>Range</label>
-                        <Dropdown
-                            className="ui inverted dropdown radius-dropdown"
-                            options={radiusOptions}
-                            defaultValue={radiusOptions[0].value}
-                        />
-                    </div> */}
                     <Button
                         className="ui button"
                         disabled={disabled}
@@ -109,7 +91,6 @@ export const Location = () => {
                                     postcode,
                                     lat,
                                     long,
-                                    radius,
                                 })
                             );
                             window.location.href = "/";

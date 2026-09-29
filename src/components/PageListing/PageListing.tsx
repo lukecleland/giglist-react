@@ -31,7 +31,7 @@ export const PageListing = ({
     const bg = `url(${gig.location_image_url})`;
     const gigBackground = bg === "url()" ? `url('./placeholder-gig.jpeg')` : bg;
     const eventImage =
-        gig.location_image_url || "https://giglist.com.au/placeholder-gig.jpeg";
+        gig.location_image_url || "https://giglist.com.au/favicon.png";
     const eventTitle = `${gig.artist} @${gig.name}`;
     const eventDescription = `${gig.artist} live at ${gig.name}, ${gig.suburb}. ${gig.start}`;
 
