@@ -4,7 +4,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Content-Type: application/json; charset=utf-8');
 
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
@@ -114,7 +114,7 @@ try {
         'currently_listed_count' => (int) $counts['currently_listed_count'],
     ]);
     $conn->close();
-} catch (Throwable $error) {
+} catch (Exception $error) {
     error_log('Simple gig stats failed: ' . $error->getMessage());
     http_response_code(500);
     echo json_encode(['error' => 'stats_generation_failed']);
