@@ -9,6 +9,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { QrPoster } from "./pages/QrPoster";
 import { qrTargetFromPath, posterRouteFromPath } from "./utils/qrUrl";
 import { UtilityPageMetadata } from "./components/UtilityPageMetadata";
+import { GigStats } from "./pages/GigStats";
 
 export const App = () => {
     return (
@@ -22,6 +23,7 @@ export const App = () => {
 
 const AppContent = () => {
     const { pathname } = useLocation();
+    if (/^\/gigstats\/?$/i.test(pathname)) return <GigStats />;
     const posterRoute = posterRouteFromPath(pathname);
     if (posterRoute) return <QrPoster key={pathname} targetUrl={posterRoute.targetUrl} poster month={posterRoute.month} />;
     const targetUrl = qrTargetFromPath(pathname);

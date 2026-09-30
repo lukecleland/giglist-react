@@ -10,7 +10,7 @@ export const compactName = (value: string): string => value
 const reserved = new Set([
     "search", "location", "gigmap", "qr", "submit", "about", "supporters", "gigtools",
     "locations", "locationimagecollage", "geolocation", "store", "editor",
-    "redirect", "today", "notfound",
+    "redirect", "today", "notfound", "gigstats",
 ]);
 
 export const searchSlugFromPath = (pathname: string): string => {
