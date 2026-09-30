@@ -1,0 +1,56 @@
+.ui.page.grid.gigmap-layout {
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow: hidden;
+
+    > .row { flex: 0 0 auto; }
+}
+
+.ui.page.grid > .gigmap-page {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    width: 100%;
+    min-height: 0;
+    padding: 0 !important;
+    background: #171b22;
+
+    > .date-control { flex: 0 0 auto; }
+}
+
+.gigmap-canvas {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+    background: #171b22;
+}
+
+.gigmap-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.gigmap-preview .gigmap-directions {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 12px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    color: #fff;
+    font: 14px/1.4 Arial, sans-serif;
+    text-decoration: underline;
+
+    &:hover, &:focus-visible { background: #303744; }
+}
+
+@media (max-width: 767px) {
+    .ui.page.grid.gigmap-layout { padding-top: 50px; }
+}

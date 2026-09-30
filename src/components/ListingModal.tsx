@@ -3,7 +3,7 @@ import { TListing } from "../types/types";
 import { Listing } from "./Listing/Listing";
 import { PageListing } from "./PageListing/PageListing";
 
-export const ListingModal = ({ listing }: { listing: TListing }) => {
+export const ListingModal = ({ listing, children }: { listing: TListing; children?: React.ReactNode }) => {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
@@ -41,7 +41,7 @@ export const ListingModal = ({ listing }: { listing: TListing }) => {
                 }}
                 style={{ cursor: "pointer" }}
             >
-                <Listing listing={listing} />
+                {children || <Listing listing={listing} />}
             </div>
 
             {open && (

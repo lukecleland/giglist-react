@@ -1,17 +1,14 @@
 import { Helmet } from "react-helmet-async";
 import { DateList } from "../components/DateList";
-import { useContext } from "react";
 import { useLocation } from "react-router-dom";
-import { CustomContext } from "../components/GiglistProvider";
 import { searchSlugFromPath } from "../utils/searchUrl";
+import { TourListing } from "./TourListing";
 
 export const Main = () => {
-    const { giglist, giglistFull } = useContext(CustomContext);
     const { pathname } = useLocation();
     const isSearchPage = /^\/search\/?$/.test(pathname);
     const slug = searchSlugFromPath(pathname);
-    const noMatches = slug && giglistFull.length > 0 &&
-        !giglist.some((date) => date.listings.length > 0);
+    if (slug) return <TourListing slug={slug} />;
     return (
         <>
             <Helmet>
@@ -33,10 +30,6 @@ export const Main = () => {
             </Helmet>
             <div className="side-scroll">
                 <section>
-                    {noMatches && <p style={{ padding: "2rem" }}>
-                        No gigs match your search in the current location.
-                        {" "}<a href="/location">Change location</a> or edit your search.
-                    </p>}
                     <DateList />
                 </section>
             </div>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { GoogleMap, useJsApiLoader, Marker, MarkerClusterer, InfoWindow } from "@react-google-maps/api";
 import { mapStyles } from "../styles/mapStyles";
 import { TGiglist } from "../types/types";
@@ -7,8 +7,9 @@ import moment from "moment";
 import { Helmet } from "react-helmet-async";
 import markerIcon from "../styles/assets/gigmap-marker.svg";
 import clusterIcon from "../styles/assets/gigmap-cluster.svg";
+import "./GigMap.scss";
 
-const containerStyle = { width: "100%", height: "110%" };
+const containerStyle = { width: "100%", height: "100%" };
 const clusterStyles = [{
     url: clusterIcon, width: 56, height: 56, textColor: "#111", textSize: 18, fontWeight: "bold",
 }];
@@ -20,18 +21,27 @@ const mapOptions = {
 const GigMap = ({ giglist }: { giglist: TGiglist }) => {
     const [searchDate, setSearchDate] = useState(() => moment().format("YYYY-MM-DD"));
     const [selectedKey, setSelectedKey] = useState<string | null>(null);
-    const [center] = useState(() => {
+    const [initialView] = useState(() => {
         try {
             const location = JSON.parse(window.localStorage.getItem("location") || "null");
+            if (["0000", "0"].includes(String(location?.postcode))) {
+                return { national: true, center: { lat: -27, lng: 133 }, zoom: 4 };
+            }
             const lat = Number(location?.lat);
             const lng = Number(location?.long);
-            if (location?.lat && location?.long && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) return { lat, lng };
+            if (location?.lat && location?.long && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) return { national: false, center: { lat, lng }, zoom: 13 };
         } catch { /* Use Perth when no valid saved location is available. */ }
-        return { lat: -31.9505, lng: 115.8605 };
+        return { national: false, center: { lat: -31.9505, lng: 115.8605 }, zoom: 13 };
     });
+    const onMapLoad = useCallback((map: google.maps.Map) => {
+        if (initialView.national) {
+            // Fit mainland Australia and Tasmania for both portrait and landscape screens.
+            map.fitBounds({ north: -10, south: -44, west: 112, east: 154 }, 24);
+        }
+    }, [initialView]);
     const locations = useMemo(() => getMapLocations(giglist, searchDate), [giglist, searchDate]);
     const selectedLocation = locations.find((location) => location.key === selectedKey);
-    const { isLoaded } = useJsApiLoader({
+    const { isLoaded, loadError } = useJsApiLoader({
         id: "google-map-script",
         googleMapsApiKey: "AIzaSyDTkZauLKxFmJ3qW2jKsgjLvgt30kqJ3AM",
     });
@@ -40,7 +50,7 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
         setSearchDate(moment(searchDate).add(days, "days").format("YYYY-MM-DD"));
     };
 
-    return <>
+    return <div className="gigmap-page">
         <Helmet>
             <title>Gigmap | Giglist</title>
             <link rel="canonical" href="https://giglist.com.au/gigmap" />
@@ -58,8 +68,12 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
                 <img src={require("../styles/assets/triangle.png")} alt="" />
             </button>
         </div></div>
+        <div className="gigmap-canvas" aria-busy={!isLoaded && !loadError}>
+        {!isLoaded && <div className="gigmap-loading" role={loadError ? "alert" : "status"}>
+            {loadError ? "The map couldn’t load. Please refresh to try again." : "Loading map…"}
+        </div>}
         {isLoaded && <GoogleMap mapContainerStyle={containerStyle} options={mapOptions}
-            center={center} zoom={13} onClick={() => setSelectedKey(null)}>
+            center={initialView.center} zoom={initialView.zoom} onLoad={onMapLoad} onClick={() => setSelectedKey(null)}>
             <MarkerClusterer key={searchDate} gridSize={40} maxZoom={18}
                 averageCenter styles={clusterStyles} zoomOnClick
                 title="Click to zoom in to gig locations" onClick={() => setSelectedKey(null)}>
@@ -79,12 +93,19 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
                             <div className="gigmap-preview-artist">{listing.artist.replace(/&amp;/g, "&")}</div>
                             <div className="gigmap-preview-venue">{listing.name.replace(/&amp;/g, "&")}, {listing.suburb}</div>
                             <div className="gigmap-preview-time">{listing.start}</div>
+                            <a className="gigmap-directions"
+                                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${selectedLocation.position.lat},${selectedLocation.position.lng}`)}`}
+                                target="_blank" rel="noopener noreferrer"
+                                aria-label={`Directions to ${listing.name.replace(/&amp;/g, "&")} in Google Maps`}>
+                                Directions
+                            </a>
                         </div>
                     </div>)}
                 </div>
             </InfoWindow>}
         </GoogleMap>}
-    </>;
+        </div>
+    </div>;
 };
 
 export default React.memo(GigMap);

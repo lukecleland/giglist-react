@@ -21,14 +21,15 @@ export const App = () => {
 };
 
 const AppContent = () => {
-    const targetUrl = qrTargetFromPath(useLocation().pathname);
+    const { pathname } = useLocation();
+    const targetUrl = qrTargetFromPath(pathname);
     if (targetUrl) return <QrPoster key={targetUrl} targetUrl={targetUrl} />;
     return (
         <GiglistProvider>
             <UtilityPageMetadata />
             <Loader />
             <main>
-                <div className="ui page grid" style={{ marginTop: "0px" }}>
+                <div className={`ui page grid${/^\/gigmap\/?$/i.test(pathname) ? " gigmap-layout" : ""}`} style={{ marginTop: "0px" }}>
                     <LocationModal />
                     <Menu />
                     <Routing />
