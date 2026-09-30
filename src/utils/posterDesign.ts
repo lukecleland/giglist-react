@@ -283,25 +283,30 @@ export const drawPoster = (ctx: CanvasRenderingContext2D, options: PosterOptions
         });
         ctx.restore();
     }
-    // One aligned lockup: QR, call to action, then the independent brand signature.
-    rect(ctx, '#000', 0, 1730, 1600, 270);
-    rect(ctx, '#fff', 80, 1775, 180, 180);
+    // The QR straddles the footer edge, clear of the listing region above.
+    rect(ctx, '#000', 0, 1830, 1600, 170);
+    rect(ctx, '#fff', 1340, 1725, 180, 180);
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(options.qr, 100, 1795, 140, 140);
+    ctx.drawImage(options.qr, 1360, 1745, 140, 140);
     ctx.imageSmoothingEnabled = true;
     ctx.fillStyle = '#fff';
-    fittedText(ctx, 'SCAN FOR GIG DETAILS & UPDATES', { x: 310, y: 1802, width: 785, height: 54 }, 'Poster Condensed', 43);
+    fittedText(ctx, 'Scan for gig details & updates', { x: 80, y: 1872, width: 1160, height: 40 }, 'Poster Grotesk', 29, 'left', true);
     ctx.fillStyle = '#bfbfbf';
-    fittedText(ctx, options.targetUrl.replace('https://', ''), { x: 310, y: 1875, width: 785, height: 62 }, 'Poster Grotesk', 26);
-    line(ctx, '#454545', 1140, 1805, 1140, 1925, 2);
+    fittedText(ctx, options.targetUrl.replace('https://', ''), { x: 80, y: 1908, width: 1160, height: 42 }, 'Poster Grotesk', 24);
     ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#a6a6a6'; ctx.font = '18px "Poster Grotesk"';
-    ctx.fillText('Powered by', 1515, 1825);
-    ctx.fillStyle = '#fff'; ctx.font = '52px "carbontyperegular"';
-    ctx.fillText('Giglist', 1515, 1887);
+    ctx.fillStyle = '#fff'; ctx.font = '38px "carbontyperegular"';
+    const logoMetrics = ctx.measureText('Giglist');
+    const logoWidth = logoMetrics.width;
+    // Align the body of the lettering, excluding the descending g and y.
+    const logoBottom = ctx.measureText('Gilist').actualBoundingBoxDescent || 0;
+    ctx.fillText('Giglist', 1520, 1947);
+    ctx.fillStyle = '#a6a6a6'; ctx.font = '20px "Poster Grotesk"';
+    const poweredByBottom = ctx.measureText('Powered b').actualBoundingBoxDescent || 0;
+    const poweredByY = 1947 + logoBottom - poweredByBottom;
+    ctx.fillText('Powered by', 1520 - logoWidth - 16, poweredByY);
     if (options.photoCredit) {
         ctx.fillStyle = '#aaa';
-        fittedText(ctx, options.photoCredit, {x: 80, y: 1960, width: 1440, height: 32}, 'Poster Grotesk', 16);
+        fittedText(ctx, options.photoCredit, {x: 80, y: 1958, width: 1080, height: 34}, 'Poster Grotesk', 14);
     }
     ctx.restore();
     return { rows: rowBounds, fontSize: layout.size, columns: layout.columns, listingArea: area };
