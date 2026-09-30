@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import "./GigStats.scss";
+import { FullStats } from "../components/GigStats/FullStats";
 
 const statsUrl = "https://giglist.com.au/gigstatssimple.php";
 const metrics = [
@@ -73,6 +74,7 @@ export const GigStats = () => {
                     <h2>{metric.label}</h2>
                 </article>)}
             </section>
+            <FullStats refresh={request} />
             <section className="gigstats-details" aria-labelledby="gigstats-details-title">
                 <div className="gigstats-details-heading"><p className="gigstats-eyebrow">Behind the numbers</p><h2 id="gigstats-details-title">What we’re counting</h2>
                     <p>These are Giglist’s records, not a census of every live show in Australia. Each total has its own scope.</p></div>

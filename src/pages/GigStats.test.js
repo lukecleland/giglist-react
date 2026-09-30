@@ -4,6 +4,7 @@ import { act } from 'react-dom/test-utils';
 import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { GigStats } from './GigStats';
+jest.mock('../components/GigStats/FullStats', () => ({ FullStats: () => null }));
 
 let container;
 const originalFetch = global.fetch;
