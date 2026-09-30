@@ -15,10 +15,16 @@ const dates = [{ listings: [gig, { ...gig, id: 2, date: "2026-10-01", name: "Oth
 let container;
 beforeEach(() => { container = document.createElement("div"); document.body.appendChild(container); });
 afterEach(() => { act(() => { ReactDOM.unmountComponentAtNode(container); }); container.remove(); });
-const render = (path, gigs = dates) => act(() => {
+const render = (path, gigs = dates, localGigs = gigs) => act(() => {
     ReactDOM.render(<MemoryRouter initialEntries={[path]}><HelmetProvider>
-        <CustomContext.Provider value={{ giglist: gigs, giglistFull: dates, gigAds: [{}] }}><Main /></CustomContext.Provider>
+        <CustomContext.Provider value={{ nationalGiglist: gigs, giglist: localGigs, giglistFull: localGigs, gigAds: [{}] }}><Main /></CustomContext.Provider>
     </HelmetProvider></MemoryRouter>, container);
+});
+
+test("URL tour lists national gigs even when the local postcode has no matches", () => {
+    render("/claytonbulger", dates, []);
+    expect(container.querySelector("h1").textContent).toBe("Clayton Bulger");
+    expect(container.querySelectorAll("[data-gig]")).toHaveLength(2);
 });
 
 test("artist URL gets a tour heading and chronological venues without ads", () => {

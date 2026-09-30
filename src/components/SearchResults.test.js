@@ -19,11 +19,12 @@ const feed = [1, 2, 3].map((id) => ({
 }));
 
 function Seed() {
-    const { setGiglistFull, setGigAds } = React.useContext(CustomContext);
+    const { setGiglistFull, setNationalGiglist, setGigAds } = React.useContext(CustomContext);
     React.useEffect(() => {
         setGiglistFull([...feed, { datestring: "Empty day", datetime: "2026-10-04", listings: [] }]);
+        setNationalGiglist(feed);
         setGigAds([{}, {}]);
-    }, [setGiglistFull, setGigAds]);
+    }, [setGiglistFull, setNationalGiglist, setGigAds]);
     return null;
 }
 

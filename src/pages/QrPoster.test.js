@@ -3,12 +3,15 @@ import ReactDOM from "react-dom";
 import { act, Simulate } from "react-dom/test-utils";
 import { HelmetProvider } from "react-helmet-async";
 import { QrPoster } from "./QrPoster";
+import axios from "axios";
+jest.mock("axios", () => ({ get: jest.fn() }));
 
 let container;
 let context;
 let originalImage;
 let originalFonts;
 beforeEach(() => {
+    axios.get.mockResolvedValue({ data: [{ listings: [{ artist: "Clayton Bulger", name: "Windsor Hotel", address: "Main Street", suburb: "Perth" }] }] });
     container = document.createElement("div");
     document.body.appendChild(container);
     originalImage = window.Image;
@@ -38,7 +41,7 @@ test("creates a branded PNG and enables print after the preview loads", async ()
     });
     expect(document.fonts.load).toHaveBeenCalledWith('184px "carbontyperegular"');
     expect(context.fillText.mock.calls.map(([text]) => text)).toEqual([
-        "Giglist", "Scan the QR Code to see", "upcoming gigs on Giglist",
+        "Giglist", "Scan the QR Code to see", "upcoming gigs for", "Clayton Bulger",
     ]);
     const canvas = HTMLCanvasElement.prototype.toDataURL.mock.instances[0];
     expect([canvas.width, canvas.height]).toEqual([1600, 2000]);
@@ -79,17 +82,27 @@ test("inverting regenerates the PNG and QR with the opposite colours", async () 
         ["#000", '184px "carbontyperegular"'],
         ["#000", '64px "carbontyperegular"'],
         ["#000", '64px "carbontyperegular"'],
+        ["#000", '64px "carbontyperegular"'],
     ]);
     const invert = container.querySelector("button[aria-pressed]");
     const originalCells = Array.from(container.querySelectorAll("svg path"), (path) => path.getAttribute("fill"));
     await act(async () => { Simulate.click(invert); });
     expect(invert.getAttribute("aria-pressed")).toBe("true");
     expect(fills).toEqual(["#fff", "#000"]);
-    expect(textStyles.slice(3).every(([colour]) => colour === "#fff")).toBe(true);
+    expect(textStyles.slice(4).every(([colour]) => colour === "#fff")).toBe(true);
     const invertedCells = Array.from(container.querySelectorAll("svg path"), (path) => path.getAttribute("fill"));
     expect(invertedCells).toEqual(originalCells.map((colour) => colour === "#000" ? "#fff" : "#000"));
     expect(HTMLCanvasElement.prototype.toDataURL).toHaveBeenCalledTimes(2);
     await act(async () => { Simulate.click(invert); });
     expect(invert.getAttribute("aria-pressed")).toBe("false");
     expect(fills).toEqual(["#fff", "#000", "#fff"]);
+});
+
+test("venue name appears on its own caption line", async () => {
+    await act(async () => {
+        ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" /></HelmetProvider>, container);
+    });
+    expect(context.fillText).toHaveBeenCalledWith("upcoming gigs at", 800, 1770, 1360);
+    expect(context.fillText).toHaveBeenCalledWith("Windsor Hotel", 800, 1870, 1360);
+    expect(container.querySelector(".qr-poster-image").alt).toContain("upcoming gigs at\nWindsor Hotel");
 });

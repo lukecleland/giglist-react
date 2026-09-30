@@ -20,16 +20,18 @@ const filterByLocationFromStorage = (giglist: TGiglist) => {
             return giglist;
         }
 
-        return giglist.filter(
-            (date, index) =>
-                (giglist[index].listings = date.listings.filter((gig) => {
+        return giglist.map(
+            (date) => ({
+                ...date,
+                listings: date.listings.filter((gig) => {
                     return (
                         parseFloat(gig.lat) < lat + distance &&
                         parseFloat(gig.lat) > lat - distance &&
                         parseFloat(gig.lng) < long + distance &&
                         parseFloat(gig.lng) > long - distance
                     );
-                })),
+                }),
+            }),
         );
     } else {
         return giglist;
@@ -47,7 +49,7 @@ const getPostcode = () => {
 };
 
 const Data = () => {
-    const { setGiglist, setGigAds, setGiglistFull, setAllTimeCount } =
+    const { setGiglist, setGigAds, setGiglistFull, setNationalGiglist, setAllTimeCount } =
         useContext(CustomContext) as CustomContextType;
 
     const feedLink = "https://giglist.com.au/feed_national.php";
@@ -87,8 +89,10 @@ const Data = () => {
             .get(feedLink)
             .then((response) => {
                 if (setGiglist) {
+                    const nationalGiglist = normalizeGigText(response.data as TGiglist);
+                    setNationalGiglist(nationalGiglist);
                     const filteredGiglist = filterByLocationFromStorage(
-                        normalizeGigText(response.data as TGiglist),
+                        nationalGiglist,
                     );
                     setGiglist(filteredGiglist as TGiglist);
                     setGiglistFull(filteredGiglist as TGiglist);
@@ -108,7 +112,7 @@ const Data = () => {
             .catch((error) => {
                 console.error("Error fetching giglist data:", error);
             });
-    }, [setGiglist, setGigAds]);
+    }, [setGiglist, setGigAds, setGiglistFull, setNationalGiglist, setAllTimeCount]);
 
     return null;
 };

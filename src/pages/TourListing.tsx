@@ -8,11 +8,11 @@ import { getTourProfile } from "../utils/tourProfile";
 import "./TourListing.scss";
 
 export const TourListing = ({ slug }: { slug: string }) => {
-    const { giglist, giglistFull } = useContext(CustomContext);
-    const profile = useMemo(() => getTourProfile(giglistFull, slug), [giglistFull, slug]);
-    const listings = useMemo(() => filterGigSearch(giglist, slug, true)
+    const { nationalGiglist } = useContext(CustomContext);
+    const profile = useMemo(() => getTourProfile(nationalGiglist, slug), [nationalGiglist, slug]);
+    const listings = useMemo(() => filterGigSearch(nationalGiglist, slug, true)
         .flatMap((date) => date.listings)
-        .sort((a, b) => a.date.localeCompare(b.date)), [giglist, slug]);
+        .sort((a, b) => a.date.localeCompare(b.date)), [nationalGiglist, slug]);
     const title = `${profile.title} — Upcoming Gigs | Giglist`;
     const canonical = `https://giglist.com.au/${encodeURIComponent(slug)}`;
     const description = `See upcoming gigs ${profile.isVenue ? "at" : "by"} ${profile.title} on Giglist.`;
@@ -49,6 +49,6 @@ export const TourListing = ({ slug }: { slug: string }) => {
                     </div>
                 </ListingModal>
             </li>)}
-        </ul> : <p className="tour-empty">No upcoming gigs match in your current location. <a href="/location">Change location</a>.</p>}
+        </ul> : <p className="tour-empty">No upcoming gigs found for this artist or venue.</p>}
     </div>;
 };

@@ -16,18 +16,18 @@ export const Menu: React.ElementType = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const { pathname: path } = useLocation();
     const navigate = useNavigate();
-    const { setGiglist, giglistFull, setIsSearching } = useContext(
+    const { setGiglist, giglistFull, nationalGiglist, setIsSearching } = useContext(
         CustomContext,
     ) as CustomContextType;
 
     useEffect(() => {
         const slug = searchSlugFromPath(path);
-        setSearchQuery(slug ? nameForSearchSlug(giglistFull, slug) : "");
-        setGiglist(slug ? filterGigSearch(giglistFull, slug, true) : giglistFull);
+        setSearchQuery(slug ? nameForSearchSlug(nationalGiglist, slug) : "");
+        setGiglist(slug ? filterGigSearch(nationalGiglist, slug, true) : giglistFull);
         setIsSearching(!!slug);
         setSearchToggle(path === "/search" || path === "/search/");
         setMenuToggle(path === "/search" || path === "/search/");
-    }, [path, giglistFull, setGiglist, setIsSearching]);
+    }, [path, giglistFull, nationalGiglist, setGiglist, setIsSearching]);
 
     useEffect(() => {
         const location = window.localStorage.getItem("location");

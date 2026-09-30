@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import { Helmet } from "react-helmet-async";
+import axios from "axios";
+import { getTourProfile } from "../utils/tourProfile";
+import { compactName } from "../utils/searchUrl";
+import { normalizeGigText } from "../utils/normalizeGigText";
 import "./QrPoster.scss";
-
-const caption = "Scan the QR Code to see upcoming gigs on Giglist";
 
 export const QrPoster = ({ targetUrl }: { targetUrl: string }) => {
     const qrRef = useRef<HTMLDivElement>(null);
@@ -11,8 +13,31 @@ export const QrPoster = ({ targetUrl }: { targetUrl: string }) => {
     const [ready, setReady] = useState(false);
     const [error, setError] = useState("");
     const [inverted, setInverted] = useState(false);
+    const [displayName, setDisplayName] = useState<string | null>(null);
+    const [isVenue, setIsVenue] = useState(false);
+    const captionLine = `upcoming gigs ${isVenue ? "at" : "for"}`;
+    const caption = `Scan the QR Code to see ${captionLine}\n${displayName || ""}`;
     const background = inverted ? "#000" : "#fff";
     const foreground = inverted ? "#fff" : "#000";
+
+    useEffect(() => {
+        let cancelled = false;
+        const name = decodeURIComponent(new URL(targetUrl).pathname.slice(1));
+        const slug = compactName(name);
+        setDisplayName(null);
+        axios.get("https://giglist.com.au/feed_national.php", { timeout: 10000 })
+            .then(({ data }) => {
+                if (!cancelled) {
+                    const profile = getTourProfile(normalizeGigText(data), slug);
+                    setIsVenue(profile.isVenue);
+                    setDisplayName(profile.title);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) setDisplayName(name.replace(/[-_]/g, " "));
+            });
+        return () => { cancelled = true; };
+    }, [targetUrl]);
 
     useEffect(() => {
         let cancelled = false;
@@ -20,6 +45,7 @@ export const QrPoster = ({ targetUrl }: { targetUrl: string }) => {
         setPng("");
         setReady(false);
         setError("");
+        if (!displayName) return;
 
         const generate = async () => {
             try {
@@ -56,8 +82,9 @@ export const QrPoster = ({ targetUrl }: { targetUrl: string }) => {
                 context.imageSmoothingEnabled = false;
                 context.drawImage(image, (1600 - size) / 2, 430, size, size);
                 context.font = '64px "carbontyperegular"';
-                context.fillText("Scan the QR Code to see", 800, 1700, 1360);
-                context.fillText("upcoming gigs on Giglist", 800, 1795, 1360);
+                context.fillText("Scan the QR Code to see", 800, 1680, 1360);
+                context.fillText(captionLine, 800, 1770, 1360);
+                context.fillText(displayName, 800, 1870, 1360);
                 setPng(canvas.toDataURL("image/png"));
             } catch {
                 if (!cancelled) setError("We couldn’t generate the PNG. Please reload this page to try again.");
@@ -70,7 +97,7 @@ export const QrPoster = ({ targetUrl }: { targetUrl: string }) => {
             cancelled = true;
             if (objectUrl) URL.revokeObjectURL(objectUrl);
         };
-    }, [targetUrl, background, foreground]);
+    }, [targetUrl, background, foreground, displayName, captionLine]);
 
     return (
         <div className="qr-poster-page">
