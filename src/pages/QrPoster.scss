@@ -12,6 +12,11 @@ body.qr-poster-body.qr-poster-inverted {
     --qr-page-foreground: #000;
 }
 
+body.qr-poster-body.gig-poster-body {
+    --qr-page-background: #888;
+    --qr-page-foreground: #111;
+}
+
 .qr-poster-page {
     padding: 24px;
     text-align: center;
@@ -66,4 +71,60 @@ body.qr-poster-body.qr-poster-inverted {
         max-height: 90vh;
         break-inside: avoid;
     }
+}
+
+.poster-theme-label {
+    display: block;
+    margin: 16px auto;
+    max-width: 420px;
+    text-align: left;
+
+    select {
+        display: block;
+        width: 100%;
+        margin-top: 6px;
+        padding: 10px;
+        border: 1px solid #999;
+        border-radius: 4px;
+        background: var(--qr-page-foreground);
+        color: var(--qr-page-background);
+        font: inherit;
+    }
+}
+
+@font-face {
+    font-family: "Poster Condensed";
+    src: url("../styles/font/poster/Anton-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Poster Serif";
+    src: url("../styles/font/poster/DMSerifDisplay-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Poster Grotesk";
+    src: url("../styles/font/poster/SpaceGrotesk[wght].ttf") format("truetype");
+    font-weight: 300 700;
+    font-display: swap;
+}
+
+.poster-theme-description {
+    max-width: 520px;
+    margin: 8px auto 16px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+@media screen {
+    body.gig-poster-body .qr-poster-image { max-width: 760px; }
+}
+
+.poster-photo-credit {
+    max-width: 760px;
+    margin: 10px auto;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }

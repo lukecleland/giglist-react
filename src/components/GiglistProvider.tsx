@@ -13,7 +13,11 @@ interface ProviderProps<T> {
 }
 
 // Define your custom context that includes the attributes you need
+export type FeedStatus = "loading" | "ready" | "error";
+
 export interface CustomContextType {
+    feedStatus: FeedStatus;
+    setFeedStatus: Dispatch<SetStateAction<FeedStatus>>;
     nationalGiglist: TGiglist;
     setNationalGiglist: Dispatch<SetStateAction<TGiglist>>;
     isSearching: boolean;
@@ -35,6 +39,8 @@ export interface CustomContextType {
 }
 
 const CustomContext = createContext<CustomContextType>({
+    feedStatus: "loading",
+    setFeedStatus: () => {},
     nationalGiglist: [],
     setNationalGiglist: () => {},
     isSearching: false,
@@ -55,6 +61,7 @@ const CustomContext = createContext<CustomContextType>({
 });
 
 function GiglistProvider({ children }: ProviderProps<ReactNode>) {
+    const [feedStatus, setFeedStatus] = useState<FeedStatus>("loading");
     const [nationalGiglist, setNationalGiglist] = useState<TGiglist>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [giglist, setGiglist] = useState<TGiglist>([]);
@@ -71,6 +78,8 @@ function GiglistProvider({ children }: ProviderProps<ReactNode>) {
 
     // Create a context value object that includes your attributes
     const contextValue: CustomContextType = {
+        feedStatus,
+        setFeedStatus,
         nationalGiglist,
         setNationalGiglist,
         isSearching,

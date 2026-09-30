@@ -7,7 +7,7 @@ import { Menu } from "./components/Menu";
 import { Routing } from "./components/Routing";
 import { HelmetProvider } from "react-helmet-async";
 import { QrPoster } from "./pages/QrPoster";
-import { qrTargetFromPath } from "./utils/qrUrl";
+import { qrTargetFromPath, posterRouteFromPath } from "./utils/qrUrl";
 import { UtilityPageMetadata } from "./components/UtilityPageMetadata";
 
 export const App = () => {
@@ -22,6 +22,8 @@ export const App = () => {
 
 const AppContent = () => {
     const { pathname } = useLocation();
+    const posterRoute = posterRouteFromPath(pathname);
+    if (posterRoute) return <QrPoster key={pathname} targetUrl={posterRoute.targetUrl} poster month={posterRoute.month} />;
     const targetUrl = qrTargetFromPath(pathname);
     if (targetUrl) return <QrPoster key={targetUrl} targetUrl={targetUrl} />;
     return (

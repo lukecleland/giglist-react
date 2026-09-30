@@ -49,7 +49,7 @@ const getPostcode = () => {
 };
 
 const Data = () => {
-    const { setGiglist, setGigAds, setGiglistFull, setNationalGiglist, setAllTimeCount } =
+    const { setGiglist, setGigAds, setGiglistFull, setNationalGiglist, setFeedStatus, setAllTimeCount } =
         useContext(CustomContext) as CustomContextType;
 
     const feedLink = "https://giglist.com.au/feed_national.php";
@@ -86,7 +86,7 @@ const Data = () => {
 
         // Fetch giglist data from the national API and update the context
         axios
-            .get(feedLink)
+            .get(feedLink, { timeout: 15000 })
             .then((response) => {
                 if (setGiglist) {
                     const nationalGiglist = normalizeGigText(response.data as TGiglist);
@@ -96,10 +96,12 @@ const Data = () => {
                     );
                     setGiglist(filteredGiglist as TGiglist);
                     setGiglistFull(filteredGiglist as TGiglist);
+                    setFeedStatus("ready");
                 }
             })
             .catch((error) => {
                 console.error("Error fetching giglist data:", error);
+                setFeedStatus("error");
             });
 
         axios
@@ -112,7 +114,7 @@ const Data = () => {
             .catch((error) => {
                 console.error("Error fetching giglist data:", error);
             });
-    }, [setGiglist, setGigAds, setGiglistFull, setNationalGiglist, setAllTimeCount]);
+    }, [setGiglist, setGigAds, setGiglistFull, setNationalGiglist, setFeedStatus, setAllTimeCount]);
 
     return null;
 };

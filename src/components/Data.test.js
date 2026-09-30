@@ -17,7 +17,7 @@ test("retains the national feed while restricting ordinary listings to the saved
     window.localStorage.setItem("location", JSON.stringify({ postcode: "2000", lat: "-33.86", long: "151.21" }));
     const setters = {
         setGiglist: jest.fn(), setGiglistFull: jest.fn(), setNationalGiglist: jest.fn(),
-        setGigAds: jest.fn(), setAllTimeCount: jest.fn(),
+        setFeedStatus: jest.fn(), setGigAds: jest.fn(), setAllTimeCount: jest.fn(),
     };
     const container = document.createElement("div");
     try {
@@ -25,6 +25,7 @@ test("retains the national feed while restricting ordinary listings to the saved
         expect(setters.setNationalGiglist.mock.calls[0][0][0].listings).toEqual([perth, sydney]);
         expect(setters.setGiglistFull.mock.calls[0][0][0].listings).toEqual([sydney]);
         expect(setters.setGiglist.mock.calls[0][0][0].listings).toEqual([sydney]);
+        expect(setters.setFeedStatus).toHaveBeenCalledWith("ready");
         expect(feed[0].listings).toHaveLength(2);
     } finally {
         act(() => { ReactDOM.unmountComponentAtNode(container); });

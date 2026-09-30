@@ -15,9 +15,9 @@ const dates = [{ listings: [gig, { ...gig, id: 2, date: "2026-10-01", name: "Oth
 let container;
 beforeEach(() => { container = document.createElement("div"); document.body.appendChild(container); });
 afterEach(() => { act(() => { ReactDOM.unmountComponentAtNode(container); }); container.remove(); });
-const render = (path, gigs = dates, localGigs = gigs) => act(() => {
+const render = (path, gigs = dates, localGigs = gigs, feedStatus = "ready") => act(() => {
     ReactDOM.render(<MemoryRouter initialEntries={[path]}><HelmetProvider>
-        <CustomContext.Provider value={{ nationalGiglist: gigs, giglist: localGigs, giglistFull: localGigs, gigAds: [{}] }}><Main /></CustomContext.Provider>
+        <CustomContext.Provider value={{ feedStatus, nationalGiglist: gigs, giglist: localGigs, giglistFull: localGigs, gigAds: [{}] }}><Main /></CustomContext.Provider>
     </HelmetProvider></MemoryRouter>, container);
 });
 
@@ -55,4 +55,22 @@ test.each(["/", "/search"])("normal listing keeps its layout at %s", (path) => {
     render(path);
     expect(container.querySelector("[data-normal-list]")).not.toBeNull();
     expect(container.querySelector(".tour-page")).toBeNull();
+});
+
+
+test("URL search hides unresolved title and results until the feed is ready", () => {
+    render("/claytonbulger", [], [], "loading");
+    expect(container.querySelector('[role="status"]').textContent).toContain("Loading upcoming gigs");
+    expect(container.querySelector("h1")).toBeNull();
+    expect(container.querySelector(".tour-empty")).toBeNull();
+    expect(container.querySelector("[data-normal-list]")).toBeNull();
+    render("/claytonbulger");
+    expect(container.querySelector('[role="status"]')).toBeNull();
+    expect(container.querySelector("h1").textContent).toBe("Clayton Bulger");
+});
+
+test("failed feed shows an error instead of an endless spinner", () => {
+    render("/claytonbulger", [], [], "error");
+    expect(container.querySelector('[role="alert"]').textContent).toContain("refresh");
+    expect(container.querySelector('[role="status"]')).toBeNull();
 });

@@ -8,7 +8,7 @@ import { getTourProfile } from "../utils/tourProfile";
 import "./TourListing.scss";
 
 export const TourListing = ({ slug }: { slug: string }) => {
-    const { nationalGiglist } = useContext(CustomContext);
+    const { nationalGiglist, feedStatus } = useContext(CustomContext);
     const profile = useMemo(() => getTourProfile(nationalGiglist, slug), [nationalGiglist, slug]);
     const listings = useMemo(() => filterGigSearch(nationalGiglist, slug, true)
         .flatMap((date) => date.listings)
@@ -16,6 +16,16 @@ export const TourListing = ({ slug }: { slug: string }) => {
     const title = `${profile.title} — Upcoming Gigs | Giglist`;
     const canonical = `https://giglist.com.au/${encodeURIComponent(slug)}`;
     const description = `See upcoming gigs ${profile.isSuburb ? "in" : profile.isVenue ? "at" : "by"} ${profile.title} on Giglist.`;
+
+    if (feedStatus === "loading") return <div className="tour-page" aria-busy="true">
+        <div className="tour-loading" role="status">
+            <span className="tour-spinner" aria-hidden="true" />
+            <span>Loading upcoming gigs…</span>
+        </div>
+    </div>;
+    if (feedStatus === "error") return <div className="tour-page">
+        <p role="alert">Gigs couldn’t load. Please refresh to try again.</p>
+    </div>;
 
     return <div className="tour-page">
         <Helmet>
