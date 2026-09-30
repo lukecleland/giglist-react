@@ -40,15 +40,13 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
     const [locationLoading, setLocationLoading] = useState(false);
     const [locationMessage, setLocationMessage] = useState("");
     const locationRequest = useRef<AbortController | null>(null);
-    const useLocationImagery = async () => {
-        if (locationPhoto) { setLocationPhoto(null); setLocationMessage(""); return; }
-        if (locationPhotos.length) { setLocationPhoto(locationPhotos[0]); return; }
+    const loadLocationImagery = async (name: string, states: string[]) => {
         const controller = new AbortController();
         locationRequest.current?.abort(); locationRequest.current = controller;
         setLocationLoading(true); setLocationMessage("");
         const timeout = window.setTimeout(() => controller.abort(), 15000);
         try {
-            const photos = await fetchLocationPhotos(displayName || "", locationStates, controller.signal);
+            const photos = await fetchLocationPhotos(name, states, controller.signal);
             if (controller.signal.aborted) return;
             setLocationPhotos(photos); setLocationPhoto(photos[0] || null);
             if (!photos.length) setLocationMessage("No suitable local photos found. You can keep using theme artwork.");
@@ -58,6 +56,11 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
             window.clearTimeout(timeout);
             if (locationRequest.current === controller) { setLocationLoading(false); locationRequest.current = null; }
         }
+    };
+    const useLocationImagery = () => {
+        if (locationPhoto) { setLocationPhoto(null); setLocationMessage(""); return; }
+        if (locationPhotos.length) { setLocationPhoto(locationPhotos[0]); return; }
+        void loadLocationImagery(displayName || "", locationStates);
     };
     const shuffleImage = () => {
         setUseVenuePhoto(false);
@@ -97,9 +100,13 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                     setIsVenue(profile.isVenue);
                     setIsSuburb(profile.isSuburb);
                     setArtwork("mountains");
-                    if (profile.isSuburb) setLocationStates(Array.from(new Set(dates.flatMap((date) => date.listings)
+                    if (profile.isSuburb) {
+                        const states = Array.from(new Set(dates.flatMap((date) => date.listings)
                         .filter((gig) => compactName(gig.suburb || "") === compactName(profile.title))
-                        .map((gig) => gig.state).filter(Boolean))));
+                        .map((gig) => gig.state).filter(Boolean)));
+                        setLocationStates(states);
+                        if (poster) void loadLocationImagery(profile.title, states);
+                    }
                     setDisplayName(profile.title);
                 }
             })

@@ -181,7 +181,7 @@ test("artist posters shuffle imagery without changing their theme, listings or t
     expect(container.querySelector('button[aria-pressed]')).toBeNull();
 });
 
-test('suburb location imagery is opt-in and survives theme changes', async () => {
+test('suburb location imagery loads by default and survives theme changes', async () => {
     for (const method of ['strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'save', 'restore', 'translate', 'rotate', 'ellipse', 'closePath']) context[method] = jest.fn();
     context.measureText = (value) => ({width: value.length * 20});
     axios.get.mockResolvedValue({data: [{listings: [{artist: 'Band', name: 'Local Venue', address: 'Main Street', suburb: 'Brunswick', state: 'VIC', date: '2027-03-01', start: '8pm'}]}]});
@@ -192,10 +192,9 @@ test('suburb location imagery is opt-in and survives theme changes', async () =>
     }}}})});
     try {
         await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/brunswick" poster /></HelmetProvider>, container); });
-        expect(global.fetch).not.toHaveBeenCalled();
+        expect(global.fetch).toHaveBeenCalledTimes(1);
         const button = container.querySelector('.poster-location');
-        expect(button.textContent).toBe('Location imagery');
-        await act(async () => { Simulate.click(button); });
+        expect(button.textContent).toBe('Use theme artwork');
         expect(button.getAttribute('aria-pressed')).toBe('true');
         expect(context.fillText.mock.calls.some(([value]) => value.includes('Photo: Jane'))).toBe(true);
         await act(async () => { Simulate.change(container.querySelector('select'), {target: {value: 'solar'}}); });
