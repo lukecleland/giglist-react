@@ -1,0 +1,69 @@
+body.qr-poster-body {
+    --qr-page-background: #000;
+    --qr-page-foreground: #fff;
+    background: var(--qr-page-background);
+    color: var(--qr-page-foreground);
+    overflow: auto;
+    height: auto;
+}
+
+body.qr-poster-body.qr-poster-inverted {
+    --qr-page-background: #fff;
+    --qr-page-foreground: #000;
+}
+
+.qr-poster-page {
+    padding: 24px;
+    text-align: center;
+    color: var(--qr-page-foreground);
+}
+
+.qr-poster-controls {
+    margin: 0 auto 24px;
+    overflow-wrap: anywhere;
+
+    a, a:visited, a:hover, a:focus {
+        color: var(--qr-page-foreground) !important;
+        text-decoration: underline;
+    }
+
+    button, .qr-poster-button {
+        display: inline-block;
+        padding: 12px 20px;
+        margin: 4px;
+        border: 0;
+        border-radius: 4px;
+        background: var(--qr-page-foreground);
+        color: var(--qr-page-background) !important;
+        text-decoration: none;
+        cursor: pointer;
+        font: inherit;
+    }
+
+    .qr-poster-button:visited, .qr-poster-button:hover, .qr-poster-button:focus {
+        color: var(--qr-page-background) !important;
+    }
+
+    button:disabled { opacity: 0.4; cursor: default; }
+}
+
+.qr-poster-image {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    margin: 0 auto;
+}
+
+@media print {
+    body.qr-poster-body { background: white; margin: 0; }
+    .qr-poster-page { padding: 0; }
+    .qr-poster-controls { display: none; }
+    .qr-poster-image {
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 90vh;
+        break-inside: avoid;
+    }
+}

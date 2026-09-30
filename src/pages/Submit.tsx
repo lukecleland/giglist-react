@@ -6,7 +6,7 @@ export const Submit = () => {
     return (
         <>
             <Helmet>
-                <title>Submit a Gig | Giglist</title>
+                <title>Submit | Giglist</title>
                 <link rel="canonical" href="https://giglist.com.au/submit" />
                 <meta
                     name="description"

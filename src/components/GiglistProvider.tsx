@@ -14,6 +14,8 @@ interface ProviderProps<T> {
 
 // Define your custom context that includes the attributes you need
 export interface CustomContextType {
+    isSearching: boolean;
+    setIsSearching: Dispatch<SetStateAction<boolean>>;
     giglist: TGiglist;
     setGiglist: Dispatch<SetStateAction<TGiglist>>;
     gigAds: GigAd[];
@@ -31,6 +33,8 @@ export interface CustomContextType {
 }
 
 const CustomContext = createContext<CustomContextType>({
+    isSearching: false,
+    setIsSearching: () => {},
     giglist: [],
     setGiglist: () => {},
     gigAds: [],
@@ -47,6 +51,7 @@ const CustomContext = createContext<CustomContextType>({
 });
 
 function GiglistProvider({ children }: ProviderProps<ReactNode>) {
+    const [isSearching, setIsSearching] = useState(false);
     const [giglist, setGiglist] = useState<TGiglist>([]);
     const [giglistFull, setGiglistFull] = useState<TGiglist>([]);
     const [gigAds, setGigAds] = useState<GigAd[]>([]);
@@ -61,6 +66,8 @@ function GiglistProvider({ children }: ProviderProps<ReactNode>) {
 
     // Create a context value object that includes your attributes
     const contextValue: CustomContextType = {
+        isSearching,
+        setIsSearching,
         giglist,
         gigAds,
         setGiglist,

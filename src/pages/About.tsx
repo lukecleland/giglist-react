@@ -177,7 +177,7 @@ export const About = () => {
     return (
         <>
             <Helmet>
-                <title>About Giglist | Live Music Gig Guide</title>
+                <title>About | Giglist</title>
                 <link rel="canonical" href="https://giglist.com.au/about" />
                 <meta
                     name="description"

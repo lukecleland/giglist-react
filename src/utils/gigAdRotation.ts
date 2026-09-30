@@ -4,11 +4,12 @@ import { TDate } from "../types/types";
 export const buildGigAdRotation = (
     dates: TDate[],
     adCount: number,
+    maxAds: number = Infinity,
 ): number[] => {
     let slot = 0;
 
     return dates.map((date) => {
-        if (!adCount || !date.listings.length) return -1;
+        if (!adCount || !date.listings.length || slot >= maxAds) return -1;
 
         return slot++ % adCount;
     });

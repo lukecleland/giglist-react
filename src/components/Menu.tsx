@@ -4,6 +4,8 @@ import type { DatePickerProps } from "antd";
 import { DatePicker, Space } from "antd";
 import "antd/dist/antd.css";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
+import { useLocation, useNavigate } from "react-router-dom";
+import { filterGigSearch, nameForSearchSlug, searchSlugFromPath } from "../utils/searchUrl";
 
 export const Menu: React.ElementType = () => {
     const [searchToggle, setSearchToggle] = useState<boolean>(false);
@@ -11,9 +13,21 @@ export const Menu: React.ElementType = () => {
     const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [datePickerOpenMobile, setDatePickerOpenMobile] = useState(false);
     const [postcode, setPostcode] = useState<string>("0000");
-    const { giglist, setGiglist, giglistFull } = useContext(
+    const [searchQuery, setSearchQuery] = useState("");
+    const { pathname: path } = useLocation();
+    const navigate = useNavigate();
+    const { setGiglist, giglistFull, setIsSearching } = useContext(
         CustomContext,
     ) as CustomContextType;
+
+    useEffect(() => {
+        const slug = searchSlugFromPath(path);
+        setSearchQuery(slug ? nameForSearchSlug(giglistFull, slug) : "");
+        setGiglist(slug ? filterGigSearch(giglistFull, slug, true) : giglistFull);
+        setIsSearching(!!slug);
+        setSearchToggle(path === "/search" || path === "/search/");
+        setMenuToggle(path === "/search" || path === "/search/");
+    }, [path, giglistFull, setGiglist, setIsSearching]);
 
     useEffect(() => {
         const location = window.localStorage.getItem("location");
@@ -23,33 +37,15 @@ export const Menu: React.ElementType = () => {
     }, []);
 
     const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {
-        // Is this needed?
-        if (!e || e.target.value.length < 2) {
-            setGiglist(giglistFull);
-            return;
-        }
-
-        const input = e.target.value;
-
-        setGiglist(
-            giglistFull.map((el) => {
-                const foundObjects = el.listings.filter(
-                    (l) =>
-                        l.artist.toLowerCase().includes(input.toLowerCase()) ||
-                        l.name.toLowerCase().includes(input.toLowerCase()) ||
-                        l.suburb.toLowerCase().includes(input.toLowerCase()),
-                );
-
-                return {
-                    datestring: el.datestring,
-                    datetime: el.datetime,
-                    listings: [...foundObjects],
-                };
-            }),
-        );
+        const input = e?.target.value || "";
+        setSearchQuery(input);
+        setIsSearching(input.length >= 2);
+        setGiglist(filterGigSearch(giglistFull, input));
     };
 
     const filterByDateCalendar = (datetime: string) => {
+        setIsSearching(false);
+        setSearchQuery("");
         setGiglist(giglistFull.filter((gig) => gig.datetime === datetime));
     };
 
@@ -62,6 +58,10 @@ export const Menu: React.ElementType = () => {
 
     const handleSearchToggle = (event: React.MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
+        if (path !== "/" && path !== "/search" && path !== "/search/" && !searchSlugFromPath(path)) {
+            navigate("/search");
+            return;
+        }
         setSearchToggle(!searchToggle);
     };
 
@@ -80,7 +80,6 @@ export const Menu: React.ElementType = () => {
         }
     };
 
-    const path = window.location.pathname;
     const postcodeDisplay =
         postcode === "0000" || postcode === "0" ? "National" : postcode;
 
@@ -109,7 +108,7 @@ export const Menu: React.ElementType = () => {
                     <div className="right menu">
                         {path != "/gigmap" && path != "/submit" && (
                             <a
-                                href="#"
+                                href="/search"
                                 className="item search-button"
                                 onClick={handleSearchToggle}
                             >
@@ -129,6 +128,8 @@ export const Menu: React.ElementType = () => {
                                 <Icon
                                     onClick={() => {
                                         setGiglist(giglistFull);
+                                        setSearchQuery("");
+                                        setIsSearching(false);
                                         return setSearchToggle(false);
                                     }}
                                     style={{
@@ -147,6 +148,7 @@ export const Menu: React.ElementType = () => {
                                     <input
                                         autoComplete="off"
                                         name="searchq"
+                                        value={searchQuery}
                                         type="text"
                                         placeholder="Search Artist / Venue / Suburb"
                                         id="event_name_search"
@@ -195,7 +197,7 @@ export const Menu: React.ElementType = () => {
                             Gigmap
                         </a>
                         <a
-                            href="https://giglist.deco-apparel.com/"
+                            href="/store"
                             className="item"
                         >
                             Store
@@ -277,7 +279,7 @@ export const Menu: React.ElementType = () => {
                         <ul>
                             <li>
                                 <a
-                                    href="/"
+                                    href="/search"
                                     className="item search-mobile"
                                     onClick={handleSearchToggle}
                                 >
@@ -295,6 +297,7 @@ export const Menu: React.ElementType = () => {
                                             <input
                                                 autoComplete="off"
                                                 name="searchq"
+                                                value={searchQuery}
                                                 type="text"
                                                 placeholder="Search Artist / Venue / Suburb"
                                                 id="event_name_search"
@@ -316,7 +319,7 @@ export const Menu: React.ElementType = () => {
                             <li>
                                 <a
                                     className="item"
-                                    href="https://giglist.deco-apparel.com/"
+                                    href="/store"
                                 >
                                     Store
                                 </a>

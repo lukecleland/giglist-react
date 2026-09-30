@@ -11,10 +11,11 @@ const FEED_URLS = [
 
 const STATIC_ROUTES = [
     { loc: `${SITE_URL}/`, changefreq: "hourly", priority: "1.0" },
+    { loc: `${SITE_URL}/search`, changefreq: "daily", priority: "0.9" },
     { loc: `${SITE_URL}/gigmap`, changefreq: "daily", priority: "0.9" },
+    { loc: `${SITE_URL}/store`, changefreq: "monthly", priority: "0.6" },
     { loc: `${SITE_URL}/about`, changefreq: "monthly", priority: "0.6" },
     { loc: `${SITE_URL}/submit`, changefreq: "weekly", priority: "0.7" },
-    { loc: `${SITE_URL}/supporters`, changefreq: "weekly", priority: "0.5" },
 ];
 
 const SITEMAP_OUTPUT_DIR =

@@ -16,6 +16,7 @@ import { CustomContext, CustomContextType } from "./GiglistProvider";
 import { Location } from "./Location/Location";
 import { PageListing } from "./PageListing/PageListing";
 import { buildGigPath, buildLegacyGigPath } from "../utils/gigUrl";
+import { Store } from "../pages/Store";
 
 export const Routing = () => {
     const { giglist } = useContext(CustomContext) as CustomContextType;
@@ -62,6 +63,8 @@ export const Routing = () => {
         <Routes>
             {routes}
             <Route path="/" element={<Main />} />
+            <Route path="/search" element={<Main />} />
+            <Route path="/:searchSlug" element={<Main />} />
             <Route path="/location" element={<Location />} />
             <Route path="/gigmap" element={<GigMap giglist={giglist} />} />
             <Route path="/qr" element={<Navigate to="/" />} />
@@ -106,13 +109,7 @@ export const Routing = () => {
             />
             <Route
                 path="/store"
-                element={
-                    <div className="gigtools">
-                        <script>
-                            location.href='https://giglist.deco-apparel.com/'
-                        </script>
-                    </div>
-                }
+                element={<Store />}
             />
             <Route
                 path="/editor"

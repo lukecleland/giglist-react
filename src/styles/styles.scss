@@ -169,6 +169,19 @@ body {
     margin-top: 5px;
 }
 
+// Keep the date with its first gig, while later gigs can flow to a new column.
+.day > .date {
+    -webkit-column-break-after: avoid;
+    break-after: avoid-column;
+}
+
+.day > .date + div {
+    -webkit-column-break-before: avoid;
+    break-before: avoid-column;
+    -webkit-column-break-inside: avoid;
+    break-inside: avoid-column;
+}
+
 .header.white {
     color: #fff !important;
 }

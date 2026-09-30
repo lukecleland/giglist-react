@@ -61,8 +61,22 @@ export const Location = () => {
                     Let us know where you are...
                 </h1>
                 <h2>
-                    or to see every listed gig in Australia just enter the
-                    postcode as 0000
+                    or to see every listed gig in Australia{" "}
+                    <a
+                        href="/"
+                        style={{ textDecoration: "underline" }}
+                        onClick={() => {
+                            const nationalLocation = postcodeData.find(
+                                (row: PostcodeInfo) => row.postcode === 0,
+                            );
+                            window.localStorage.setItem(
+                                "location",
+                                JSON.stringify({ ...nationalLocation, postcode: "0000" }),
+                            );
+                        }}
+                    >
+                        click here
+                    </a>
                 </h2>
 
                 <div className="ui form">

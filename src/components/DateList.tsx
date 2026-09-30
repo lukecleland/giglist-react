@@ -13,12 +13,18 @@ import { buildGigUrl } from "../utils/gigUrl";
 import { buildGigAdRotation } from "../utils/gigAdRotation";
 
 export const DateList = () => {
-    const { giglist, gigAds } = useContext(CustomContext) as CustomContextType;
+    const { giglist, gigAds, isSearching } = useContext(CustomContext) as CustomContextType;
     const [daysToShow, setDaysToShow] = useState<number>(14);
 
     const adRotation = useMemo(
-        () => buildGigAdRotation(giglist, gigAds.length),
-        [giglist, gigAds],
+        () => {
+            if (isSearching) {
+                const lastResult = giglist.map((date) => date.listings.length > 0).lastIndexOf(true);
+                return giglist.map((_, index) => gigAds.length > 0 && index === lastResult ? 0 : -1);
+            }
+            return buildGigAdRotation(giglist, gigAds.length);
+        },
+        [giglist, gigAds, isSearching],
     );
 
     const getCondition = (index: number) => {
@@ -70,7 +76,7 @@ export const DateList = () => {
                                     </span>
                                 </div>
                                 <Listings listings={date.listings} />
-                                {gigAds.length > 0 && (
+                                {adId >= 0 && (
                                     <GigAds adId={adId} gigAds={gigAds} />
                                 )}
 

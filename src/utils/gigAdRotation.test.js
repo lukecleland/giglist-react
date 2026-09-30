@@ -26,3 +26,11 @@ test("handles zero ads, one ad, and no dates", () => {
     expect(buildGigAdRotation(dates(3), 1)).toEqual([0, 0, 0]);
     expect(buildGigAdRotation([], 10)).toEqual([]);
 });
+
+test("search results show one ad at the first populated date only", () => {
+    const results = [{ listings: [] }, ...dates(3), { listings: [] }];
+    expect(buildGigAdRotation(results, 10, 1)).toEqual([-1, 0, -1, -1, -1]);
+    expect(buildGigAdRotation(results, 1, 1)).toEqual([-1, 0, -1, -1, -1]);
+    expect(buildGigAdRotation(results, 0, 1)).toEqual([-1, -1, -1, -1, -1]);
+    expect(buildGigAdRotation([{ listings: [] }], 10, 1)).toEqual([-1]);
+});
