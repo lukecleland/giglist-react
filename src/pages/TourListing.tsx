@@ -15,7 +15,7 @@ export const TourListing = ({ slug }: { slug: string }) => {
         .sort((a, b) => a.date.localeCompare(b.date)), [nationalGiglist, slug]);
     const title = `${profile.title} — Upcoming Gigs | Giglist`;
     const canonical = `https://giglist.com.au/${encodeURIComponent(slug)}`;
-    const description = `See upcoming gigs ${profile.isVenue ? "at" : "by"} ${profile.title} on Giglist.`;
+    const description = `See upcoming gigs ${profile.isSuburb ? "in" : profile.isVenue ? "at" : "by"} ${profile.title} on Giglist.`;
 
     return <div className="tour-page">
         <Helmet>
@@ -41,14 +41,14 @@ export const TourListing = ({ slug }: { slug: string }) => {
                             <span className="tour-year">{moment(gig.date).format("YYYY")}</span>
                         </time>
                         <div className="tour-gig">
-                            <h3>{(profile.isVenue ? gig.artist : gig.name).replace(/&amp;/gi, "&")}</h3>
-                            <p>{profile.isVenue ? gig.name.replace(/&amp;/gi, "&") : [gig.suburb, gig.state].filter(Boolean).join(", ")}</p>
+                            <h3>{((profile.isVenue || profile.isSuburb) ? gig.artist : gig.name).replace(/&amp;/gi, "&")}</h3>
+                            <p>{(profile.isVenue || profile.isSuburb) ? gig.name.replace(/&amp;/gi, "&") : [gig.suburb, gig.state].filter(Boolean).join(", ")}</p>
                         </div>
                         <div className="tour-time">{gig.start}</div>
                         <span className="tour-details">VIEW GIG</span>
                     </div>
                 </ListingModal>
             </li>)}
-        </ul> : <p className="tour-empty">No upcoming gigs found for this artist or venue.</p>}
+        </ul> : <p className="tour-empty">No upcoming gigs found for this artist, venue or suburb.</p>}
     </div>;
 };

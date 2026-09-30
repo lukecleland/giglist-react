@@ -106,3 +106,12 @@ test("venue name appears on its own caption line", async () => {
     expect(context.fillText).toHaveBeenCalledWith("Windsor Hotel", 800, 1870, 1360);
     expect(container.querySelector(".qr-poster-image").alt).toContain("upcoming gigs at\nWindsor Hotel");
 });
+
+test("suburb QR caption uses in with the suburb on its own line", async () => {
+    await act(async () => {
+        ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/perth" /></HelmetProvider>, container);
+    });
+    expect(context.fillText).toHaveBeenCalledWith("upcoming gigs in", 800, 1770, 1360);
+    expect(context.fillText).toHaveBeenCalledWith("Perth", 800, 1870, 1360);
+    expect(container.querySelector(".qr-poster-image").alt).toContain("upcoming gigs in\nPerth");
+});

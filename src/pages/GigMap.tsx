@@ -98,6 +98,10 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
                                 target="_blank" rel="noopener noreferrer"
                                 aria-label={`Directions to ${listing.name.replace(/&amp;/g, "&")} in Google Maps`}>
                                 Directions
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+                                    <path d="m12 3 9 9-9 9-9-9Z" />
+                                    <path d="M9 15v-4h7m-3-3 3 3-3 3" />
+                                </svg>
                             </a>
                         </div>
                     </div>)}

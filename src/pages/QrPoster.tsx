@@ -14,8 +14,9 @@ export const QrPoster = ({ targetUrl }: { targetUrl: string }) => {
     const [error, setError] = useState("");
     const [inverted, setInverted] = useState(false);
     const [displayName, setDisplayName] = useState<string | null>(null);
+    const [isSuburb, setIsSuburb] = useState(false);
     const [isVenue, setIsVenue] = useState(false);
-    const captionLine = `upcoming gigs ${isVenue ? "at" : "for"}`;
+    const captionLine = `upcoming gigs ${isSuburb ? "in" : isVenue ? "at" : "for"}`;
     const caption = `Scan the QR Code to see ${captionLine}\n${displayName || ""}`;
     const background = inverted ? "#000" : "#fff";
     const foreground = inverted ? "#fff" : "#000";
@@ -30,6 +31,7 @@ export const QrPoster = ({ targetUrl }: { targetUrl: string }) => {
                 if (!cancelled) {
                     const profile = getTourProfile(normalizeGigText(data), slug);
                     setIsVenue(profile.isVenue);
+                    setIsSuburb(profile.isSuburb);
                     setDisplayName(profile.title);
                 }
             })

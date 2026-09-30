@@ -41,3 +41,14 @@ test("regular search still matches suburbs, clearing restores all gigs, and feed
     expect(filterGigSearch(dates, "C")).toBe(dates);
     expect(dates[0].listings).toHaveLength(3);
 });
+
+
+test("suburb URLs use the original name and only include that suburb", () => {
+    const suburbs = [{ listings: [
+        { artist: "Band", name: "Local Hotel", suburb: "South Perth" },
+        { artist: "Band", name: "Elsewhere", suburb: "Perth" },
+        { artist: "South Perth Tribute", name: "Elsewhere", suburb: "Sydney" },
+    ] }];
+    expect(nameForSearchSlug(suburbs, "southperth")).toBe("South Perth");
+    expect(filterGigSearch(suburbs, "southperth", true)[0].listings).toEqual([suburbs[0].listings[0]]);
+});

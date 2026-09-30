@@ -18,7 +18,12 @@
     padding: 0 !important;
     background: #171b22;
 
-    > .date-control { flex: 0 0 auto; }
+    > .date-control {
+        flex: 0 0 auto;
+        padding: 4px 0;
+
+        p { margin: 0; padding: 0; }
+    }
 }
 
 .gigmap-canvas {
@@ -38,17 +43,76 @@
     color: white;
 }
 
+.gigmap-canvas {
+    .gm-style-iw-c {
+        padding: 0 !important;
+        border: 4px solid #fff;
+        border-radius: 20px;
+        background: #05060a;
+    }
+
+    .gm-style-iw-d {
+        overflow: auto !important;
+    }
+
+    // Keep Google's accessible close control, without its empty header row.
+    .gm-style-iw-chr {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 1;
+    }
+
+    .gm-style-iw-ch { display: none; }
+
+    .gm-style-iw-c button.gm-ui-hover-effect {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        width: 32px !important;
+        height: 32px !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #fff !important;
+        opacity: 1;
+        box-shadow: 0 1px 5px #0006;
+
+        span, img { margin: 0 !important; }
+    }
+
+    .gm-style-iw-chr button.gm-ui-hover-effect {
+        position: relative !important;
+        top: 0 !important;
+        right: 0 !important;
+    }
+
+    .gigmap-preview {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        max-width: 100%;
+    }
+
+    .gigmap-preview + .gigmap-preview { border-top: 2px solid #fff; }
+}
+
 .gigmap-preview .gigmap-directions {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    margin: 10px 0 0 auto;
+    padding: 4px 8px;
     border: 1px solid #aaa;
     border-radius: 4px;
     color: #fff;
-    font: 14px/1.4 Arial, sans-serif;
-    text-decoration: underline;
+    font: 11px/1.4 Arial, sans-serif;
+    text-decoration: none;
 
-    &:hover, &:focus-visible { background: #303744; }
+    &:hover, &:focus-visible { background: #303744; text-decoration: none; }
 }
 
 @media (max-width: 767px) {

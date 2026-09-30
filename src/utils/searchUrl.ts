@@ -23,6 +23,13 @@ export const searchSlugFromPath = (pathname: string): string => {
     return compactName(slug);
 };
 
+// Exact artist/venue names retain priority when names collide with a suburb.
+export const suburbForSearchSlug = (dates: TGiglist, slug: string): string | undefined => {
+    const gigs = dates.flatMap((date) => date.listings);
+    if (gigs.some((gig) => [gig.artist, gig.name].some((name) => compactName(name) === slug))) return undefined;
+    return gigs.find((gig) => compactName(gig.suburb || "") === slug)?.suburb;
+};
+
 export const nameForSearchSlug = (dates: TGiglist, slug: string): string => {
     for (const date of dates) {
         for (const gig of date.listings) {
@@ -31,15 +38,17 @@ export const nameForSearchSlug = (dates: TGiglist, slug: string): string => {
             }
         }
     }
-    return slug;
+    return suburbForSearchSlug(dates, slug) || slug;
 };
 
 export const filterGigSearch = (dates: TGiglist, query: string, fromUrl = false): TGiglist => {
     const needle = fromUrl ? compactName(query) : query.toLowerCase();
     if (!needle || (!fromUrl && needle.length < 2)) return dates;
+    const suburb = fromUrl ? suburbForSearchSlug(dates, needle) : undefined;
     return dates.map((date) => ({
         ...date,
         listings: date.listings.filter((gig) =>
+            suburb ? compactName(gig.suburb || "") === needle :
             (fromUrl ? [gig.artist, gig.name] : [gig.artist, gig.name, gig.suburb])
                 .some((name) => (fromUrl ? compactName(name) : name.toLowerCase()).includes(needle)),
         ),
