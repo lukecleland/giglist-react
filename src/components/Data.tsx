@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { TGiglist, GigAd, TAllTimeCount } from "../types/types";
 import axios from "axios";
 import { fetchGigAds } from "../utils/fetchGigAds";
+import { normalizeGigText } from "../utils/normalizeGigText";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
 
 const filterByLocationFromStorage = (giglist: TGiglist) => {
@@ -87,7 +88,7 @@ const Data = () => {
             .then((response) => {
                 if (setGiglist) {
                     const filteredGiglist = filterByLocationFromStorage(
-                        response.data as TGiglist,
+                        normalizeGigText(response.data as TGiglist),
                     );
                     setGiglist(filteredGiglist as TGiglist);
                     setGiglistFull(filteredGiglist as TGiglist);
