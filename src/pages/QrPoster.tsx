@@ -1,3 +1,4 @@
+import { ShuffleControl } from '../components/Poster/ShuffleControl';
 import { upcomingWeekend, weekendGigs } from "../utils/posterWeekend";
 import { ListStyle, nextListStyle, listStyleNames, listStyles } from "../components/Poster/FestivalWordCloud";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -8,10 +9,10 @@ import { getTourProfile } from "../utils/tourProfile";
 import { compactName } from "../utils/searchUrl";
 import { normalizeGigText } from "../utils/normalizeGigText";
 import "./QrPoster.scss";
-import { drawPoster, nextPosterHeader, PosterHeader, posterThemes, realVenueImage, posterGigs, posterMonthNames, randomPosterTheme } from "../utils/posterDesign";
+import { drawPoster, posterHeaders, posterHeaderNames, nextPosterHeader, PosterHeader, posterThemes, realVenueImage, posterGigs, posterMonthNames, randomPosterTheme } from "../utils/posterDesign";
 import { posterArtwork, loadPosterImage } from "../utils/posterArtwork";
 import { fetchLocationPhotos, LocationPhoto } from "../utils/locationPhotos";
-import { nextPosterArtwork, nextPosterFonts, nextListingFonts, nextHeaderFonts, PosterFonts } from "../utils/posterThemes";
+import { posterFontFamilies, nextPosterArtwork, nextListingFonts, PosterFonts } from "../utils/posterThemes";
 import { TListing } from "../types/types";
 import { posterMonths } from "../utils/qrUrl";
 import { filterGigSearch } from "../utils/searchUrl";
@@ -34,12 +35,10 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
     const [header, setHeader] = useState<PosterHeader>("gradient");
     const [theme, setTheme] = useState("nocturne");
     const [fontSettings, setPosterFonts] = useState<PosterFonts | null>(null);
-    const [matchFonts, setMatchFonts] = useState(true);
     const posterFonts = useMemo<PosterFonts | null>(() => {
-        if (!matchFonts) return fontSettings;
         const title = fontSettings?.title || posterThemes.find(item => item.id === theme)!.font;
         return {...fontSettings, title, listing: title};
-    }, [fontSettings, matchFonts, theme]);
+    }, [fontSettings, theme]);
     const currentPosterFonts = (): PosterFonts => {
         const title = posterThemes.find(item => item.id === theme)!.font;
         return posterFonts || {title, listing: weekendOnly || listStyle !== 'columns' ? title : 'Poster Grotesk'};
@@ -99,6 +98,25 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
             const choices = locationPhotos.filter((photo) => photo.id !== locationPhoto.id);
             if (choices.length) setLocationPhoto(choices[Math.floor(Math.random() * choices.length)]);
         } else setArtwork((current) => nextPosterArtwork(theme, current));
+    };
+    const chooseTheme = (value: string) => { setTheme(value); setArtwork(nextPosterArtwork(value, artwork)); };
+    const chooseHeader = (value: string) => { setHeader(value as PosterHeader); };
+    const chooseFont = (value: string) => {
+        const next = {...currentPosterFonts(), listing: value as PosterFonts['listing']};
+        setPosterFonts({...next, title: next.listing});
+    };
+    const imageOptions = [
+        ...(venueImage ? [{value: 'venue', label: 'Venue photo'}] : []),
+        ...locationPhotos.map(photo => ({value: 'local:' + photo.id, label: photo.title})),
+        ...Object.keys(posterArtwork).map(key => ({value: key, label: key.replace(/([a-z])([A-Z])/g, '$1 $2')})),
+    ];
+    const imageValue = useVenuePhoto && venueImage && !venuePhotoFailed ? 'venue' : locationPhoto ? 'local:' + locationPhoto.id : artwork;
+    const chooseImage = (value: string) => {
+        locationRequest.current?.abort(); locationRequest.current = null; setLocationLoading(false);
+        setUseVenuePhoto(value === 'venue');
+        setLocationPhoto(value.startsWith('local:') ? locationPhotos.find(photo => 'local:' + photo.id === value) || null : null);
+        if (value === 'venue') setVenuePhotoAttempt(attempt => attempt + 1);
+        else if (!value.startsWith('local:')) setArtwork(value);
     };
     const background = inverted ? "#000" : "#fff";
     const foreground = inverted ? "#fff" : "#000";
@@ -279,31 +297,13 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                 <div id={poster ? "poster-settings-content" : undefined} className={`poster-controls-content${configOpen ? " is-open" : ""}`}>
                 <p>QR code links to <a href={targetUrl}>{targetUrl}</a></p>
                 {poster && <p>{periodLabel || (month === undefined ? "Upcoming gigs" : `Live music in ${posterMonthNames[month]}`)} · {gigs.length} listings</p>}
-                {poster && <label className="poster-theme-label">Poster theme
-                    <select value={theme} onChange={(event) => {
-                        const next = event.target.value; setTheme(next);
-                        setArtwork(nextPosterArtwork(next, artwork));
-                    }}>
-                        {posterThemes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-                    </select>
-                </label>}
-                {poster && <label className="poster-match-fonts">
-                    <input type="checkbox" checked={matchFonts} onChange={event => {
-                        setPosterFonts(currentPosterFonts());
-                        setMatchFonts(event.target.checked);
-                    }} /> Match header and listing font
-                </label>}
+
+
                 {poster && <label className="poster-weekend-toggle"><input type="checkbox" checked={weekendOnly} onChange={event => { setWeekend(upcomingWeekend()); setWeekendOnly(event.target.checked); }} /> Upcoming weekend (Fri–Sun)</label>}
-                {poster && <label className="poster-theme-label">List style
-                    <select aria-label="List style" value={weekendOnly ? "festivalDays" : listStyle} disabled={!!activeShuffle || weekendOnly} onChange={event => {
-                        const next = event.target.value as ListStyle;
-                        setListStyle(next);
-                        seenListStyles.current = [next];
-                    }}>
-                        {listStyles.map(style => <option key={style} value={style}>{listStyleNames[style]}</option>)}
-                    </select>
-                </label>}
+
+
                 {poster && <>
+                    <ShuffleControl label="Poster theme" value={theme} options={posterThemes.map(item => ({value: item.id, label: item.name}))} onChange={chooseTheme}>
                     <button type="button" className="poster-random" {...shuffleProps("Shuffle theme")} onClick={() => {
                         setActiveShuffle("Shuffle theme");
                         const next = randomPosterTheme(theme); setTheme(next);
@@ -311,29 +311,20 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                     }}>
                         {shuffleLabel("Shuffle theme")}
                     </button>
-                    <button type="button" className="poster-shuffle-everything" {...shuffleProps("Shuffle everything")} onClick={() => {
-                        setActiveShuffle("Shuffle everything");
-                        setHeader(nextPosterHeader(header));
-                        shuffleListStyle();
-                        const next = randomPosterTheme(theme);
-                        const currentFonts = currentPosterFonts();
-                        setTheme(next);
-                        setPosterFonts(matchFonts ? nextHeaderFonts(currentFonts) : nextPosterFonts(currentFonts));
-                        setArtwork(nextPosterArtwork(next, artwork));
-                        setUseVenuePhoto(false);
-                        locationRequest.current?.abort();
-                        locationRequest.current = null;
-                        setLocationLoading(false);
-                        setLocationPhoto(null);
-                        setLocationMessage("");
-                    }}>{shuffleLabel("Shuffle everything")}</button>
-                    <button type="button" className="poster-header-shuffle" {...shuffleProps("Shuffle header")} title={`Current header: ${header}`} onClick={() => { setActiveShuffle("Shuffle header"); setHeader(nextPosterHeader(header)); setPosterFonts(nextHeaderFonts(currentPosterFonts())); }}>{shuffleLabel("Shuffle header")}</button>
+                    </ShuffleControl>
+                    <ShuffleControl label="Header artwork" value={header} options={posterHeaders.map(value => ({value, label: posterHeaderNames[value]}))} onChange={chooseHeader}>
+                    <button type="button" className="poster-header-shuffle" {...shuffleProps("Shuffle header")} title={`Current header: ${header}`} onClick={() => { setActiveShuffle("Shuffle header"); const next = nextPosterHeader(header); setHeader(next); }}>{shuffleLabel("Shuffle header")}</button>
+                    </ShuffleControl>
+                    <ShuffleControl label="Poster font" value={currentPosterFonts().listing} options={posterFontFamilies.map(value => ({value, label: value}))} onChange={chooseFont}>
                     <button type="button" className="poster-font-shuffle" {...shuffleProps("Shuffle fonts")} onClick={() => {
                         setActiveShuffle("Shuffle fonts");
                         const next = nextListingFonts(currentPosterFonts());
-                        setPosterFonts(matchFonts ? {...next, title: next.listing} : next);
+                        setPosterFonts({...next, title: next.listing});
                     }}>{shuffleLabel("Shuffle fonts")}</button>
+                    </ShuffleControl>
+                    <ShuffleControl label="Image" value={imageValue} options={imageOptions} onChange={chooseImage}>
                     <button type="button" className="poster-shuffle" {...shuffleProps("Shuffle image")} disabled={!!activeShuffle || (!!locationPhoto && locationPhotos.length < 2)} onClick={() => { setActiveShuffle("Shuffle image"); shuffleImage(); }}>{shuffleLabel("Shuffle image")}</button>
+                    </ShuffleControl>
                     {venueImage && <button type="button" className="poster-venue-photo"
                         aria-pressed={useVenuePhoto && !venuePhotoFailed} onClick={() => {
                             setUseVenuePhoto(true);
@@ -344,11 +335,30 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                         {locationLoading ? "Finding local photos…" : "Location imagery"}
                     </button>}
                     {locationMessage && <p role="status">{locationMessage}</p>}
-                    {locationPhoto && <p className="poster-photo-credit">
-                        {locationPhotos.length} local photos · <a href={locationPhoto.source} target="_blank" rel="noreferrer">{locationPhoto.title}</a>
-                        {" — "}{locationPhoto.artist}{" · "}
-                        {locationPhoto.licenseUrl ? <a href={locationPhoto.licenseUrl} target="_blank" rel="noreferrer">{locationPhoto.license}</a> : locationPhoto.license}
-                    </p>}
+                    <ShuffleControl label="List style" value={weekendOnly ? 'festivalDays' : listStyle}
+                        options={listStyles.map(value => ({value, label: listStyleNames[value]}))} disabled={weekendOnly}
+                        onChange={value => {setListStyle(value as ListStyle); seenListStyles.current = [value as ListStyle];}}>
+                        <button type="button" className="poster-list-style" disabled={weekendOnly} onClick={() => {shuffleListStyle();}}>Shuffle list style</button>
+                    </ShuffleControl>
+                    <div className="poster-randomise-label">Randomise</div>
+                    <button type="button" className="poster-shuffle-everything" {...shuffleProps("Shuffle everything")} onClick={() => {
+                        setActiveShuffle("Shuffle everything");
+                        const nextHeader = nextPosterHeader(header);
+                        setHeader(nextHeader);
+                        shuffleListStyle();
+                        const next = randomPosterTheme(theme);
+                        const currentFonts = currentPosterFonts();
+                        setTheme(next);
+                        const fonts = nextListingFonts(currentFonts);
+                        setPosterFonts({...fonts, title: fonts.listing});
+                        setArtwork(nextPosterArtwork(next, artwork));
+                        setUseVenuePhoto(false);
+                        locationRequest.current?.abort();
+                        locationRequest.current = null;
+                        setLocationLoading(false);
+                        setLocationPhoto(null);
+                        setLocationMessage("");
+                    }}>{shuffleLabel("Shuffle everything")}</button>
                     <div className="poster-settings-gap" aria-hidden="true" />
                 </>}
                 <div className="poster-export-actions">

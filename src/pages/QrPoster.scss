@@ -112,7 +112,7 @@ body.qr-poster-body.gig-poster-body {
     font-display: swap;
 }
 
-.poster-settings-gap { height: 16px; }
+.poster-settings-gap { height: 3px; }
 @media screen {
     body.gig-poster-body .qr-poster-image { max-width: 760px; }
 }
@@ -137,28 +137,28 @@ body.qr-poster-body.gig-poster-body {
         .qr-poster-image { grid-column: 1; grid-row: 1; }
         .qr-poster-controls {
             grid-column: 2; grid-row: 1;
-            position: sticky; top: 24px;
-            width: 100%; margin: 0; padding: 20px;
-            max-height: calc(100vh - 48px); overflow-y: auto;
+            position: sticky; top: 12px;
+            width: 100%; margin: 0; padding: 12px;
+            max-height: calc(100vh - 24px); overflow-y: auto;
             border: 1px solid #bcbcbc; border-radius: 10px;
             background: #f2f2ef; color: #222;
             text-align: left; font-size: 13px; line-height: 1.5;
         }
-        .poster-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+        .poster-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
         .poster-panel-heading h2 { font: 600 17px/1.3 Arial, sans-serif; color: #111; margin: 0; }
         .poster-panel-toggle { display: none; }
-        .poster-controls-content > p { font-size: 12px; margin: 0 0 12px; }
+        .poster-controls-content > p { font-size: 11px; margin: 0 0 5px; }
         .poster-theme-label { margin: 16px 0 10px; max-width: none; font-weight: 600; }
-        .poster-theme-label select { padding: 10px 8px; font-size: 12px; font-weight: 400; }
+        .poster-theme-label select { padding: 4px 6px; height: 28px; margin-top: 2px; font-size: 12px; font-weight: 400; }
         .qr-poster-controls button, .qr-poster-button {
-            padding: 9px 10px; margin: 0 0 8px; font-size: 12px;
+            padding: 5px 8px; margin: 0 0 4px; font-size: 12px;
             width: 100%; text-align: center; line-height: 1.4;
         }
         .qr-poster-controls button:focus-visible, .qr-poster-button:focus-visible, select:focus-visible {
             outline: 2px solid #345dd4; outline-offset: 2px;
         }
         .poster-photo-credit { font-size: 11px; }
-        .poster-export-actions { display: flex; gap: 8px; padding-top: 15px; border-top: 1px solid #ccc; margin-top: 16px; }
+        .poster-export-actions { display: flex; gap: 6px; padding-top: 8px; border-top: 1px solid #ccc; margin-top: 6px; }
         .poster-export-actions .qr-poster-button { flex: 1.5; }
         .poster-export-actions button { flex: 1; }
     }
@@ -251,10 +251,36 @@ body.qr-poster-body.gig-poster-body {
     display: flex; align-items: center; justify-content: center; border-radius: inherit;
     .poster-button-spinner { width: 28px; height: 28px; color: #111; border-color: #bbb; border-top-color: #111; }
 }
-.poster-weekend-toggle, .poster-match-fonts { display: flex; align-items: center; gap: 8px; margin: 14px 0; font-size: 12px; }
+.poster-weekend-toggle { display: flex; align-items: center; gap: 6px; margin: 7px 0; font-size: 12px; }
 
 @font-face { font-family: "Rye"; src: url("../styles/font/poster/Rye-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
 
 @font-face { font-family: "Sancreek"; src: url("../styles/font/poster/Sancreek-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
 
 @font-face { font-family: "Ewert"; src: url("../styles/font/poster/Ewert-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+
+.poster-editor .qr-poster-controls .poster-shuffle-control {
+    margin: 0 0 8px;
+    min-width: 0;
+    .poster-theme-label { margin: 0 0 3px; font-size: 11px; line-height: 1.3; }
+    .poster-theme-label select {
+        appearance: none;
+        padding-right: 30px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 5 5 5 5-5' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-size: 14px 14px;
+        background-position: right 6px center;
+    }
+    .poster-shuffle-row {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr) 28px;
+        gap: 6px;
+        button { width: 100%; min-width: 0; margin: 0; padding: 3px 4px; min-height: 27px; font-size: 11px; }
+        button:first-child, button:last-child {
+            display: flex; align-items: center; justify-content: center; padding: 0;
+            svg { display: block; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        }
+    }
+}
+
+.poster-editor .poster-randomise-label { margin: 0 0 3px; font-size: 11px; line-height: 1.3; font-weight: 600; }

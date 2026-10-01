@@ -132,7 +132,7 @@ test("poster provides researched themes and exports the selected layout", async 
     await act(async () => { Simulate.change(select, { target: { value: 'wildflower' } }); });
     expect(container.querySelector('a[download]').download).toBe('giglist-windsorhotel-wildflower-poster.png');
     expect(context.fillText.mock.calls.map(([text]) => text).join(' ')).toContain('Windsor');
-    expect(container.querySelector('svg').innerHTML).toContain('#000');
+    expect(container.querySelector('[hidden] svg').innerHTML).toContain('#000');
 });
 
 test("March poster filters listings and includes month in export name", async () => {
@@ -198,7 +198,7 @@ test('suburb location imagery loads by default and survives theme changes', asyn
         await act(async () => { Simulate.change(container.querySelector('select'), {target: {value: 'solar'}}); });
         expect(container.querySelector('.poster-location')).toBeNull();
         expect(global.fetch).toHaveBeenCalledTimes(1);
-        expect(container.querySelector('.poster-photo-credit')).not.toBeNull();
+        expect(container.querySelector('.poster-photo-credit')).toBeNull();
     } finally { global.fetch = oldFetch; }
 });
 
@@ -322,25 +322,26 @@ test('weekend mode overrides month filtering and restores the month when uncheck
     expect(context.fillText.mock.calls.map(([t])=>t).join(' ')).toContain('Other Month Act');
 });
 
-test('font matching defaults on, synchronises shuffles and allows independent listing fonts when off', async () => {
-    for (const method of ['strokeText','strokeRect','beginPath','arc','fill','stroke','moveTo','lineTo','save','restore','translate','rotate','ellipse','closePath']) context[method] = jest.fn();
+test('fonts always match and header controls preserve the selected font', async () => {
+    for (const method of ['rect','clip','strokeText','strokeRect','beginPath','arc','fill','stroke','moveTo','lineTo','save','restore','translate','rotate','ellipse','closePath']) context[method] = jest.fn();
     context.measureText = value => ({width:value.length * Number(/([\d.]+)px/.exec(context.font)?.[1] || 30) * .5});
     const drawn = {};
     context.fillText.mockImplementation(text => { drawn[text.toLowerCase()] = /"([^"]+)"/.exec(context.font)?.[1]; });
     jest.spyOn(Math,'random').mockReturnValue(0);
     await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider>, container); });
-    const checkbox = container.querySelector('.poster-match-fonts input');
-    expect(checkbox.checked).toBe(true);
+    expect(container.querySelector('.poster-match-fonts')).toBeNull();
     expect(drawn['clayton bulger']).toBe(drawn['windsor hotel']);
     await act(async () => { Simulate.click(container.querySelector('.poster-font-shuffle')); });
-    expect(drawn['clayton bulger']).toBe(drawn['windsor hotel']);
     const matchedFont = drawn['clayton bulger'];
+    expect(drawn['windsor hotel']).toBe(matchedFont);
     await act(async () => { Simulate.click(container.querySelector('.poster-header-shuffle')); });
-    expect(drawn['clayton bulger']).not.toBe(matchedFont);
-    expect(drawn['windsor hotel']).toBe(drawn['clayton bulger']);
-    await act(async () => { Simulate.change(checkbox,{target:{checked:false}}); });
-    const headerFont = drawn['clayton bulger'];
-    await act(async () => { Simulate.click(container.querySelector('.poster-font-shuffle')); });
-    expect(drawn['clayton bulger']).toBe(headerFont);
-    expect(drawn['windsor hotel']).not.toBe(headerFont);
+    expect(drawn['clayton bulger']).toBe(matchedFont);
+    await act(async () => { Simulate.change(container.querySelector('[aria-label="Header artwork"]'),{target:{value:'western-centered'}}); });
+    expect(drawn['clayton bulger']).toBe(matchedFont);
+    expect(drawn['windsor hotel']).toBe(matchedFont);
+    await act(async () => { Simulate.click(container.querySelector('[aria-label="Next header artwork"]')); });
+    expect(drawn['clayton bulger']).toBe(matchedFont);
+    await act(async () => { Simulate.change(container.querySelector('[aria-label="Poster font"]'),{target:{value:'Rye'}}); });
+    expect(drawn['clayton bulger']).toBe('Rye');
+    expect(drawn['windsor hotel']).toBe('Rye');
 });

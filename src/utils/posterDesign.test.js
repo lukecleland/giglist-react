@@ -14,8 +14,8 @@ test.each(posterThemes.map((theme) => theme.id))('renders %s with a venue photo 
     const qr = {};
     drawPoster(ctx, {theme, title: 'Windsor Hotel', targetUrl: 'https://giglist.com.au/windsorhotel', photo, artwork: {naturalWidth: 1000, naturalHeight: 1000}, qr});
     expect(ctx.drawImage.mock.calls[0][0]).toBe(photo);
-    expect(ctx.drawImage).toHaveBeenLastCalledWith(qr, 100, 1787, 140, 140);
-    expect(ctx.fillRect).toHaveBeenCalledWith(80, 1767, 180, 180);
+    expect(ctx.drawImage).toHaveBeenLastCalledWith(qr, 80, 1787, 140, 140);
+    expect(ctx.fillRect).toHaveBeenCalledWith(60, 1767, 180, 180);
     expect(ctx.fillText.mock.calls.map(([text]) => text).join(' ').toLowerCase()).toContain('windsor');
 });
 

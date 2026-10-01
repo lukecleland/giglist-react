@@ -83,7 +83,7 @@ export const nextPosterFonts = (current: PosterFonts, random = Math.random): Pos
     return {...pair, effect: effects[Math.floor(random() * effects.length)], headerEffect: effects[Math.floor(random() * effects.length)]};
 };
 
-const posterFontFamilies = Array.from(new Set(posterFontPairings.flatMap(pair => [pair.title, pair.listing])));
+export const posterFontFamilies = Array.from(new Set(posterFontPairings.flatMap(pair => [pair.title, pair.listing])));
 const shuffledEffect = (random: () => number): PosterTextEffect =>
     (['plain', 'outline', 'shadow', 'outlineShadow'] as PosterTextEffect[])[Math.floor(random() * 4)];
 export const nextListingFonts = (current: PosterFonts, random = Math.random): PosterFonts => {
