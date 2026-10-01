@@ -1,3 +1,4 @@
+import { cityForSlug, gigWithinCity } from './citySearch';
 import { TGiglist } from "../types/types";
 
 export const compactName = (value: string): string => value
@@ -27,6 +28,8 @@ export const searchSlugFromPath = (pathname: string): string => {
 export const suburbForSearchSlug = (dates: TGiglist, slug: string): string | undefined => {
     const gigs = dates.flatMap((date) => date.listings);
     if (gigs.some((gig) => [gig.artist, gig.name].some((name) => compactName(name) === slug))) return undefined;
+    const city = cityForSlug(slug);
+    if (city) return city.name;
     return gigs.find((gig) => compactName(gig.suburb || "") === slug)?.suburb;
 };
 
@@ -45,9 +48,11 @@ export const filterGigSearch = (dates: TGiglist, query: string, fromUrl = false)
     const needle = fromUrl ? compactName(query) : query.toLowerCase();
     if (!needle || (!fromUrl && needle.length < 2)) return dates;
     const suburb = fromUrl ? suburbForSearchSlug(dates, needle) : undefined;
+    const city = suburb && fromUrl ? cityForSlug(needle) : undefined;
     return dates.map((date) => ({
         ...date,
         listings: date.listings.filter((gig) =>
+            city ? gigWithinCity(gig, city) :
             suburb ? compactName(gig.suburb || "") === needle :
             (fromUrl ? [gig.artist, gig.name] : [gig.artist, gig.name, gig.suburb])
                 .some((name) => (fromUrl ? compactName(name) : name.toLowerCase()).includes(needle)),

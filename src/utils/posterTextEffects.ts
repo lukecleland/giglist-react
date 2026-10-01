@@ -31,3 +31,26 @@ export const paintPosterText = (ctx: CanvasRenderingContext2D, text: string, x: 
     }
     ctx.fillText(text,x,y); ctx.restore();
 };
+
+// Listing type needs a quiet edge over photographs without the heavy masthead stroke.
+export const paintListingText = (ctx: CanvasRenderingContext2D, text: string, x: number, y: number, effect: PosterTextEffect = 'plain') => {
+    const size = Number(/([\d.]+)px/.exec(ctx.font)?.[1] || 30);
+    const rgb = String(ctx.fillStyle).match(/^#([a-f\d]{6})$/i)?.[1];
+    const luminance = rgb ? parseInt(rgb.slice(0, 2), 16) * .299 + parseInt(rgb.slice(2, 4), 16) * .587 + parseInt(rgb.slice(4), 16) * .114 : 255;
+    ctx.save();
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = luminance > 145 ? 'rgba(0, 0, 0, .8)' : 'rgba(255, 248, 232, .8)';
+    ctx.lineWidth = Math.max(.6, size * .025);
+    if (effect === 'shadow' || effect === 'outlineShadow') {
+        ctx.shadowColor = luminance > 145 ? 'rgba(0, 0, 0, .55)' : 'rgba(255, 248, 232, .45)';
+        ctx.shadowBlur = size * .035;
+        ctx.shadowOffsetY = size * .025;
+    }
+    ctx.strokeText(text, x, y);
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.fillText(text, x, y);
+    ctx.restore();
+};

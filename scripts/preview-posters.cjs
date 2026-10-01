@@ -8,7 +8,7 @@ const { renderToStaticMarkup } = require('react-dom/server');
 const QR = require('react-qr-code').default;
 const root = path.resolve(__dirname, '..');
 const out = process.argv[2] || '/tmp/giglist-poster-themes.html';
-const modules = ['posterBanners', 'posterDesign', 'posterThemes', 'posterTextEffects', 'posterDuplicates', 'searchUrl', '../components/Poster/FestivalWordCloud'].map((name) => {
+const modules = ['citySearch', 'posterBannerCollection', 'posterBanners', 'posterDesign', 'posterThemes', 'posterTextEffects', 'posterDuplicates', 'searchUrl', '../components/Poster/FestivalWordCloud'].map((name) => {
     const js = ts.transpileModule(fs.readFileSync(path.join(root, 'src/utils', name + '.ts'), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2019 } }).outputText;
     return `${JSON.stringify(name.startsWith('../') ? name : './' + name)}: function(require,exports,module){${js}}`;
 }).join(',');

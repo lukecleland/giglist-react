@@ -1,7 +1,7 @@
 import { drawFestivalWordCloud, listStyles, nextListStyle } from './FestivalWordCloud';
 
 test.each(listStyles.filter(style => style !== 'columns').flatMap(style => [1, 9, 92, 200].map(count => [style, count])))('%s fits all %i gigs without overlaps or dropped repeated names', (style, count) => {
-    const ctx = Object.fromEntries(['save', 'restore', 'fillRect', 'fillText', 'beginPath', 'arc', 'moveTo', 'lineTo', 'closePath', 'fill'].map(name => [name,jest.fn()]));
+    const ctx = Object.fromEntries(['save', 'restore', 'fillRect', 'fillText', 'strokeText', 'beginPath', 'arc', 'moveTo', 'lineTo', 'closePath', 'fill'].map(name => [name,jest.fn()]));
     ctx.measureText = text => ({width: text.length * Number(/([\d.]+)px/.exec(ctx.font)?.[1] || 30) * .55});
     const area = {x:65,y:320,width:1470,height:1390};
     const entries = Array.from({length:count}, (_, i) => ({name:i % 3 ? 'A long artist and supporting band name' : 'Open Mic', dateKey: String(Math.floor(i / 4)), dateLabel: `Day ${Math.floor(i / 4)}`, details:`Fri ${i+1} Oct 2026 · 7PM · The Local Venue`}));
@@ -20,7 +20,7 @@ test.each(listStyles.filter(style => style !== 'columns').flatMap(style => [1, 9
 });
 
 test.each(['diamonds', 'circles', 'stars'])('%s dividers fit between entries and long names use smaller type', divider => {
-    const ctx = Object.fromEntries(['save', 'restore', 'fillRect', 'fillText', 'beginPath', 'arc', 'moveTo', 'lineTo', 'closePath', 'fill'].map(name => [name,jest.fn()]));
+    const ctx = Object.fromEntries(['save', 'restore', 'fillRect', 'fillText', 'strokeText', 'beginPath', 'arc', 'moveTo', 'lineTo', 'closePath', 'fill'].map(name => [name,jest.fn()]));
     ctx.measureText = text => ({width: text.length * Number(/([\d.]+)px/.exec(ctx.font)?.[1] || 30) * .5});
     const sizes = {};
     ctx.fillText.mockImplementation(text => { sizes[text] = Number(/([\d.]+)px/.exec(ctx.font)?.[1]); });
@@ -41,8 +41,19 @@ test('shuffle reaches every layout before repeating', () => {
     expect(new Set(seen).size).toBe(listStyles.length);
 });
 
+test('long comma-separated artist names wrap without shrinking the entire bill to one line', () => {
+    const ctx = Object.fromEntries(['save', 'restore', 'fillRect', 'fillText', 'strokeText', 'beginPath', 'arc', 'moveTo', 'lineTo', 'closePath', 'fill'].map(name => [name, jest.fn()]));
+    ctx.measureText = text => ({width: text.length * Number(/([\d.]+)px/.exec(ctx.font)?.[1] || 30) * .5});
+    const name = 'Jan Gunnar Hoff, Counterfeit, Kye Brown, Another Long Artist';
+    const {bounds} = drawFestivalWordCloud(ctx, {area:{x:0,y:0,width:600,height:700},entries:[{name,details:'Friday'}],font:'Bitter',ink:'#fff',accent:'#ddd',divider:'stacked'});
+    const artistLines = ctx.fillText.mock.calls.map(([text]) => text).filter(text => name.includes(text) && text.length > 8);
+    expect(artistLines.length).toBeGreaterThan(1);
+    expect(artistLines.join(' ')).toBe(name);
+    expect(bounds[0].height).toBeGreaterThan(0);
+});
+
 test.each([.6, .9])('row whitespace stays fixed with glyph height ratio %f', ratio => {
-    const ctx = Object.fromEntries(['save','restore','fillRect','fillText','beginPath','arc','moveTo','lineTo','closePath','fill'].map(name=>[name,jest.fn()]));
+    const ctx = Object.fromEntries(['save','restore','fillRect','fillText','strokeText','beginPath','arc','moveTo','lineTo','closePath','fill'].map(name=>[name,jest.fn()]));
     ctx.measureText = text => {
         const size=Number(/([\d.]+)px/.exec(ctx.font)?.[1] || 30);
         return {width:text.length*size*.5,actualBoundingBoxAscent:-size*.1,actualBoundingBoxDescent:size*(ratio+.1)};

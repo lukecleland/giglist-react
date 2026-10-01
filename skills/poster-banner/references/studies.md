@@ -20,3 +20,6 @@ These are compact reusable banners, not replicas of full festival identities. Fu
 
 ## Expanded full-colour artwork
 Psychedelic ribbons, modernist mosaic, cut-paper collage, cosmic orbits, art deco fans, contour engraving, flower power and electric zigzags provide eight additional original vector compositions. All illustrated and photo headers now use outlined lettering without a colour-dimming wash or central panel. Header controls never change the selected font.
+
+## Expanded collection
+Twenty additional original vector banners: aurora silk, desert cut-outs, hard bop geometry, vinyl grooves, risograph circles, confetti terrazzo, Memphis playground, warped checkerboard, rainbow arches, prismatic shards, woven colour, mountain woodcut, ocean linocut, midnight star chart, tropical canopy, paisley garden, pop halftone, spotlight crossing, torn gig flyers and op-art ripples. Each defines its own full-colour palette and corresponding translucent listing-panel and date colours in posterBannerCollection.ts.

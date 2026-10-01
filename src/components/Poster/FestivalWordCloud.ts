@@ -1,4 +1,4 @@
-import { paintPosterText, PosterTextEffect } from "../../utils/posterTextEffects";
+import { paintListingText, PosterTextEffect } from "../../utils/posterTextEffects";
 export const listStyles = ['columns', 'festivalDays', 'festival', 'diamonds', 'circles', 'stars', 'stacked', 'twoColumn', 'threeColumn', 'dates', 'ruled', 'bands'] as const;
 export type ListStyle = typeof listStyles[number];
 export const listStyleNames: Record<ListStyle, string> = {
@@ -30,6 +30,19 @@ const wrap = (ctx: CanvasRenderingContext2D, text: string, width: number) => {
     return lines;
 };
 
+const wrapCommaName = (ctx: CanvasRenderingContext2D, name: string, width: number) => {
+    const parts = name.split(/,\s*/).map((part, index, all) => index < all.length - 1 ? `${part},` : part);
+    const lines: string[] = [];
+    for (const part of parts) {
+        const last = lines.length - 1;
+        const combined = last >= 0 ? `${lines[last]} ${part}` : part;
+        if (last >= 0 && ctx.measureText(combined).width > width) lines.push(part);
+        else if (last >= 0) lines[last] = combined;
+        else lines.push(part);
+    }
+    return lines;
+};
+
 // Measured festival typesetting, rather than free-floating cloud placement.
 // Names stay intact; only supporting date/venue details wrap.
 export const drawFestivalWordCloud = (ctx: CanvasRenderingContext2D, options: CloudOptions) => {
@@ -42,6 +55,9 @@ export const drawFestivalWordCloud = (ctx: CanvasRenderingContext2D, options: Cl
     const dateGroups = new Set(entries.map(entry => entry.dateKey || entry.dateLabel)).size;
     const columnCount = style === 'twoColumn' ? 2 : style === 'threeColumn' ? 3 : style === 'dates' && dateGroups > 8 ? (dateGroups > 24 ? 3 : 2) : 1;
     const sideBySide = style === 'ruled' || style === 'bands';
+    // A small fixed gap, independent of the artist font size. Scale down only
+    // for exceptionally dense bills so every entry still fits.
+    const artistDateGap = Math.min(8, area.height * .1 / Math.max(1, Math.ceil(entries.length / columnCount)));
     const columnGap = 42;
     const columnWidth = (area.width - columnGap * (columnCount - 1)) / columnCount;
     const isSingle = ['stacked', 'ruled', 'bands', 'twoColumn', 'threeColumn'].includes(style);
@@ -50,25 +66,28 @@ export const drawFestivalWordCloud = (ctx: CanvasRenderingContext2D, options: Cl
         const perColumn = Math.ceil(entries.length / columnCount);
         return Array.from({length: columnCount}, (_, col) => {
             const source = columnCount > 1 ? entries.slice(col * perColumn, (col + 1) * perColumn) : entries;
-            const rows: {items: {name: string; details: string[]; width: number; height: number; fontSize: number; detailSize: number; inkHeight: number}[]; width: number; height: number; label?: string}[] = [];
+            const rows: {items: {name: string; nameLines: string[]; details: string[]; width: number; height: number; fontSize: number; detailSize: number; inkHeight: number; lineHeight: number}[]; width: number; height: number; label?: string}[] = [];
             let dateKey = '';
             for (const entry of source) {
                 const name = entry.name.replace(/\s+/g, ' ').trim();
                 let fontSize = size * 1.45 / Math.pow(1 + Array.from(name).length / 18, .35);
                 ctx.font = fontString(fontSize, options.font);
-                const naturalWidth = ctx.measureText(name).width;
                 const nameLimit = columnWidth * (sideBySide ? .62 : 1);
-                if (naturalWidth > nameLimit) fontSize *= nameLimit / naturalWidth;
+                let nameLines = name.includes(',') && ctx.measureText(name).width > nameLimit ? wrapCommaName(ctx, name, nameLimit) : [name];
+                const widestLine = Math.max(...nameLines.map(line => ctx.measureText(line).width));
+                if (widestLine > nameLimit) fontSize *= nameLimit / widestLine;
                 ctx.font = fontString(fontSize, options.font);
-                const nameMetrics = ctx.measureText(name);
-                const inkHeight = Number.isFinite(nameMetrics.actualBoundingBoxAscent) && Number.isFinite(nameMetrics.actualBoundingBoxDescent)
+                const nameMetrics = ctx.measureText(nameLines[0]);
+                const singleLineInk = Number.isFinite(nameMetrics.actualBoundingBoxAscent) && Number.isFinite(nameMetrics.actualBoundingBoxDescent)
                     ? Math.max(.01, nameMetrics.actualBoundingBoxAscent + nameMetrics.actualBoundingBoxDescent) : fontSize * .85;
-                const nameWidth = Math.min(columnWidth, nameMetrics.width);
-                const detailSize = Math.min(size * .38, fontSize * .48);
+                const lineHeight = Math.max(singleLineInk, fontSize * .95);
+                const inkHeight = singleLineInk + (nameLines.length - 1) * lineHeight;
+                const nameWidth = Math.min(columnWidth, Math.max(...nameLines.map(line => ctx.measureText(line).width)));
+                const detailSize = Math.min(size * .42, fontSize * .53);
                 ctx.font = `${detailSize}px "Poster Grotesk", sans-serif`;
                 const details = wrap(ctx, entry.details, sideBySide ? columnWidth * .32 : isSingle ? columnWidth : Math.min(columnWidth, Math.max(nameWidth, size * 8)));
                 const width = isSingle ? columnWidth : Math.min(columnWidth, Math.max(nameWidth, ...details.map(line => ctx.measureText(line).width)));
-                const item = {name, details, width, height: inkHeight + details.length * detailSize * 1.25, fontSize, detailSize, inkHeight};
+                const item = {name, nameLines, details, width, height: inkHeight + details.length * detailSize * 1.25, fontSize, detailSize, inkHeight, lineHeight};
                 const newDate = (style === 'dates' || style === 'festivalDays') && (entry.dateKey || entry.dateLabel || '') !== dateKey;
                 if (newDate) dateKey = entry.dateKey || entry.dateLabel || '';
                 let row = rows[rows.length - 1];
@@ -79,7 +98,7 @@ export const drawFestivalWordCloud = (ctx: CanvasRenderingContext2D, options: Cl
                 row.width += (row.items.length ? gap : 0) + width;
                 row.items.push(item); row.height = Math.max(row.height, item.height);
             }
-            rows.forEach(row => { const titleHeight = Math.max(...row.items.map(item => item.inkHeight)); const detailHeight = Math.max(...row.items.map(item => item.details.length * item.detailSize * 1.25)); row.height = sideBySide ? Math.max(titleHeight, detailHeight) : titleHeight + detailHeight; });
+            rows.forEach(row => { const titleHeight = Math.max(...row.items.map(item => item.inkHeight)); const detailHeight = Math.max(...row.items.map(item => item.details.length * item.detailSize * 1.25)); row.height = sideBySide ? Math.max(titleHeight, detailHeight) : titleHeight + detailHeight + (detailHeight > 0 ? artistDateGap : 0); });
             const dayBreaks = rows.slice(1).filter(row => row.label).length;
             // Reserve day spacing independently of fitted type. Only exceptionally
             // dense calendars reduce it, using available space and day count.
@@ -145,7 +164,7 @@ export const drawFestivalWordCloud = (ctx: CanvasRenderingContext2D, options: Cl
                 ctx.textAlign = 'center';
                 ctx.fillStyle = options.accent; ctx.font = fontString(low * .58, 'Poster Grotesk');
                 const ascent = ctx.measureText(row.label.toUpperCase()).actualBoundingBoxAscent;
-                ctx.fillText(row.label.toUpperCase(), left + columnWidth / 2, y + (Number.isFinite(ascent) ? ascent : 0));
+                paintListingText(ctx, row.label.toUpperCase(), left + columnWidth / 2, y + (Number.isFinite(ascent) ? ascent : 0), options.effect);
                 y += column.labelHeights[rowIndex] + column.labelGap;
             }
             if (style === 'bands' && rowIndex % 2 === 0) {
@@ -164,12 +183,12 @@ export const drawFestivalWordCloud = (ctx: CanvasRenderingContext2D, options: Cl
                 const centre = Number.isFinite(metrics.actualBoundingBoxAscent) && Number.isFinite(metrics.actualBoundingBoxDescent)
                     ? (metrics.actualBoundingBoxDescent - metrics.actualBoundingBoxAscent) / 2
                     : item.inkHeight / 2;
-                const textY = y + titleHeight / 2 - centre;
-                paintPosterText(ctx, item.name, textX, textY, options.effect);
+                const textY = y + titleHeight / 2 - centre - (item.nameLines.length - 1) * item.lineHeight / 2;
+                item.nameLines.forEach((line, lineIndex) => paintListingText(ctx, line, textX, textY + lineIndex * item.lineHeight, options.effect));
                 ctx.fillStyle = options.accent; ctx.font = `${item.detailSize}px "Poster Grotesk", sans-serif`;
-                let metaY = sideBySide ? y + (row.height - item.details.length * item.detailSize * 1.25) / 2 : y + titleHeight;
+                let metaY = sideBySide ? y + (row.height - item.details.length * item.detailSize * 1.25) / 2 : y + titleHeight + (item.details.length ? artistDateGap : 0);
                 const metaX = sideBySide ? x + columnWidth * .68 : textX;
-                item.details.forEach(text => { ctx.fillText(text, metaX, metaY); metaY += item.detailSize * 1.25; });
+                item.details.forEach(text => { paintListingText(ctx, text, metaX, metaY, options.effect); metaY += item.detailSize * 1.25; });
                 bounds.push({x, y, width: item.width, height: Math.max(row.height, metaY - y)});
                 if (index < row.items.length - 1) separator(x + item.width + column.gap / 2, y + titleHeight / 2, column.gap * .17);
                 x += item.width + column.gap;

@@ -2,7 +2,7 @@ import { bannerFonts, bannerNames, drawArtworkBanner } from './posterBanners';
 import { drawPoster } from './posterDesign';
 
 const context = () => {
-    const ctx = Object.fromEntries(['fillRect','strokeRect','beginPath','rect','clip','arc','ellipse','fill','stroke','moveTo','lineTo','closePath','fillText','strokeText','drawImage','save','restore','translate','rotate'].map(name => [name,jest.fn()]));
+    const ctx = Object.fromEntries(['fillRect','strokeRect','beginPath','rect','clip','arc','ellipse','fill','stroke','moveTo','lineTo','closePath','fillText','strokeText','drawImage','save','restore','translate','scale','rotate'].map(name => [name,jest.fn()]));
     ctx.createLinearGradient = () => ({addColorStop:jest.fn()});
     ctx.measureText = text => ({width:text.length * Number(/([\d.]+)px/.exec(ctx.font)?.[1] || 30) * .5});
     return ctx;

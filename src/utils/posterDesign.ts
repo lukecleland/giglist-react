@@ -1,6 +1,8 @@
+import { extraBannerNames } from './posterBannerCollection';
+import { ImagePalette } from './posterUpload';
 import { bannerListingColours, bannerNames, drawArtworkBanner, isArtworkBanner } from './posterBanners';
 import { uniquePosterGigs } from "./posterDuplicates";
-import { paintPosterText, PosterTextEffect } from "./posterTextEffects";
+import { paintListingText, paintPosterText, PosterTextEffect } from "./posterTextEffects";
 import { drawFestivalWordCloud, ListStyle } from "../components/Poster/FestivalWordCloud";
 import { TGiglist, TListing } from "../types/types";
 import { filterGigSearch } from "./searchUrl";
@@ -47,6 +49,9 @@ type PosterOptions = {
     qr: HTMLImageElement; photo: HTMLImageElement | null; artwork?: HTMLImageElement | null;
     fonts?: PosterFonts;
     header?: PosterHeader;
+    headerCaps?: boolean;
+    customBanner?: HTMLImageElement;
+    customPalette?: ImagePalette;
     listStyle?: ListStyle;
     periodLabel?: string;
     photoCredit?: string;
@@ -79,6 +84,38 @@ const fittedText = (ctx: CanvasRenderingContext2D, text: string, box: Box, famil
     return { size, bottom: textTop + Math.max(0, lines.length - 1) * size * 1.08 + visibleHeight };
 };
 
+// Size headings by visible glyph bounds, not the font's generous line box.
+// This gives condensed/display fonts their full visual size within the banner.
+const fittedHeading = (ctx: CanvasRenderingContext2D, text: string, box: Box, family: string, align: CanvasTextAlign, centered: boolean, effect: PosterTextEffect = 'plain') => {
+    ctx.textBaseline = 'alphabetic';
+    const availableHeight = Math.max(1, box.height - 20);
+    const measure = (size: number) => {
+        ctx.font = font(size, family);
+        const lines = text.split('\n').flatMap(part => wrap(ctx, part, box.width - 18));
+        const metrics = lines.map(value => {
+            const measured = ctx.measureText(value);
+            return {ascent: measured.actualBoundingBoxAscent ?? size * .8, descent: measured.actualBoundingBoxDescent ?? size * .15};
+        });
+        return {lines, metrics, height: metrics.reduce((sum, m) => sum + m.ascent + m.descent, 0) + Math.max(0, lines.length - 1) * 8};
+    };
+    let low = 1, high = 420;
+    for (let i = 0; i < 25; i++) {
+        const size = (low + high) / 2;
+        if (measure(size).height <= availableHeight) low = size; else high = size;
+    }
+    const fitted = measure(low);
+    ctx.textAlign = align;
+    const x = align === 'center' ? box.x + box.width / 2 : align === 'right' ? box.x + box.width - 9 : box.x + 9;
+    let y = box.y + (centered ? (availableHeight - fitted.height) / 2 : 0);
+    fitted.lines.forEach((value, i) => {
+        y += fitted.metrics[i].ascent;
+        paintPosterText(ctx, value, x, y, effect);
+        y += fitted.metrics[i].descent + (i < fitted.lines.length - 1 ? 8 : 0);
+    });
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    return {size: low, bottom: y};
+};
+
 const drawPhoto = (ctx: CanvasRenderingContext2D, photo: HTMLImageElement, box: Box) => {
     const scale = Math.max(box.width / photo.naturalWidth, box.height / photo.naturalHeight);
     const sw = box.width / scale, sh = box.height / scale;
@@ -93,9 +130,9 @@ const fade = (ctx: CanvasRenderingContext2D, y: number, height: number, stops: [
     ctx.fillStyle = gradient; ctx.fillRect(0, y, 1600, height);
 };
 
-export const posterHeaders = ['gradient', 'photo', 'smear', 'band', 'gradient-centered', 'photo-centered', 'smear-centered', 'band-centered', 'glass-centered', 'western-centered', 'botanical-centered', 'sunburst-centered', 'waves-centered', 'mosaic-centered', 'paper-centered', 'orbit-centered', 'scallop-centered', 'contour-centered', 'floral-centered', 'lightning-centered'] as const;
+export const posterHeaders = ['gradient', 'photo', 'smear', 'band', 'gradient-centered', 'photo-centered', 'smear-centered', 'band-centered', 'glass-centered', 'western-centered', 'botanical-centered', 'sunburst-centered', 'waves-centered', 'mosaic-centered', 'paper-centered', 'orbit-centered', 'scallop-centered', 'contour-centered', 'floral-centered', 'lightning-centered', ...(Object.keys(extraBannerNames) as Array<keyof typeof extraBannerNames>)] as const;
 export const posterHeaderNames: Record<string, string> = {...Object.fromEntries(posterHeaders.map(name => [name, name.replace('-centered', ' · centred')])), ...bannerNames};
-export type PosterHeader = typeof posterHeaders[number];
+export type PosterHeader = typeof posterHeaders[number] | "custom";
 export const nextPosterHeader = (current: PosterHeader, random = Math.random): PosterHeader => {
     const choices = posterHeaders.filter(value => value !== current);
     return choices[Math.floor(random() * choices.length)];
@@ -103,6 +140,11 @@ export const nextPosterHeader = (current: PosterHeader, random = Math.random): P
 
 // Independent of layout: protect the artist, venue or suburb name on every poster.
 const headerBackground = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options: PosterOptions, box: Box) => {
+    if (options.customBanner) {
+        ctx.save(); ctx.filter = 'none';
+        drawPhoto(ctx, options.customBanner, {x: 0, y: box.y - 40, width: 1600, height: box.height + 75});
+        ctx.restore(); return '#ffffff';
+    }
     const style = (options.header || 'gradient').replace('-centered', '');
     const y = box.y - 40, height = box.height + 75;
     const rgb = theme.background.slice(1).match(/../g)!.map(value => parseInt(value, 16));
@@ -144,9 +186,9 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
     const dense = (!!options.listStyle && options.listStyle !== 'columns') || (options.gigs?.length || 0) > 20;
     const month = options.periodLabel || (options.month === undefined ? 'LIVE MUSIC' : `LIVE MUSIC IN ${posterMonthNames[options.month].toUpperCase()}`);
     let titleBox = { x: 100, y: 105, width: 1400, height: 285 };
-    const headerEffect = isArtworkBanner(options.header || '') || options.header?.startsWith('photo') ? 'bannerOutlineShadow' : options.fonts?.headerEffect;
+    const headerEffect = options.customBanner || isArtworkBanner(options.header || '') || options.header?.startsWith('photo') ? 'bannerOutlineShadow' : options.fonts?.headerEffect;
     const centered = options.header?.endsWith('-centered');
-    let titleInk = ink, titleSize = 265, align: CanvasTextAlign = 'left';
+    let titleInk = ink, align: CanvasTextAlign = 'left';
     let labelBox = { x: 100, y: 405, width: 1400, height: 50 };
     let area: ListingArea = {x: 100, y: 1190, width: 1400, height: 520, columns: 2, ink, accent};
     const photoAt = (box: Box, filter = 'none') => {
@@ -159,7 +201,6 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
         const filter = mono ? 'grayscale(1) contrast(1.15)' : 'saturate(0.75)';
         align = alt ? 'right' : 'left';
         titleBox = {x: 90, y: 90, width: 1420, height: 290};
-        titleSize = theme.font === 'Poster Condensed' ? 290 : 220;
         area = {x: 90, y: 1060, width: 1420, height: 650, columns: 2, ink, accent};
         if (dense) {
             photoAt({x: 0, y: 0, width: 1600, height: 1930}, filter);
@@ -177,7 +218,7 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
             if (centered) align = 'center';
             const headerInk = headerBackground(ctx, theme, options, titleBox);
             ctx.fillStyle = headerInk;
-            const heading = fittedText(ctx, theme.font === 'Poster Condensed' ? options.title.toUpperCase() : options.title, {...titleBox, height: titleBox.height - 35}, theme.font, 170, align, false, false, headerEffect);
+            const heading = fittedHeading(ctx, (options.headerCaps ?? (theme.font === 'Poster Condensed')) ? options.title.toUpperCase() : options.title, titleBox, theme.font, align, false, headerEffect);
             ctx.fillStyle = headerInk;
             fittedText(ctx, month, {x: inset, y: heading.bottom + 10, width: titleBox.width, height: 50}, 'Poster Grotesk', 32, align, true, false, headerEffect);
             return {x: inset, y: 300, width: 1600 - inset * 2, height: 1410, columns: 3, ink, accent, backdrop: bg + (alt ? 'e8' : 'da')};
@@ -246,8 +287,7 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
             case 'cover':
                 photoAt({x: 0, y: 0, width: 1600, height: 1930}, filter);
                 fade(ctx, 0, 1930, [[0, bg + 'bb'], [.3, bg + '66'], [.52, bg + 'e6'], [1, bg]]);
-                titleBox = {x: 90, y: alt ? 130 : 280, width: 1420, height: 390};
-                titleSize = alt ? 225 : 320; align = alt ? 'left' : 'center';
+                titleBox = {x: 90, y: alt ? 130 : 280, width: 1420, height: 390}; align = alt ? 'left' : 'center';
                 area.y = alt ? 890 : 1040; area.height = 1710 - area.y;
                 break;
             case 'collage':
@@ -262,7 +302,7 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
         if (centered) align = 'center';
         const subtitleInk = headerBackground(ctx, theme, options, titleBox);
         ctx.fillStyle = subtitleInk;
-        const heading = fittedText(ctx, theme.font === 'Poster Condensed' ? options.title.toUpperCase() : options.title, {...titleBox, height: titleBox.height - 35}, theme.font, titleSize, align, false, true, headerEffect);
+        const heading = fittedHeading(ctx, (options.headerCaps ?? (theme.font === 'Poster Condensed')) ? options.title.toUpperCase() : options.title, titleBox, theme.font, align, true, headerEffect);
         ctx.fillStyle = subtitleInk;
         fittedText(ctx, month, {x: titleBox.x, y: heading.bottom + 10, width: titleBox.width, height: 50}, 'Poster Grotesk', 32, align, true, false, headerEffect);
         return area;
@@ -311,9 +351,9 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
         headingInk = headerBackground(ctx, theme, options, {x: 65, y: 70, width: 1470, height: 165});
         headingAccent = headingInk;
         ctx.fillStyle = headingInk;
-        const title = theme.font === 'Poster Condensed' ? options.title.toUpperCase() : options.title;
+        const title = (options.headerCaps ?? (theme.font === 'Poster Condensed')) ? options.title.toUpperCase() : options.title;
         const align = centered || id === 'solar' || id === 'wildflower' ? 'center' : 'left';
-        const heading = fittedText(ctx, title, {x: 65, y: 70, width: 1470, height: 130}, theme.font, 180, align, false, false, headerEffect);
+        const heading = fittedHeading(ctx, title, {x: 65, y: 70, width: 1470, height: 165}, theme.font, align, false, headerEffect);
         ctx.fillStyle = headingAccent;
         fittedText(ctx, month, {x: 65, y: heading.bottom + 10, width: 1470, height: 55}, 'Poster Grotesk', 34, align, true, false, headerEffect);
         ctx.restore();
@@ -323,11 +363,11 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
         case 'nocturne':
             photoAt({x: 0, y: 0, width: 1600, height: 1930}, 'saturate(0.6)');
             fade(ctx, 0, 1930, [[0, 'rgba(5,15,16,0.72)'], [0.29, 'rgba(5,15,16,0.05)'], [0.50, 'rgba(5,15,16,0.85)'], [0.68, bg], [1, bg]]);
-            titleBox = {x: 100, y: 110, width: 1400, height: 435}; titleSize = 370;
+            titleBox = {x: 100, y: 110, width: 1400, height: 435};
             labelBox.y = 905; area.y = 1000; area.height = 710;
             break;
         case 'wildflower':
-            titleBox = {x: 100, y: 115, width: 1400, height: 380}; titleSize = 230;
+            titleBox = {x: 100, y: 115, width: 1400, height: 380};
             photoAt({x: 800, y: 565, width: 730, height: 1135});
             area = {x: 100, y: 620, width: 620, height: 1090, columns: 1, ink, accent};
             line(ctx, ink, 100, 65, 1500, 65, 2);
@@ -335,15 +375,14 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
         case 'xerox':
             photoAt({x: 0, y: 0, width: 1600, height: 1050}, 'grayscale(1) contrast(1.6)');
             fade(ctx, 0, 1050, [[0, 'rgba(0,0,0,0.83)'], [0.46, 'rgba(0,0,0,0.3)'], [1, 'rgba(0,0,0,0)']]);
-            titleInk = '#f7f1df'; titleSize = 350; titleBox.height = 400;
+            titleInk = '#f7f1df'; titleBox.height = 400;
 
             labelBox = {x: 130, y: 551, width: 1330, height: 45};
             rect(ctx, bg, 0, 1050, 1600, 880);
             for (let x = 0; x < 1600; x += 17) rect(ctx, bg, x, 1040 + Math.sin(x * 0.21) * 8, 18, 20);
             area.y = 1130; area.height = 580;
             break;
-        case 'solar':
-            titleSize = 320; align = 'center';
+        case 'solar': align = 'center';
             photoAt({x: 80, y: 485, width: 1440, height: 570}, 'saturate(0.65) sepia(0.18)');
             labelBox.y = 1100; area.y = 1190;
             break;
@@ -351,13 +390,13 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
             photoAt({x: 0, y: 0, width: 1600, height: 1930});
             rect(ctx, 'rgba(12,25,61,0.25)', 0, 0, 1600, 1930);
             fade(ctx, 0, 1930, [[0, 'rgba(10,22,52,0.1)'], [0.27, 'rgba(10,22,52,0.15)'], [0.48, 'rgba(10,22,52,0.94)'], [0.63, bg], [1, bg]]);
-            titleBox = {x: 100, y: 510, width: 1400, height: 400}; titleSize = 235;
+            titleBox = {x: 100, y: 510, width: 1400, height: 400};
             labelBox.y = 945; area.y = 1050; area.height = 660;
             break;
         case 'redroom':
             photoAt({x: 775, y: 0, width: 825, height: 1710}, 'grayscale(1) contrast(1.2)');
             rect(ctx, 'rgba(0,0,0,0.5)', 775, 0, 825, 1710);
-            titleBox = {x: 100, y: 120, width: 1380, height: 430}; titleSize = 340;
+            titleBox = {x: 100, y: 120, width: 1380, height: 430};
             labelBox = {x: 100, y: 630, width: 620, height: 70};
             area = {x: 100, y: 650, width: 610, height: 1060, columns: 1, ink, accent};
             break;
@@ -365,8 +404,8 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
     if (centered) align = 'center';
     titleInk = headerBackground(ctx, theme, options, titleBox);
     ctx.fillStyle = titleInk;
-    const title = theme.font === 'Poster Condensed' ? options.title.toUpperCase() : options.title;
-    const heading = fittedText(ctx, title, {...titleBox, height: titleBox.height - 35}, theme.font, titleSize, align, false, true, headerEffect);
+    const title = (options.headerCaps ?? (theme.font === 'Poster Condensed')) ? options.title.toUpperCase() : options.title;
+    const heading = fittedHeading(ctx, title, titleBox, theme.font, align, true, headerEffect);
     labelBox = {x: titleBox.x, y: heading.bottom + 10, width: titleBox.width, height: 55};
     ctx.fillStyle = titleInk;
     fittedText(ctx, month, labelBox, 'Poster Grotesk', 34, align, true, false, headerEffect);
@@ -418,7 +457,7 @@ const listingLayout = (ctx: CanvasRenderingContext2D, gigs: TListing[], options:
 
 export const drawPoster = (ctx: CanvasRenderingContext2D, options: PosterOptions) => {
     const selectedTheme = posterThemes.find((item) => item.id === options.theme) || posterThemes[0];
-    const theme = {...selectedTheme, font: options.fonts?.title || selectedTheme.font};
+    const theme = {...selectedTheme, ...(options.customPalette ? {background: options.customPalette.background, ink: options.customPalette.ink, accent: options.customPalette.accent} : {}), font: options.fonts?.title || selectedTheme.font};
     const bg = theme.background;
     const ink = theme.ink;
     const gigs = uniquePosterGigs(options.gigs || [], options.listStyle === 'festivalDays');
@@ -428,6 +467,7 @@ export const drawPoster = (ctx: CanvasRenderingContext2D, options: PosterOptions
     if (options.header && isArtworkBanner(options.header)) {
         Object.assign(area, bannerListingColours[options.header]);
     }
+    if (options.customPalette) Object.assign(area, options.customPalette);
     paperGrain(ctx);
     const layout = listingLayout(ctx, gigs, options, area.width, area.height, area.columns);
     const rowBounds: Box[] = [];
@@ -461,10 +501,10 @@ export const drawPoster = (ctx: CanvasRenderingContext2D, options: PosterOptions
             ctx.textAlign = 'left';
             let textY = y;
             ctx.font = font(size, options.fonts?.listing || 'Poster Grotesk', options.fonts?.listing !== 'Poster Serif');
-            row.name.forEach((value) => { paintPosterText(ctx, value, x, textY, options.fonts?.effect); textY += size * 1.13; });
+            row.name.forEach((value) => { paintListingText(ctx, value, x, textY, options.fonts?.effect); textY += size * 1.13; });
             ctx.fillStyle = area.accent;
             ctx.font = font(size * 0.63, 'Poster Grotesk');
-            row.meta.forEach((value) => { ctx.fillText(value, x, textY); textY += size * 0.8; });
+            row.meta.forEach((value) => { paintListingText(ctx, value, x, textY, options.fonts?.effect); textY += size * 0.8; });
             rowBounds.push({ x, y, width: layout.columnWidth, height: row.height });
             y += row.height;
         });
@@ -481,16 +521,24 @@ export const drawPoster = (ctx: CanvasRenderingContext2D, options: PosterOptions
     ctx.drawImage(options.qr, 80, 1787, 140, 140);
     ctx.imageSmoothingEnabled = true;
     ctx.fillStyle = '#fff';
-    fittedText(ctx, 'Scan QR code for gig details & updates', { x: 300, y: 1872, width: 1000, height: 40 }, 'Poster Grotesk', 29, 'left', true);
+    fittedText(ctx, 'Scan QR code for gig details & updates', { x: 265, y: 1872, width: 1035, height: 40 }, 'Poster Grotesk', 29, 'left', true);
     ctx.fillStyle = '#bfbfbf';
-    fittedText(ctx, options.targetUrl.replace('https://', ''), { x: 300, y: 1908, width: 1000, height: 42 }, 'Poster Grotesk', 24);
-    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    fittedText(ctx, options.targetUrl.replace('https://', ''), { x: 265, y: 1908, width: 1035, height: 42 }, 'Poster Grotesk', 24);
+    ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
     ctx.font = '38px "carbontyperegular"';
-    const logoWidth = ctx.measureText('Giglist').width;
+    const logoMetrics = ctx.measureText('Giglist');
+    const logoWidth = logoMetrics.width;
+    const logoBottom = 1937;
+    const logoAscent = logoMetrics.actualBoundingBoxAscent ?? 30;
+    const logoDescent = logoMetrics.actualBoundingBoxDescent ?? 8;
+    const logoBaseline = logoBottom - logoDescent;
+    const logoCentre = logoBottom - (logoAscent + logoDescent) / 2;
     ctx.fillStyle = '#bfbfbf'; ctx.font = '20px "Poster Grotesk"';
-    ctx.fillText('Gigs. In a list.', 1540 - logoWidth - 18, 1947);
+    const taglineMetrics = ctx.measureText('Gigs. In a list.');
+    const taglineBaseline = logoCentre + ((taglineMetrics.actualBoundingBoxAscent ?? 16) - (taglineMetrics.actualBoundingBoxDescent ?? 4)) / 2;
+    ctx.fillText('Gigs. In a list.', 1540 - logoWidth - 18, taglineBaseline);
     ctx.fillStyle = '#fff'; ctx.font = '38px "carbontyperegular"';
-    ctx.fillText('Giglist', 1540, 1947);
+    ctx.fillText('Giglist', 1540, logoBaseline);
     ctx.restore();
     return { rows: rowBounds, fontSize: layout.size, columns: layout.columns, listingArea: area };
 };

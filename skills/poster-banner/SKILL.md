@@ -11,9 +11,10 @@ Treat the artist, venue or suburb name as the headline. Artwork should frame it,
 
 For Giglist:
 - Use original canvas/vector artwork or documented licensed imagery. The user rejected generated raster images.
-- Always use the same font family for the header and listings. Header shuffle, selection and sequential navigation change only header artwork, never fonts. The poster font controls change both together. Never alter the Carbon Giglist footer logo.
+- Always use the same font family for the header and listings. Header shuffle changes artwork and alternates the name between all caps and its original casing, never fonts. Header selection and sequential navigation change only artwork. The poster font controls change both together. Never alter the Carbon Giglist footer logo.
 - Keep artwork visible behind the name: never cover illustrated banners with a solid centre panel. Keep artwork and header photos at full colour: no translucent wash or darkening. Use a substantial contrasting outline plus a tight drop shadow for both the name and period, keeping the letter faces crisp; clip artwork to the header bounds. Fit measured text without horizontal distortion.
 - Use fixed poster-space padding and gaps; do not let larger fonts create larger margins. Compact dense bills must retain their listing space.
+- Custom banner and background uploads are processed locally. Extract a palette from opaque pixels; the active custom banner palette takes priority over a custom background. Keep header uploads undimmed with outlined text, and allow removing or reselecting uploads.
 - Illustrated headers dictate the translucent listing-panel tint and coordinated text/accent colours, even when the page theme is shuffled independently. Keep the background image visible through the panel.
 - Do not introduce theatre imagery, fake headliners, invented sponsors or borrowed festival branding.
 - Outlines and offset shadows must maintain contrast against the field, not obscure the letterforms.

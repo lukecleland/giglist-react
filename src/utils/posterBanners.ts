@@ -1,6 +1,8 @@
+import { extraBannerNames, extraListingColours, drawExtraBanner } from './posterBannerCollection';
 import { PosterFonts } from './posterThemes';
 
 export const bannerNames = {
+    ...extraBannerNames,
     'glass-centered': 'Stained glass',
     'western-centered': 'Western engraving',
     'botanical-centered': 'Botanical folk',
@@ -20,6 +22,7 @@ export const isArtworkBanner = (value: string): value is ArtworkBanner => value 
 // Listing panels take their colours from the selected illustration, not the
 // independently selected page theme. Dark shades keep translucent panels legible.
 export const bannerListingColours: Record<ArtworkBanner, {backdrop: string; ink: string; accent: string}> = {
+    ...extraListingColours,
     'glass-centered': {backdrop: '#643b70dd', ink: '#fff7e7', accent: '#f6c94c'},
     'western-centered': {backdrop: '#59371fdd', ink: '#fff7e7', accent: '#f0c38a'},
     'botanical-centered': {backdrop: '#164d43dd', ink: '#fff7e7', accent: '#f5da86'},
@@ -48,6 +51,7 @@ export const bannerFonts = (header: string, current: PosterFonts): PosterFonts =
 export function drawArtworkBanner(ctx: CanvasRenderingContext2D, style: ArtworkBanner, y: number, height: number, field: string, ink: string, accent: string) {
     ctx.save();
     ctx.beginPath(); ctx.rect(0, y, 1600, height); ctx.clip();
+    if (drawExtraBanner(ctx, style, y, height)) { ctx.restore(); return; }
     const colours = ['#f6c94c', '#ea593e', '#276d88', '#f5e7c6', '#643b70'];
     ctx.fillStyle = accent; ctx.fillRect(0, y, 1600, height);
     const path = (points: number[][], color: string, stroke = field, weight = 4) => {

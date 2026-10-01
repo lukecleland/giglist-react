@@ -7,7 +7,7 @@ test('accepts real venue photos and resolves relative URLs', () => {
     expect(realVenueImage('/venues/windsor.jpg')).toBe('https://giglist.com.au/venues/windsor.jpg');
 });
 test.each(posterThemes.map((theme) => theme.id))('renders %s with a venue photo and readable QR quiet zone', (theme) => {
-    const ctx = Object.fromEntries(['fillRect', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'fillText', 'drawImage', 'save', 'restore', 'translate', 'rotate', 'ellipse', 'closePath'].map((name) => [name, jest.fn()]));
+    const ctx = Object.fromEntries(['fillRect', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'fillText', 'strokeText', 'drawImage', 'save', 'restore', 'translate', 'rotate', 'ellipse', 'closePath'].map((name) => [name, jest.fn()]));
     ctx.createLinearGradient = () => ({ addColorStop: jest.fn() });
     ctx.measureText = (value) => ({ width: value.length * 30 });
     const photo = { naturalWidth: 1200, naturalHeight: 800 };
@@ -31,7 +31,7 @@ test('month selection includes every matching gig and sorts dates', () => {
 });
 
 test('dense suburb posters render every gig inside the listing area', () => {
-    const ctx = Object.fromEntries(['fillRect', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'fillText', 'drawImage', 'save', 'restore', 'translate', 'rotate', 'ellipse', 'closePath'].map((name) => [name, jest.fn()]));
+    const ctx = Object.fromEntries(['fillRect', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'fillText', 'strokeText', 'drawImage', 'save', 'restore', 'translate', 'rotate', 'ellipse', 'closePath'].map((name) => [name, jest.fn()]));
     ctx.createLinearGradient = () => ({ addColorStop: jest.fn() });
     ctx.measureText = (text) => ({width: text.length * Number(/([\d.]+)px/.exec(ctx.font)?.[1] || 30) * 0.5});
     const gigs = Array.from({length: 200}, (_, id) => ({artist: `Band ${id}`, name: 'Venue', suburb: 'Perth', start: '8pm', date: '2027-03-01'}));
@@ -52,7 +52,7 @@ test('random selection never repeats the current theme and reaches every alterna
 });
 
 test.each(posterThemes.map((theme) => theme.id))('%s fits all 200 long listings without overlapping the QR footer', (theme) => {
-    const ctx = Object.fromEntries(['fillRect', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'fillText', 'drawImage', 'save', 'restore', 'translate', 'rotate', 'ellipse', 'closePath'].map((name) => [name, jest.fn()]));
+    const ctx = Object.fromEntries(['fillRect', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'fillText', 'strokeText', 'drawImage', 'save', 'restore', 'translate', 'rotate', 'ellipse', 'closePath'].map((name) => [name, jest.fn()]));
     ctx.createLinearGradient = () => ({ addColorStop: jest.fn() });
     ctx.measureText = (text) => ({ width: text.length * Number(/([\d.]+)px/.exec(ctx.font)?.[1] || 30) * 0.5 });
     const gigs = Array.from({length: 200}, (_, id) => ({ artist: `Artist ${id} and the extremely long supporting band name`, name: 'A venue with a long name', suburb: 'South Perth', start: '8pm', date: '2027-03-01' }));
@@ -63,7 +63,7 @@ test.each(posterThemes.map((theme) => theme.id))('%s fits all 200 long listings 
 
 
 test.each(posterThemes.map((theme) => theme.id))('%s keeps artwork full-page behind dense listings', (theme) => {
-    const ctx = Object.fromEntries(['fillRect', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'fillText', 'drawImage', 'save', 'restore', 'translate', 'rotate', 'ellipse', 'closePath'].map((name) => [name, jest.fn()]));
+    const ctx = Object.fromEntries(['fillRect', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'fillText', 'strokeText', 'drawImage', 'save', 'restore', 'translate', 'rotate', 'ellipse', 'closePath'].map((name) => [name, jest.fn()]));
     ctx.createLinearGradient = () => ({ addColorStop: jest.fn() });
     ctx.measureText = (text) => ({width: text.length * 15});
     const artwork = {naturalWidth: 1600, naturalHeight: 2000};
