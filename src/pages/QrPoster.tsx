@@ -1,7 +1,7 @@
 import { PosterUpload, readPosterUpload } from '../utils/posterUpload';
 import { ShuffleControl } from '../components/Poster/ShuffleControl';
 import { upcomingWeekend, weekendGigs } from "../utils/posterWeekend";
-import { ListStyle, nextListStyle, listStyleNames, listStyles } from "../components/Poster/FestivalWordCloud";
+import { ListStyle, listStyleNames, listStyles } from "../components/Poster/FestivalWordCloud";
 import { useEffect, useMemo, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import { Helmet } from "react-helmet-async";
@@ -48,8 +48,12 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
     const [listStyle, setListStyle] = useState<ListStyle>("columns");
     const seenListStyles = useRef<ListStyle[]>(['columns']);
     const shuffleListStyle = () => {
-        if (seenListStyles.current.length >= listStyles.length) seenListStyles.current = [listStyle];
-        const next = nextListStyle(listStyle, Math.random, seenListStyles.current);
+        let choices = availableListStyles.filter(style => style !== selectedListStyle && !seenListStyles.current.includes(style));
+        if (!choices.length) {
+            seenListStyles.current = [selectedListStyle];
+            choices = availableListStyles.filter(style => style !== selectedListStyle);
+        }
+        const next = choices[Math.floor(Math.random() * choices.length)];
         seenListStyles.current.push(next);
         setListStyle(next);
     };
@@ -85,6 +89,9 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
     const [displayName, setDisplayName] = useState<string | null>(null);
     const [isSuburb, setIsSuburb] = useState(false);
     const [isVenue, setIsVenue] = useState(false);
+    const isArtistPoster = !isSuburb && !isVenue;
+    const availableListStyles = isArtistPoster ? listStyles.filter(style => style !== 'festivalDays') : listStyles;
+    const selectedListStyle = weekendOnly && !isArtistPoster ? 'festivalDays' : isArtistPoster && listStyle === 'festivalDays' ? 'columns' : listStyle;
     const captionLine = `upcoming gigs ${isSuburb ? "in" : isVenue ? "at" : "for"}`;
     const caption = `Scan the QR Code to see ${captionLine}\n${displayName || ""}`;
     const [locationPhotos, setLocationPhotos] = useState<LocationPhoto[]>([]);
@@ -262,7 +269,7 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                     }
                     const art = photo ? null : localImage || await loadPosterImage(posterArtwork[artwork]);
                     if (cancelled) return;
-                    drawPoster(context, { theme, header, headerCaps, customBanner: header === "custom" ? bannerUpload?.image : undefined, customPalette: (header === "custom" ? bannerUpload?.palette : undefined) || (useCustomBackground ? backgroundUpload?.palette : undefined), listStyle: weekendOnly ? "festivalDays" : listStyle, periodLabel, fonts: posterFonts || undefined, artwork: art, title: displayName, targetUrl, qr: image, photo, gigs, month, isVenue, isSuburb, photoCredit: localImage ? locationPhoto?.credit : undefined });
+                    drawPoster(context, { theme, header, headerCaps, customBanner: header === "custom" ? bannerUpload?.image : undefined, customPalette: (header === "custom" ? bannerUpload?.palette : undefined) || (useCustomBackground ? backgroundUpload?.palette : undefined), listStyle: selectedListStyle, periodLabel, fonts: posterFonts || undefined, artwork: art, title: displayName, targetUrl, qr: image, photo, gigs, month, isVenue, isSuburb, photoCredit: localImage ? locationPhoto?.credit : undefined });
                 } else {
                 context.fillStyle = background;
                 context.fillRect(0, 0, canvas.width, canvas.height);
@@ -304,7 +311,7 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
             cancelled = true;
             if (objectUrl) URL.revokeObjectURL(objectUrl);
         };
-    }, [bannerUpload, backgroundUpload, useCustomBackground, targetUrl, background, foreground, displayName, captionLine, poster, theme, header, headerCaps, listStyle, weekendOnly, periodLabel, artwork, inverted, venueImage, gigs, month, isVenue, isSuburb, locationPhoto, posterFonts, useVenuePhoto, venuePhotoAttempt]);
+    }, [bannerUpload, backgroundUpload, useCustomBackground, targetUrl, background, foreground, displayName, captionLine, poster, theme, header, headerCaps, selectedListStyle, weekendOnly, periodLabel, artwork, inverted, venueImage, gigs, month, isVenue, isSuburb, locationPhoto, posterFonts, useVenuePhoto, venuePhotoAttempt]);
 
     return (
         <div className={`qr-poster-page${poster ? " poster-editor" : ""}`}>
@@ -373,10 +380,10 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                         {locationLoading ? "Finding local photos…" : "Location imagery"}
                     </button>}
                     {locationMessage && <p role="status">{locationMessage}</p>}
-                    <ShuffleControl label="List style" value={weekendOnly ? 'festivalDays' : listStyle}
-                        options={listStyles.map(value => ({value, label: listStyleNames[value]}))} disabled={weekendOnly}
+                    <ShuffleControl label="List style" value={selectedListStyle}
+                        options={availableListStyles.map(value => ({value, label: listStyleNames[value]}))} disabled={weekendOnly && !isArtistPoster}
                         onChange={value => {setListStyle(value as ListStyle); seenListStyles.current = [value as ListStyle];}}>
-                        <button type="button" className="poster-list-style" disabled={weekendOnly} onClick={() => {shuffleListStyle();}}>Shuffle list style</button>
+                        <button type="button" className="poster-list-style" disabled={weekendOnly && !isArtistPoster} onClick={() => {shuffleListStyle();}}>Shuffle list style</button>
                     </ShuffleControl>
                     <div className="poster-randomise-label">Randomise</div>
                     <button type="button" className="poster-shuffle-everything" {...shuffleProps("Shuffle everything")} onClick={() => {

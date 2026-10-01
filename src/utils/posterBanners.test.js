@@ -22,3 +22,12 @@ test.each(Object.keys(bannerNames))('%s renders a long name without losing dense
     expect(result.rows).toHaveLength(60);
     expect(result.rows.every(row=>row.y>=result.listingArea.y && row.y+row.height<=1710.01)).toBe(true);
 });
+
+test.each(['nocturne', 'cutpaste'])('%s starts dense header artwork at the top edge and moves listings up', theme => {
+    const ctx=context();
+    const gigs=Array.from({length:30},(_,i)=>({artist:`Band ${i}`,name:'Venue',date:'2026-10-02',start:'8PM',suburb:'Perth'}));
+    const result=drawPoster(ctx,{theme,header:'ripple-centered',title:'Perth',targetUrl:'https://giglist.com.au/perth',qr:{},photo:null,gigs,isSuburb:true});
+    expect(ctx.rect).toHaveBeenCalledWith(0,0,1600,theme==='nocturne' ? 240 : 225);
+    expect(result.listingArea.y).toBe(theme==='nocturne' ? 260 : 265);
+    expect(result.listingArea.y+result.listingArea.height).toBe(1710);
+});

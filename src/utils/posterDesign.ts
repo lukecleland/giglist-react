@@ -208,20 +208,20 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
             rect(ctx, bg + (mono ? '70' : '99'), 0, 0, 1600, 1930);
             const inset = theme.layout === 'frame' || theme.layout === 'ticket' ? 100 : 65;
             if (['masthead', 'collage', 'rail', 'split'].includes(theme.layout)) {
-                rect(ctx, bg + 'f5', 35, 35, 1530, 245);
-                if (!centered) rect(ctx, accent, alt ? 1525 : 35, 35, 40, 245);
+                rect(ctx, bg + 'f5', 35, 0, 1530, 245);
+                if (!centered) rect(ctx, accent, alt ? 1525 : 35, 0, 40, 245);
             } else {
-                rect(ctx, bg + 'df', inset - 20, 45, 1640 - inset * 2, 245);
-                line(ctx, accent, inset, 285, 1600 - inset, 285, theme.layout === 'cover' ? 1 : 4);
+                rect(ctx, bg + 'df', inset - 20, 10, 1640 - inset * 2, 245);
+                line(ctx, accent, inset, 250, 1600 - inset, 250, theme.layout === 'cover' ? 1 : 4);
             }
-            titleBox = {x: inset, y: 75, width: 1600 - inset * 2, height: 150};
+            titleBox = {x: inset, y: 40, width: 1600 - inset * 2, height: 150};
             if (centered) align = 'center';
             const headerInk = headerBackground(ctx, theme, options, titleBox);
             ctx.fillStyle = headerInk;
             const heading = fittedHeading(ctx, (options.headerCaps ?? (theme.font === 'Poster Condensed')) ? options.title.toUpperCase() : options.title, titleBox, theme.font, align, false, headerEffect);
             ctx.fillStyle = headerInk;
             fittedText(ctx, month, {x: inset, y: heading.bottom + 10, width: titleBox.width, height: 50}, 'Poster Grotesk', 32, align, true, false, headerEffect);
-            return {x: inset, y: 300, width: 1600 - inset * 2, height: 1410, columns: 3, ink, accent, backdrop: bg + (alt ? 'e8' : 'da')};
+            return {x: inset, y: 265, width: 1600 - inset * 2, height: 1445, columns: 3, ink, accent, backdrop: bg + (alt ? 'e8' : 'da')};
         }
         switch (theme.layout) {
             case 'sleeve':
@@ -348,16 +348,16 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
         }
         ctx.save();
         if (shadow) { ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3; }
-        headingInk = headerBackground(ctx, theme, options, {x: 65, y: 70, width: 1470, height: 165});
+        headingInk = headerBackground(ctx, theme, options, {x: 65, y: 40, width: 1470, height: 165});
         headingAccent = headingInk;
         ctx.fillStyle = headingInk;
         const title = (options.headerCaps ?? (theme.font === 'Poster Condensed')) ? options.title.toUpperCase() : options.title;
         const align = centered || id === 'solar' || id === 'wildflower' ? 'center' : 'left';
-        const heading = fittedHeading(ctx, title, {x: 65, y: 70, width: 1470, height: 165}, theme.font, align, false, headerEffect);
+        const heading = fittedHeading(ctx, title, {x: 65, y: 40, width: 1470, height: 165}, theme.font, align, false, headerEffect);
         ctx.fillStyle = headingAccent;
         fittedText(ctx, month, {x: 65, y: heading.bottom + 10, width: 1470, height: 55}, 'Poster Grotesk', 34, align, true, false, headerEffect);
         ctx.restore();
-        return {x: 65, y: 290, width: 1470, height: 1420, columns: 3, ink, accent, backdrop, shadow};
+        return {x: 65, y: 260, width: 1470, height: 1450, columns: 3, ink, accent, backdrop, shadow};
     }
     switch (id) {
         case 'nocturne':
@@ -456,6 +456,7 @@ const listingLayout = (ctx: CanvasRenderingContext2D, gigs: TListing[], options:
 };
 
 export const drawPoster = (ctx: CanvasRenderingContext2D, options: PosterOptions) => {
+    if (options.listStyle === 'festivalDays' && !options.isVenue && !options.isSuburb) options = {...options, listStyle: 'columns'};
     const selectedTheme = posterThemes.find((item) => item.id === options.theme) || posterThemes[0];
     const theme = {...selectedTheme, ...(options.customPalette ? {background: options.customPalette.background, ink: options.customPalette.ink, accent: options.customPalette.accent} : {}), font: options.fonts?.title || selectedTheme.font};
     const bg = theme.background;
