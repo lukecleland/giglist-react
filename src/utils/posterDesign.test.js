@@ -14,14 +14,14 @@ test.each(posterThemes.map((theme) => theme.id))('renders %s with a venue photo 
     const qr = {};
     drawPoster(ctx, {theme, title: 'Windsor Hotel', targetUrl: 'https://giglist.com.au/windsorhotel', photo, artwork: {naturalWidth: 1000, naturalHeight: 1000}, qr});
     expect(ctx.drawImage.mock.calls[0][0]).toBe(photo);
-    expect(ctx.drawImage).toHaveBeenLastCalledWith(qr, 1360, 1745, 140, 140);
-    expect(ctx.fillRect).toHaveBeenCalledWith(1340, 1725, 180, 180);
+    expect(ctx.drawImage).toHaveBeenLastCalledWith(qr, 100, 1787, 140, 140);
+    expect(ctx.fillRect).toHaveBeenCalledWith(80, 1767, 180, 180);
     expect(ctx.fillText.mock.calls.map(([text]) => text).join(' ').toLowerCase()).toContain('windsor');
 });
 
 
 test('month selection includes every matching gig and sorts dates', () => {
-    const gigs = Array.from({length: 75}, (_, id) => ({id, artist: 'Band', name: 'Venue', suburb: 'Perth', date: `2027-03-${String(28 - id % 28).padStart(2, '0')}`}));
+    const gigs = Array.from({length: 75}, (_, id) => ({id, artist: `Band ${id}`, name: 'Venue', suburb: 'Perth', date: `2027-03-${String(28 - id % 28).padStart(2, '0')}`}));
     gigs.push({...gigs[0], id: 100, date: '2027-04-01'});
     const result = posterGigs([{listings: gigs}], 'perth', 2);
     expect(result).toHaveLength(75);

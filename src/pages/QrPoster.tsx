@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { upcomingWeekend, weekendGigs } from "../utils/posterWeekend";
+import { ListStyle, nextListStyle, listStyleNames, listStyles } from "../components/Poster/FestivalWordCloud";
+import { useEffect, useMemo, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import { Helmet } from "react-helmet-async";
 import axios from "axios";
@@ -6,18 +8,42 @@ import { getTourProfile } from "../utils/tourProfile";
 import { compactName } from "../utils/searchUrl";
 import { normalizeGigText } from "../utils/normalizeGigText";
 import "./QrPoster.scss";
-import { drawPoster, posterThemes, realVenueImage, posterGigs, posterMonthNames, randomPosterTheme } from "../utils/posterDesign";
+import { drawPoster, nextPosterHeader, PosterHeader, posterThemes, realVenueImage, posterGigs, posterMonthNames, randomPosterTheme } from "../utils/posterDesign";
 import { posterArtwork, loadPosterImage } from "../utils/posterArtwork";
 import { fetchLocationPhotos, LocationPhoto } from "../utils/locationPhotos";
-import { nextPosterArtwork, nextPosterFonts, PosterFonts } from "../utils/posterThemes";
+import { nextPosterArtwork, nextPosterFonts, nextListingFonts, nextHeaderFonts, PosterFonts } from "../utils/posterThemes";
 import { TListing } from "../types/types";
 import { posterMonths } from "../utils/qrUrl";
 import { filterGigSearch } from "../utils/searchUrl";
 
 export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: string; poster?: boolean; month?: number }) => {
-    const [gigs, setGigs] = useState<TListing[]>([]);
+    const [allGigs, setGigs] = useState<TListing[]>([]);
+    const [weekendOnly, setWeekendOnly] = useState(false);
+    const [weekend, setWeekend] = useState(() => upcomingWeekend());
+    const gigs = useMemo(() => weekendOnly ? weekendGigs(allGigs, weekend) : allGigs.filter(gig => month === undefined || Number(gig.date.slice(5,7)) === month + 1), [allGigs, weekendOnly, weekend, month]);
+    const periodLabel = weekendOnly ? weekend.label : undefined;
+    const [rendering, setRendering] = useState(false);
+    const [listStyle, setListStyle] = useState<ListStyle>("columns");
+    const seenListStyles = useRef<ListStyle[]>(['columns']);
+    const shuffleListStyle = () => {
+        if (seenListStyles.current.length >= listStyles.length) seenListStyles.current = [listStyle];
+        const next = nextListStyle(listStyle, Math.random, seenListStyles.current);
+        seenListStyles.current.push(next);
+        setListStyle(next);
+    };
+    const [header, setHeader] = useState<PosterHeader>("gradient");
     const [theme, setTheme] = useState("nocturne");
-    const [posterFonts, setPosterFonts] = useState<PosterFonts | null>(null);
+    const [fontSettings, setPosterFonts] = useState<PosterFonts | null>(null);
+    const [matchFonts, setMatchFonts] = useState(true);
+    const posterFonts = useMemo<PosterFonts | null>(() => {
+        if (!matchFonts) return fontSettings;
+        const title = fontSettings?.title || posterThemes.find(item => item.id === theme)!.font;
+        return {...fontSettings, title, listing: title};
+    }, [fontSettings, matchFonts, theme]);
+    const currentPosterFonts = (): PosterFonts => {
+        const title = posterThemes.find(item => item.id === theme)!.font;
+        return posterFonts || {title, listing: weekendOnly || listStyle !== 'columns' ? title : 'Poster Grotesk'};
+    };
     const [artwork, setArtwork] = useState("mountains");
     const [useVenuePhoto, setUseVenuePhoto] = useState(true);
     const [venuePhotoFailed, setVenuePhotoFailed] = useState(false);
@@ -26,9 +52,15 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
     const [imageWarning, setImageWarning] = useState("");
     const qrRef = useRef<HTMLDivElement>(null);
     const [png, setPng] = useState("");
+    const [activeShuffle, setActiveShuffle] = useState<string | null>(null);
+    const shuffleLabel = (label: string) => label;
+    const shuffleProps = (label: string) => ({
+        "aria-label": label, "aria-busy": activeShuffle === label, disabled: !!activeShuffle,
+    });
     const [ready, setReady] = useState(false);
     const [error, setError] = useState("");
     const [inverted, setInverted] = useState(false);
+    const [configOpen, setConfigOpen] = useState(false);
     const [displayName, setDisplayName] = useState<string | null>(null);
     const [isSuburb, setIsSuburb] = useState(false);
     const [isVenue, setIsVenue] = useState(false);
@@ -58,7 +90,6 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
         }
     };
     const useLocationImagery = () => {
-        if (locationPhoto) { setLocationPhoto(null); setLocationMessage(""); return; }
         if (locationPhotos.length) { setLocationPhoto(locationPhotos[0]); return; }
         void loadLocationImagery(displayName || "", locationStates);
     };
@@ -79,6 +110,8 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
         locationRequest.current?.abort(); locationRequest.current = null;
         setLocationPhoto(null); setLocationPhotos([]); setLocationStates([]);
         setLocationLoading(false); setLocationMessage("");
+        setPng("");
+        setActiveShuffle(null);
         setDisplayName(null);
         setVenueImage(null);
         setUseVenuePhoto(true);
@@ -89,7 +122,7 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                 if (!cancelled) {
                     const dates = normalizeGigText(data);
                     const profile = getTourProfile(dates, slug);
-                    if (poster) setGigs(posterGigs(dates, slug, month));
+                    if (poster) setGigs(posterGigs(dates, slug));
                     if (poster && profile.isVenue) {
                         const photo = filterGigSearch(dates, slug, true).flatMap((date) => date.listings)
                             .filter((gig) => gig.name.replace(/&amp;/gi, "&") === profile.title)
@@ -122,12 +155,12 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
     useEffect(() => {
         let cancelled = false;
         let objectUrl = "";
-        setPng("");
         setReady(false);
         setError("");
         setImageWarning("");
         setVenuePhotoFailed(false);
-        if (!displayName) return;
+        if (!displayName) { setRendering(false); return; }
+        setRendering(true);
 
         const generate = async () => {
             try {
@@ -137,7 +170,8 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                     const themeFont = posterFonts?.title || posterThemes.find((item) => item.id === theme)?.font || "Poster Condensed";
                     const loaded = await Promise.all([
                         document.fonts.load(`100px "${themeFont}"`),
-                        document.fonts.load(`100px "${posterFonts?.listing || "Poster Grotesk"}"`),
+                        document.fonts.load(`700 100px "${posterFonts?.listing || themeFont}"`),
+                        document.fonts.load(`${posterFonts?.listing === "Poster Serif" ? 400 : 700} 100px "${posterFonts?.listing || "Poster Grotesk"}"`),
                         document.fonts.load('400 40px "Poster Grotesk"'),
                         document.fonts.load('700 40px "Poster Grotesk"'),
                         document.fonts.load('60px "Poster Condensed"'),
@@ -182,7 +216,7 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                     }
                     const art = photo ? null : localImage || await loadPosterImage(posterArtwork[artwork]);
                     if (cancelled) return;
-                    drawPoster(context, { theme, fonts: posterFonts || undefined, artwork: art, title: displayName, targetUrl, qr: image, photo, gigs, month, isVenue, isSuburb, photoCredit: localImage ? locationPhoto?.credit : undefined });
+                    drawPoster(context, { theme, header, listStyle: weekendOnly ? "festivalDays" : listStyle, periodLabel, fonts: posterFonts || undefined, artwork: art, title: displayName, targetUrl, qr: image, photo, gigs, month, isVenue, isSuburb, photoCredit: localImage ? locationPhoto?.credit : undefined });
                 } else {
                 context.fillStyle = background;
                 context.fillRect(0, 0, canvas.width, canvas.height);
@@ -201,10 +235,21 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                 context.fillText(displayName, 800, 1870, 1360);
                 }
                 if (cancelled) return;
-                setPng(canvas.toDataURL("image/png"));
+                const nextPng = canvas.toDataURL("image/png");
+                // Decode the replacement before swapping out the visible poster.
+                const preview = new Image();
+                await new Promise<void>((resolve, reject) => {
+                    preview.onload = () => resolve();
+                    preview.onerror = () => reject(new Error("Poster preview could not load"));
+                    preview.src = nextPng;
+                });
+                if (cancelled) return;
+                setPng(nextPng);
+                setReady(true);
             } catch {
                 if (!cancelled) setError("We couldn’t generate the PNG. Please reload this page to try again.");
             } finally {
+                if (!cancelled) { setActiveShuffle(null); setRendering(false); }
                 if (objectUrl) URL.revokeObjectURL(objectUrl);
             }
         };
@@ -213,18 +258,27 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
             cancelled = true;
             if (objectUrl) URL.revokeObjectURL(objectUrl);
         };
-    }, [targetUrl, background, foreground, displayName, captionLine, poster, theme, artwork, inverted, venueImage, gigs, month, isVenue, isSuburb, locationPhoto, posterFonts, useVenuePhoto, venuePhotoAttempt]);
+    }, [targetUrl, background, foreground, displayName, captionLine, poster, theme, header, listStyle, weekendOnly, periodLabel, artwork, inverted, venueImage, gigs, month, isVenue, isSuburb, locationPhoto, posterFonts, useVenuePhoto, venuePhotoAttempt]);
 
     return (
-        <div className="qr-poster-page">
+        <div className={`qr-poster-page${poster ? " poster-editor" : ""}`}>
             <Helmet>
                 <title>{poster ? "Giglist | Printable gig poster" : "Giglist | Printable QR code"}</title>
                 <meta name="robots" content="noindex" />
                 <body className={`qr-poster-body${inverted ? " qr-poster-inverted" : ""}${poster ? " gig-poster-body" : ""}`} />
             </Helmet>
-            <div className="qr-poster-controls">
+            <aside className="qr-poster-controls" aria-busy={poster && (rendering || !!activeShuffle || locationLoading)}>
+                {poster && (rendering || !!activeShuffle || locationLoading) && <div className="poster-panel-loading" role="status" aria-label="Updating poster">
+                    <span className="poster-button-spinner" aria-hidden="true" />
+                </div>}
+                <fieldset className="poster-controls-fieldset" disabled={poster && (rendering || !!activeShuffle || locationLoading)}>
+                {poster && <div className="poster-panel-heading"><h2>Poster settings</h2>
+                    <button type="button" className="poster-panel-toggle" aria-expanded={configOpen} aria-controls="poster-settings-content"
+                        onClick={() => setConfigOpen(value => !value)}>{configOpen ? "Close" : "Configure"}</button>
+                </div>}
+                <div id={poster ? "poster-settings-content" : undefined} className={`poster-controls-content${configOpen ? " is-open" : ""}`}>
                 <p>QR code links to <a href={targetUrl}>{targetUrl}</a></p>
-                {poster && <p>{month === undefined ? "Upcoming gigs" : `Live music in ${posterMonthNames[month]}`} · {gigs.length} listings</p>}
+                {poster && <p>{periodLabel || (month === undefined ? "Upcoming gigs" : `Live music in ${posterMonthNames[month]}`)} · {gigs.length} listings</p>}
                 {poster && <label className="poster-theme-label">Poster theme
                     <select value={theme} onChange={(event) => {
                         const next = event.target.value; setTheme(next);
@@ -233,26 +287,61 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                         {posterThemes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
                     </select>
                 </label>}
+                {poster && <label className="poster-match-fonts">
+                    <input type="checkbox" checked={matchFonts} onChange={event => {
+                        setPosterFonts(currentPosterFonts());
+                        setMatchFonts(event.target.checked);
+                    }} /> Match header and listing font
+                </label>}
+                {poster && <label className="poster-weekend-toggle"><input type="checkbox" checked={weekendOnly} onChange={event => { setWeekend(upcomingWeekend()); setWeekendOnly(event.target.checked); }} /> Upcoming weekend (Fri–Sun)</label>}
+                {poster && <label className="poster-theme-label">List style
+                    <select aria-label="List style" value={weekendOnly ? "festivalDays" : listStyle} disabled={!!activeShuffle || weekendOnly} onChange={event => {
+                        const next = event.target.value as ListStyle;
+                        setListStyle(next);
+                        seenListStyles.current = [next];
+                    }}>
+                        {listStyles.map(style => <option key={style} value={style}>{listStyleNames[style]}</option>)}
+                    </select>
+                </label>}
                 {poster && <>
-                    <button type="button" className="poster-random" onClick={() => {
+                    <button type="button" className="poster-random" {...shuffleProps("Shuffle theme")} onClick={() => {
+                        setActiveShuffle("Shuffle theme");
                         const next = randomPosterTheme(theme); setTheme(next);
                         setArtwork(nextPosterArtwork(next, artwork));
                     }}>
-                        <span aria-hidden="true">⤨</span> Random theme
+                        {shuffleLabel("Shuffle theme")}
                     </button>
-                    <button type="button" className="poster-font-shuffle" onClick={() => {
-                        const current = posterFonts || {title: posterThemes.find((item) => item.id === theme)!.font, listing: "Poster Grotesk" as const};
-                        setPosterFonts(nextPosterFonts(current));
-                    }}>Shuffle fonts</button>
-                    <button type="button" className="poster-shuffle" disabled={!!locationPhoto && locationPhotos.length < 2} onClick={shuffleImage}>Shuffle image</button>
+                    <button type="button" className="poster-shuffle-everything" {...shuffleProps("Shuffle everything")} onClick={() => {
+                        setActiveShuffle("Shuffle everything");
+                        setHeader(nextPosterHeader(header));
+                        shuffleListStyle();
+                        const next = randomPosterTheme(theme);
+                        const currentFonts = currentPosterFonts();
+                        setTheme(next);
+                        setPosterFonts(matchFonts ? nextHeaderFonts(currentFonts) : nextPosterFonts(currentFonts));
+                        setArtwork(nextPosterArtwork(next, artwork));
+                        setUseVenuePhoto(false);
+                        locationRequest.current?.abort();
+                        locationRequest.current = null;
+                        setLocationLoading(false);
+                        setLocationPhoto(null);
+                        setLocationMessage("");
+                    }}>{shuffleLabel("Shuffle everything")}</button>
+                    <button type="button" className="poster-header-shuffle" {...shuffleProps("Shuffle header")} title={`Current header: ${header}`} onClick={() => { setActiveShuffle("Shuffle header"); setHeader(nextPosterHeader(header)); setPosterFonts(nextHeaderFonts(currentPosterFonts())); }}>{shuffleLabel("Shuffle header")}</button>
+                    <button type="button" className="poster-font-shuffle" {...shuffleProps("Shuffle fonts")} onClick={() => {
+                        setActiveShuffle("Shuffle fonts");
+                        const next = nextListingFonts(currentPosterFonts());
+                        setPosterFonts(matchFonts ? {...next, title: next.listing} : next);
+                    }}>{shuffleLabel("Shuffle fonts")}</button>
+                    <button type="button" className="poster-shuffle" {...shuffleProps("Shuffle image")} disabled={!!activeShuffle || (!!locationPhoto && locationPhotos.length < 2)} onClick={() => { setActiveShuffle("Shuffle image"); shuffleImage(); }}>{shuffleLabel("Shuffle image")}</button>
                     {venueImage && <button type="button" className="poster-venue-photo"
                         aria-pressed={useVenuePhoto && !venuePhotoFailed} onClick={() => {
                             setUseVenuePhoto(true);
                             setVenuePhotoAttempt((attempt) => attempt + 1);
                         }}>{useVenuePhoto && !venuePhotoFailed ? "Venue photo selected" : "Use venue photo"}</button>}
-                    {isSuburb && <button type="button" className="poster-location" aria-pressed={!!locationPhoto}
+                    {isSuburb && !locationPhoto && <button type="button" className="poster-location" aria-pressed={!!locationPhoto}
                         disabled={locationLoading || !displayName} onClick={useLocationImagery}>
-                        {locationLoading ? "Finding local photos…" : locationPhoto ? "Use theme artwork" : "Location imagery"}
+                        {locationLoading ? "Finding local photos…" : "Location imagery"}
                     </button>}
                     {locationMessage && <p role="status">{locationMessage}</p>}
                     {locationPhoto && <p className="poster-photo-credit">
@@ -260,24 +349,28 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                         {" — "}{locationPhoto.artist}{" · "}
                         {locationPhoto.licenseUrl ? <a href={locationPhoto.licenseUrl} target="_blank" rel="noreferrer">{locationPhoto.license}</a> : locationPhoto.license}
                     </p>}
-                    <p className="poster-theme-description">{posterThemes.find((item) => item.id === theme)?.description}</p>
+                    <div className="poster-settings-gap" aria-hidden="true" />
                 </>}
+                <div className="poster-export-actions">
                 {png && <a className="qr-poster-button" href={png}
-                    download={`giglist-${targetUrl.split("/").pop()}-${poster ? theme + "-poster" + (month === undefined ? "" : "-" + posterMonths[month]) : "qr"}.png`}>Download PNG</a>}
+                    download={`giglist-${targetUrl.split("/").pop()}-${poster ? theme + "-poster" + (weekendOnly ? "-weekend-" + weekend.start : "") + (weekendOnly || month === undefined ? "" : "-" + posterMonths[month]) : "qr"}.png`}>Download PNG</a>}
                 <button type="button" disabled={!ready} onClick={() => window.print()}>Print</button>
                 {!poster && <button type="button" aria-pressed={inverted}
                     onClick={() => setInverted((value) => !value)}>Invert colours</button>}
+                </div>
                 {!png && !error && <p role="status">{poster ? "Preparing your poster…" : "Preparing your QR code…"}</p>}
                 {imageWarning && <p role="status">{imageWarning}</p>}
                 {error && <p role="alert">{error}</p>}
-            </div>
+                </div>
+                </fieldset>
+            </aside>
             <div ref={qrRef} hidden aria-hidden="true">
                 <QRCode value={targetUrl} level="M" size={1120}
                     bgColor={poster ? "#fff" : background} fgColor={poster ? "#000" : foreground} />
             </div>
             {png && <img className="qr-poster-image" src={png}
                 onLoad={() => setReady(true)}
-                alt={poster ? `${displayName}: ${month === undefined ? "Upcoming gigs" : "Live music in " + posterMonthNames[month]}. ${gigs.length} listings. Scan for gig details.` : `Giglist. QR code for ${targetUrl}. ${caption}`} />}
+                alt={poster ? `${displayName}: ${periodLabel || (month === undefined ? "Upcoming gigs" : "Live music in " + posterMonthNames[month])}. ${gigs.length} listings. Scan QR code for gig details.` : `Giglist. QR code for ${targetUrl}. ${caption}`} />}
         </div>
     );
 };

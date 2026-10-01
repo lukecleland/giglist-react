@@ -9,7 +9,8 @@ test('accepts exportable credited photos and converts metadata to plain text', (
     const [photo] = parseLocationPhotos(data(page()));
     expect(photo.artist).toBe('Jane & Jo');
     expect(photo.credit).toContain('creativecommons.org/licenses/by/4.0/');
-    expect(photo.credit).toContain('commons.wikimedia.org/?curid=1');
+    expect(photo.credit).not.toContain('commons.wikimedia.org');
+    expect(photo.source).toBe('https://commons.wikimedia.org/?curid=1');
     expect(photo.credit).toContain('Cropped/colour adjusted');
 });
 test('rejects unknown licenses, share-alike, undersized, non-raster and untrusted URLs', () => {

@@ -29,7 +29,7 @@ export const parseLocationPhotos = (data: any): LocationPhoto[] => Object.values
         const licenseUrl = safeUrl((meta.LicenseUrl?.value || '').replace(/^http:/, 'https:'), 'creativecommons.org');
         if (!url || !artist || (/^CC BY /i.test(license) && !licenseUrl) || !Number.isSafeInteger(page.pageid)) return [];
         const source = `https://commons.wikimedia.org/?curid=${page.pageid}`;
-        const credit = `Photo: ${artist} · ${license}${licenseUrl ? ' (' + licenseUrl.replace('https://', '') + ')' : ''} · commons.wikimedia.org/?curid=${page.pageid} · Cropped/colour adjusted`;
+        const credit = `Photo: ${artist} · ${license}${licenseUrl ? ' (' + licenseUrl.replace('https://', '') + ')' : ''} · Cropped/colour adjusted`;
         return [{id: page.pageid, url, title, artist, license, licenseUrl, source, credit}];
     }).sort((a, b) => {
         const sceneScore = (title: string) =>

@@ -50,3 +50,48 @@ Art Institute of Chicago Open Access images; the museum API marks each selected 
 - art76395: Flower Clouds — https://www.artic.edu/artworks/76395 — Public domain / Art Institute Open Access
 - art90316: Guardian Spirit of the Waters — https://www.artic.edu/artworks/90316 — Public domain / Art Institute Open Access
 
+
+## October background expansion
+
+Downloaded and visually reviewed 2026-10-01. Optimised local JPEGs for reliable export.
+
+- aurora: https://images.unsplash.com/photo-1531366936337-7c912a4589a7 — Unsplash license https://unsplash.com/license
+- starlit: https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3 — Unsplash license https://unsplash.com/license
+- waves: https://images.unsplash.com/photo-1471922694854-ff1b63b20054 — Unsplash license https://unsplash.com/license
+- waterfall: https://images.unsplash.com/photo-1432405972618-c60b0225b8f9 — Unsplash license https://unsplash.com/license
+- citylights: https://images.unsplash.com/photo-1519501025264-65ba15a82390 — Unsplash license https://unsplash.com/license
+- coast: https://images.unsplash.com/photo-1473116763249-2faaef81ccda — Unsplash license https://unsplash.com/license
+- dunes: https://images.unsplash.com/photo-1473580044384-7ba9967e16a0 — Unsplash license https://unsplash.com/license
+- redcanyon: https://images.unsplash.com/photo-1469854523086-cc02fe5d8800 — Unsplash license https://unsplash.com/license
+- leaves: https://images.unsplash.com/photo-1518531933037-91b2f5f229cc — Unsplash license https://unsplash.com/license
+- ferns: https://images.unsplash.com/photo-1497250681960-ef046c08a56e — Unsplash license https://unsplash.com/license
+- gigcrowd: https://images.unsplash.com/photo-1501386761578-eac5c94b800a — Unsplash license https://unsplash.com/license
+- acoustic: https://images.unsplash.com/photo-1510915361894-db8b60106cb1 — Unsplash license https://unsplash.com/license
+- mistcastle: https://images.unsplash.com/photo-1518709268805-4e9042af9f23 — Unsplash license https://unsplash.com/license
+
+## Intimate acoustic and small-room collection
+
+Reviewed 2026-10-01. Atmospheric imagery, not photographs of the listed performer or venue.
+
+- pianokeys: https://images.unsplash.com/photo-1520523839897-bd0b52f945a0 — Unsplash license https://unsplash.com/license
+- acousticroom: https://images.unsplash.com/photo-1511379938547-c1f69419868d — Unsplash license https://unsplash.com/license
+- microphone: https://images.unsplash.com/photo-1478737270239-2f02b77fc618 — Unsplash license https://unsplash.com/license
+- saxophone: https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f — Unsplash license https://unsplash.com/license
+- coffeehouse: https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb — Unsplash license https://unsplash.com/license
+
+## Additional instruments and landscapes
+
+Bundled locally; atmospheric imagery, not the advertised performer or venue.
+
+- electricguitar: https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02 — Unsplash license https://unsplash.com/license
+- guitarist: https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee — Unsplash license https://unsplash.com/license
+- vinyl: https://images.unsplash.com/photo-1461360370896-922624d12aa1 — Unsplash license https://unsplash.com/license
+- drums: https://images.unsplash.com/photo-1519892300165-cb5542fb47c7 — Unsplash license https://unsplash.com/license
+- pianoroom: https://images.unsplash.com/photo-1552422535-c45813c61732 — Unsplash license https://unsplash.com/license
+- travellingguitar: https://images.unsplash.com/photo-1524650359799-842906ca1c06 — Unsplash license https://unsplash.com/license
+- tropical: https://images.unsplash.com/photo-1518495973542-4542c06a5843 — Unsplash license https://unsplash.com/license
+- sunrisepeaks: https://images.unsplash.com/photo-1500534623283-312aade485b7 — Unsplash license https://unsplash.com/license
+- forestbridge: https://images.unsplash.com/photo-1447752875215-b2761acb3c5d — Unsplash license https://unsplash.com/license
+- goldenmeadow: https://images.unsplash.com/photo-1470252649378-9c29740c9fa8 — Unsplash license https://unsplash.com/license
+- lavenderlake: https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8 — Unsplash license https://unsplash.com/license
+- layeredhills: https://images.unsplash.com/photo-1500534314209-a25ddb2bd429 — Unsplash license https://unsplash.com/license

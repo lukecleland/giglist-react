@@ -1,3 +1,33 @@
+import electricguitar from '../assets/posters/electricguitar.jpg';
+import guitarist from '../assets/posters/guitarist.jpg';
+import vinyl from '../assets/posters/vinyl.jpg';
+import drums from '../assets/posters/drums.jpg';
+import pianoroom from '../assets/posters/pianoroom.jpg';
+import travellingguitar from '../assets/posters/travellingguitar.jpg';
+import tropical from '../assets/posters/tropical.jpg';
+import sunrisepeaks from '../assets/posters/sunrisepeaks.jpg';
+import forestbridge from '../assets/posters/forestbridge.jpg';
+import goldenmeadow from '../assets/posters/goldenmeadow.jpg';
+import lavenderlake from '../assets/posters/lavenderlake.jpg';
+import layeredhills from '../assets/posters/layeredhills.jpg';
+import pianokeys from '../assets/posters/pianokeys.jpg';
+import acousticroom from '../assets/posters/acousticroom.jpg';
+import microphone from '../assets/posters/microphone.jpg';
+import saxophone from '../assets/posters/saxophone.jpg';
+import coffeehouse from '../assets/posters/coffeehouse.jpg';
+import aurora from '../assets/posters/aurora.jpg';
+import starlit from '../assets/posters/starlit.jpg';
+import waves from '../assets/posters/waves.jpg';
+import waterfall from '../assets/posters/waterfall.jpg';
+import citylights from '../assets/posters/citylights.jpg';
+import coast from '../assets/posters/coast.jpg';
+import dunes from '../assets/posters/dunes.jpg';
+import redcanyon from '../assets/posters/redcanyon.jpg';
+import leaves from '../assets/posters/leaves.jpg';
+import ferns from '../assets/posters/ferns.jpg';
+import gigcrowd from '../assets/posters/gigcrowd.jpg';
+import acoustic from '../assets/posters/acoustic.jpg';
+import mistcastle from '../assets/posters/mistcastle.jpg';
 import alpine from '../assets/posters/alpine.jpg';
 import art129849 from '../assets/posters/art129849.jpg';
 import art21720 from '../assets/posters/art21720.jpg';
@@ -38,7 +68,7 @@ import sunridge from '../assets/posters/sunridge.jpg';
 import violet from '../assets/posters/violet.jpg';
 import woodland from '../assets/posters/woodland.jpg';
 
-export const posterArtwork: Record<string, string> = {alpine, art129849, art21720, art24645, art25110, art47398, art76395, art87008, art8980, art8983, art8987, art8991, art90316, canopy, canvas, colourwash, concertlights, crowd, desert, earth, flowers, forest, galaxy, goldenland, inkflow, mist, mountains, nebula, night, ocean, paint, palms, pigment, purplegig, soundstage, starcloud, sunridge, violet, woodland};
+export const posterArtwork: Record<string, string> = {electricguitar, guitarist, vinyl, drums, pianoroom, travellingguitar, tropical, sunrisepeaks, forestbridge, goldenmeadow, lavenderlake, layeredhills, pianokeys, acousticroom, microphone, saxophone, coffeehouse, aurora, starlit, waves, waterfall, citylights, coast, dunes, redcanyon, leaves, ferns, gigcrowd, acoustic, mistcastle, alpine, art129849, art21720, art24645, art25110, art47398, art76395, art87008, art8980, art8983, art8987, art8991, art90316, canopy, canvas, colourwash, concertlights, crowd, desert, earth, flowers, forest, galaxy, goldenland, inkflow, mist, mountains, nebula, night, ocean, paint, palms, pigment, purplegig, soundstage, starcloud, sunridge, violet, woodland};
 
 export const posterImageSource = (src: string, development = process.env.NODE_ENV === 'development'): string => {
     if (!development) return src;

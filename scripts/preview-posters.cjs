@@ -8,11 +8,22 @@ const { renderToStaticMarkup } = require('react-dom/server');
 const QR = require('react-qr-code').default;
 const root = path.resolve(__dirname, '..');
 const out = process.argv[2] || '/tmp/giglist-poster-themes.html';
-const modules = ['posterDesign', 'posterThemes', 'searchUrl'].map((name) => {
+const modules = ['posterDesign', 'posterThemes', 'posterTextEffects', 'posterDuplicates', 'searchUrl', '../components/Poster/FestivalWordCloud'].map((name) => {
     const js = ts.transpileModule(fs.readFileSync(path.join(root, 'src/utils', name + '.ts'), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2019 } }).outputText;
-    return `${JSON.stringify('./' + name)}: function(require,exports,module){${js}}`;
+    return `${JSON.stringify(name.startsWith('../') ? name : './' + name)}: function(require,exports,module){${js}}`;
 }).join(',');
 const fonts = [
+    ['Rye', 'src/styles/font/poster/Rye-Regular.ttf', '400'],
+    ['Sancreek', 'src/styles/font/poster/Sancreek-Regular.ttf', '400'],
+    ['Ewert', 'src/styles/font/poster/Ewert-Regular.ttf', '400'],
+
+    ['Bebas Neue', 'src/styles/font/poster/BebasNeue-Regular.ttf', '400'],
+    ['Oswald', 'src/styles/font/poster/Oswald[wght].ttf', '200 700'],
+    ['Abril Fatface', 'src/styles/font/poster/AbrilFatface-Regular.ttf', '400'],
+    ['Righteous', 'src/styles/font/poster/Righteous-Regular.ttf', '400'],
+    ['Bitter', 'src/styles/font/poster/Bitter[wght].ttf', '100 900'],
+    ['Outfit', 'src/styles/font/poster/Outfit[wght].ttf', '100 900'],
+
     ['carbontyperegular', 'src/styles/font/carbon_2-webfont.woff2', '400'],
     ['Poster Condensed', 'src/styles/font/poster/Anton-Regular.ttf', '400'],
     ['Poster Serif', 'src/styles/font/poster/DMSerifDisplay-Regular.ttf', '400'],
@@ -25,20 +36,21 @@ const artworkData = Object.fromEntries(fs.readdirSync(path.join(root, 'src/asset
 const photoData = photoPath ? 'data:image/jpeg;base64,' + fs.readFileSync(photoPath).toString('base64') : '';
 fs.writeFileSync(out, `<!doctype html><meta charset="utf-8"><title>Giglist poster theme proofs</title><style>${fonts}
 body{background:#888;margin:20px;font:14px Arial;color:#111}main{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}figure{margin:0}img{width:100%;display:block}figcaption{padding:6px 0;font-weight:bold}h1{font-size:20px}</style><h1>Giglist poster theme proofs</h1><main></main><script>${moment}</script><script>
-const modules={${modules}},cache={};function require(id){if(id==='moment')return {default:window.moment};if(!cache[id]){cache[id]={exports:{}};modules[id](require,cache[id].exports,cache[id]);}return cache[id].exports;}
+const modules={${modules}},cache={};function require(id){if(id==='../../utils/posterTextEffects')id='./posterTextEffects';if(id==='moment')return {default:window.moment};if(!cache[id]){cache[id]={exports:{}};modules[id](require,cache[id].exports,cache[id]);}return cache[id].exports;}
 (async()=>{
 const p=new URLSearchParams(location.search); if(p.get('theme'))document.querySelector('main').style.gridTemplateColumns='1fr'; const count=Number(p.get('count')||9), hasPhoto=p.has('photo');
-await Promise.all(['60px carbontyperegular','100px "Poster Condensed"','100px "Poster Serif"','400 40px "Poster Grotesk"','700 40px "Poster Grotesk"'].map(f=>document.fonts.load(f)));
+await Promise.all(['60px carbontyperegular','100px "Poster Condensed"','100px "Poster Serif"','400 40px "Poster Grotesk"','700 40px "Poster Grotesk"','100px "Bebas Neue"','100px "Oswald"','100px "Abril Fatface"','100px "Righteous"','100px "Bitter"','100px "Outfit"','100px Rye','100px Sancreek','100px Ewert','700 40px Bitter','700 40px Outfit'].map(f=>document.fonts.load(f)));
 const qr=new Image();qr.src='data:image/svg+xml;base64,${qr}';await qr.decode();
 let photo=null;if(hasPhoto && ${JSON.stringify(photoData)}){photo=new Image();photo.src=${JSON.stringify(photoData)};await photo.decode();}
 const names=['Araluen Botanic Park','Indian Ocean Brewing Company','Shoalwater Tavern','Bridge Garden Bar','Henley Brook Tavern','8 Knots Tavern','Brabham Hotel','South Beach Hotel','Bassendean Hotel'];
-const gigs=Array.from({length:count},(_,i)=>({artist:'Clayton Bolger & The Midnight Specials',name:names[i%names.length],suburb:['Roleystone','Mindarie','Shoalwater','Mandurah','Henley Brook','East Fremantle','Brabham','South Fremantle','Bassendean'][i%9],state:'WA',date:'2026-10-'+String(i%28+1).padStart(2,'0'),start:'8:30PM'}));
+let gigs=Array.from({length:count},(_,i)=>({artist:'Clayton Bolger & The Midnight Specials',name:names[i%names.length],suburb:['Roleystone','Mindarie','Shoalwater','Mandurah','Henley Brook','East Fremantle','Brabham','South Fremantle','Bassendean'][i%9],state:'WA',date:'2026-10-'+String(i%28+1).padStart(2,'0'),start:'8:30PM'}));
+if(p.has('weekend'))gigs=gigs.filter(g=>g.date>='2026-10-02'&&g.date<='2026-10-04');
 const {posterThemes,drawPoster}=require('./posterDesign');window.posterProofs=[];
 const artworkData=${JSON.stringify(artworkData)},artImages={};
 await Promise.all(Object.entries(artworkData).map(async([name,src])=>{const img=new Image();img.src=src;await img.decode();artImages[name]=img;}));
 for(const theme of posterThemes.filter(t=>!p.get('theme')||t.id===p.get('theme'))){const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=2000;
 const art=artImages[p.get('art')||theme.artwork[0]];
-const result=drawPoster(canvas.getContext('2d'),{theme:theme.id,title:p.get('title')||(hasPhoto?'The Windsor Hotel':'Clayton Bolger'),targetUrl:'https://giglist.com.au/claytonbolger',qr,photo,artwork:art,gigs,month:9,isVenue:hasPhoto});
+const result=drawPoster(canvas.getContext('2d'),{periodLabel:p.get('weekend')?'LIVE MUSIC THIS WEEKEND · 2 OCT–4 OCT 2026':undefined,listStyle:p.get('liststyle')||(p.has('festival')?'festival':'columns'),fonts:p.has('font')?{title:p.get('font'),listing:p.get('font'),effect:p.get('effect')||'plain'}:undefined,header:p.get('header')||'gradient',theme:theme.id,title:p.get('title')||(hasPhoto?'The Windsor Hotel':'Clayton Bolger'),targetUrl:'https://giglist.com.au/claytonbolger',qr,photo,artwork:art,gigs,month:9,isVenue:hasPhoto});
 window.posterProofs.push({theme:theme.id,...result});const figure=document.createElement('figure'),img=document.createElement('img'),caption=document.createElement('figcaption');img.src=canvas.toDataURL('image/png');img.alt=theme.name;caption.textContent=theme.name;figure.append(img,caption);document.querySelector('main').append(figure);}
 await Promise.all([...document.images].map(i=>i.decode()));document.body.dataset.ready='true';
 })().catch(error=>{document.body.dataset.error=error.message;document.body.append(error.stack)});
