@@ -45,12 +45,22 @@ export const drawSocialCard = (canvas: HTMLCanvasElement, data: {
     ctx.fillText(data.periodLabel || 'LIVE MUSIC · NEXT 7 DAYS',pad,subtitleTop,width-pad*2);
     const listTop = subtitleTop+85;
     const footerTop = height-140;
-    const listBottom = footerTop-36;
+    const listBottom = footerTop-70;
     const availableHeight = listBottom-listTop;
     const wrap = (text:string,maxWidth:number):string[] => {
         const lines:string[]=[];
         let line='';
         for (const word of text.split(/\s+/)) {
+            if (ctx.measureText(word).width > maxWidth) {
+                if (line) {lines.push(line);line='';}
+                for (const character of word) {
+                    if (line && ctx.measureText(line+character).width > maxWidth) {
+                        lines.push(line);line='';
+                    }
+                    line+=character;
+                }
+                continue;
+            }
             const next=line ? `${line} ${word}` : word;
             if (line && ctx.measureText(next).width > maxWidth) {lines.push(line);line=word;}
             else line=next;
@@ -72,7 +82,7 @@ export const drawSocialCard = (canvas: HTMLCanvasElement, data: {
     const columnWidth=(width-pad*2-columnGap*(columns-1))/columns;
     const textWidth=columnWidth-24;
     let visibleCount=data.gigs.length;
-    let fontSize=columns===2 ? (data.format==='story'?36:30) : (data.format==='story'?47:37);
+    let fontSize=50;
     const measureRows = () => data.gigs.slice(0,visibleCount).map(gig => {
         ctx.font=`700 ${fontSize}px "Poster Grotesk", sans-serif`;
         const names=wrap(gigDisplayName(gig,data.isVenue,data.isSuburb),textWidth);
@@ -93,15 +103,20 @@ export const drawSocialCard = (canvas: HTMLCanvasElement, data: {
     const perColumn=Math.ceil(rows.length/columns);
     for (let column=0;column<columns;column++) {
         const x=pad+column*(columnWidth+columnGap);
+        const columnRows=rows.slice(column*perColumn,(column+1)*perColumn);
+        const usedHeight=columnRows.reduce((total,row)=>total+row.height,0);
+        const reserved=visibleCount<data.gigs.length ? 38 : 0;
+        const extraGap=columns===1 && columnRows.length>1
+            ? Math.max(0,(availableHeight-reserved-usedHeight)/(columnRows.length-1)) : 0;
         let y=listTop;
-        rows.slice(column*perColumn,(column+1)*perColumn).forEach(row=>{
+        columnRows.forEach(row=>{
             ctx.fillStyle=palette.accent;ctx.fillRect(x,y+4,3,row.height-24);
             ctx.fillStyle=palette.text;ctx.font=`700 ${fontSize}px "Poster Grotesk", sans-serif`;
-            row.names.forEach((line,index)=>ctx.fillText(line,x+24,y+index*fontSize*1.12,textWidth));
+            row.names.forEach((line,index)=>ctx.fillText(line,x+24,y+index*fontSize*1.12));
             const detailTop=y+row.names.length*fontSize*1.12+12;
             ctx.font=`${row.detailSize}px "Poster Grotesk", sans-serif`;
-            row.details.forEach((line,index)=>ctx.fillText(line,x+24,detailTop+index*row.detailSize*1.25,textWidth));
-            y+=row.height;
+            row.details.forEach((line,index)=>ctx.fillText(line,x+24,detailTop+index*row.detailSize*1.25));
+            y+=row.height+extraGap;
         });
     }
     const more=data.gigs.length-visibleCount;
