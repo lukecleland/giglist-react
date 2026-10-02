@@ -10,6 +10,8 @@ import { QrPoster } from "./pages/QrPoster";
 import { qrTargetFromPath, posterRouteFromPath } from "./utils/qrUrl";
 import { UtilityPageMetadata } from "./components/UtilityPageMetadata";
 import { GigStats } from "./pages/GigStats";
+import { FeaturePage } from "./pages/FeaturePages";
+import { featureRouteFromPath } from "./utils/featureRoutes";
 
 export const App = () => {
     return (
@@ -24,6 +26,8 @@ export const App = () => {
 const AppContent = () => {
     const { pathname } = useLocation();
     if (/^\/gigstats\/?$/i.test(pathname)) return <GigStats />;
+    const featureRoute = featureRouteFromPath(pathname);
+    if (featureRoute) return <FeaturePage key={pathname} route={featureRoute} />;
     const posterRoute = posterRouteFromPath(pathname);
     if (posterRoute) return <QrPoster key={pathname} targetUrl={posterRoute.targetUrl} poster month={posterRoute.month} />;
     const targetUrl = qrTargetFromPath(pathname);

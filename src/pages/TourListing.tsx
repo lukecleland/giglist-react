@@ -41,6 +41,13 @@ export const TourListing = ({ slug }: { slug: string }) => {
             {profile.addresses.map((address) => <p className="tour-address" key={address}>{address}</p>)}
             <h2>Upcoming Gigs</h2>
         </header>
+        <nav className="tour-tools" aria-label={`${profile.title} gig tools`}>
+            <a href={`/${slug}_embed`}>Embed</a>
+            <a href={`/${slug}_calendar`}>Calendar</a>
+            <a href={`/${slug}_screen`}>Venue screen</a>
+            <a href={`/${slug}_map`}>Map</a>
+            <a href={`/${slug}_social`}>Social card</a>
+        </nav>
         {listings.length > 0 ? <ul className="tour-dates">
             {listings.map((gig, index) => <li key={`${gig.id}-${index}`}>
                 <ListingModal listing={gig}>

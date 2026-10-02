@@ -9,7 +9,7 @@ if (!fs.existsSync(path.join(build, 'index.html'))) {
 
 // Keep server code out of public/: the development server cannot execute PHP.
 // Run after CRA so these dynamic endpoints are not added to the offline cache.
-const endpoints = ['gigstatssimple.php', 'gigstatsfeed.php'];
+const endpoints = ['gigstatssimple.php', 'gigstatsfeed.php', 'calendar.php'];
 for (const endpoint of endpoints) {
     fs.copyFileSync(path.join(root, endpoint), path.join(build, endpoint));
 }

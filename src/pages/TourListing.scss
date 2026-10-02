@@ -60,6 +60,9 @@
     .tour-details { font-size: 12px; white-space: nowrap; }
     .tour-empty { margin: 20px 0; font-size: 14px; }
     .tour-empty a { text-decoration: underline; }
+    .tour-tools { display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 22px; }
+    .tour-tools a { color:#fff!important;border:1px solid #777;border-radius:3px;padding:7px 11px;text-decoration:none;font-size:13px; }
+    .tour-tools a:hover,.tour-tools a:focus-visible { background:#fff;color:#111!important; }
 }
 
 @keyframes tour-spin { to { transform: rotate(360deg); } }

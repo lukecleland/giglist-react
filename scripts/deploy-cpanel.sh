@@ -8,7 +8,7 @@ if [ ! -d "$deploy_dir" ]; then
     echo "Deployment directory does not exist: $deploy_dir" >&2
     exit 1
 fi
-for required_file in index.html gigstatssimple.php gigstatsfeed.php; do
+for required_file in index.html gigstatssimple.php gigstatsfeed.php calendar.php; do
     if [ ! -f "$repo_dir/build/$required_file" ]; then
         echo "Missing build/$required_file. Run npm run build and commit the output first." >&2
         exit 1
@@ -25,4 +25,4 @@ for build_entry in "$repo_dir/build/"*; do
     fi
     /bin/cp -R "$build_entry" "$deploy_dir/"
 done
-echo "Deployed React build and stats PHP endpoints to $deploy_dir"
+echo "Deployed React build and PHP endpoints to $deploy_dir"
