@@ -39,7 +39,7 @@ test.each(['story', 'square'])('%s columns keep a shared font size and wrap long
     }
 });
 
-test.each(['story', 'square'])('%s single column spreads gigs through the available height', format => {
+test.each([['story', 3], ['square', 3], ['story', 9]])('%s single column spreads %i gigs through the available height', (format, count) => {
     const draws = [];
     const ctx = {
         fillRect: jest.fn(), drawImage: jest.fn(),
@@ -49,14 +49,14 @@ test.each(['story', 'square'])('%s single column spreads gigs through the availa
     };
     drawSocialCard({ getContext: () => ctx }, {
         title: 'Perth', targetUrl: 'https://giglist.com.au/perth',
-        gigs: Array.from({ length: 3 }, (_, index) => ({
+        gigs: Array.from({ length: count }, (_, index) => ({
             artist: `Band ${index}`, name: 'Venue', suburb: 'Perth', state: 'WA',
             date: '2026-10-02', start: '8pm',
         })),
         image: {}, qr: {}, format, palette: 'midnight', isVenue: true, isSuburb: false,
     });
     const names = draws.filter(({ args }) => args[0].startsWith('Band '));
-    expect(names).toHaveLength(3);
+    expect(names).toHaveLength(count);
     expect(names.every(({ args }) => args[1] === 94)).toBe(true);
     const details = draws.filter(({ args, font }) => args[1] === 94 && !font.startsWith('700 '));
     const last = details[details.length - 1];

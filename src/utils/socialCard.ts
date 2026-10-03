@@ -45,7 +45,7 @@ export const drawSocialCard = (canvas: HTMLCanvasElement, data: {
     ctx.fillText(data.periodLabel || 'LIVE MUSIC · NEXT 7 DAYS',pad,subtitleTop,width-pad*2);
     const listTop = subtitleTop+85;
     const footerTop = height-140;
-    const listBottom = footerTop-70;
+    const listBottom = footerTop-90;
     const availableHeight = listBottom-listTop;
     const wrap = (text:string,maxWidth:number):string[] => {
         const lines:string[]=[];

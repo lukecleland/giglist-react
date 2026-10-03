@@ -19,12 +19,13 @@ import { buildGigPath, buildLegacyGigPath } from "../utils/gigUrl";
 import { Store } from "../pages/Store";
 
 export const Routing = () => {
-    const { giglist } = useContext(CustomContext) as CustomContextType;
+    const { giglist, nationalGiglist } = useContext(CustomContext) as CustomContextType;
+    const routeGiglist = nationalGiglist.length ? nationalGiglist : giglist;
 
     const routes =
-        !!giglist &&
-        giglist.length &&
-        giglist
+        !!routeGiglist &&
+        routeGiglist.length &&
+        routeGiglist
             .map(
                 (date, i) =>
                     date.listings &&

@@ -67,8 +67,8 @@ export const ListingModal = ({ listing, children }: { listing: TListing; childre
                             position: "relative",
                             width: "100%",
                             maxWidth: "1200px",
-                            border: "10px solid #fff",
-                            borderRadius: "5px",
+                            border: "4px solid #fff",
+                            borderRadius: "20px",
                             overflow: "hidden",
                         }}
                     >
@@ -77,21 +77,26 @@ export const ListingModal = ({ listing, children }: { listing: TListing; childre
                             onClick={() => setOpen(false)}
                             style={{
                                 position: "absolute",
-                                top: "10px",
-                                right: "10px",
+                                top: "8px",
+                                right: "8px",
                                 zIndex: 1001,
                                 border: "none",
-                                borderRadius: "4px",
-                                background: "rgba(0, 0, 0, 0.7)",
-                                color: "#fff",
-                                fontSize: "22px",
-                                lineHeight: 1,
-                                width: "34px",
-                                height: "34px",
+                                borderRadius: "50%",
+                                background: "#fff",
+                                color: "#111",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                padding: 0,
+                                width: "32px",
+                                height: "32px",
+                                boxShadow: "0 1px 5px #0006",
                                 cursor: "pointer",
                             }}
                         >
-                            x
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true" focusable="false">
+                                <path d="m6 6 12 12M18 6 6 18" />
+                            </svg>
                         </button>
                         <PageListing listing={listing} />
                     </div>

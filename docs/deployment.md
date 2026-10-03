@@ -57,3 +57,19 @@ this pull-based cPanel deployment. Pushing directly to a cPanel-managed Git
 remote can trigger automatic deployment if that remote is configured later.
 
 Reference: [cPanel deployment setup](https://docs.cpanel.net/knowledge-base/web-services/guide-to-git-set-up-deployment/).
+
+Gig URLs (`/gig-…`) use `gig-preview.php` to add event-specific Open Graph
+metadata to the React shell, so Facebook can read previews without JavaScript.
+The deployment script prepends this route to the existing `.htaccess`, preserving
+other server rules. Manual uploads must also add this rule **before** the SPA
+fallback (Apache 2.4):
+
+```apache
+RewriteEngine On
+RewriteRule ^gig-[^/]+/?$ gig-preview.php [END]
+```
+
+The handler requires PHP cURL and the public national feed. After deployment,
+fetch a gig URL with a `facebookexternalhit` user agent and check its `og:title`,
+`og:url`, and `og:image`, then refresh the URL in Facebook's Sharing Debugger
+if Facebook still displays its cached generic site preview.

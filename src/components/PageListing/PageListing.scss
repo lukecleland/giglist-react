@@ -25,3 +25,46 @@
     font-size: 14px;
     padding: 2px 0;
 }
+
+.page-modal-listing .modal-content-header { padding-right: 56px; }
+.page-modal-listing .modal-content { width: calc(100% - 200px); }
+.listing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
+}
+.page-modal-listing .listing-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: transparent;
+    color: #fff;
+    font: 12px/1.4 Arial, sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+    i.icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 14px;
+        width: 14px;
+        height: 14px;
+        margin: 0;
+        font-size: 12px;
+        line-height: 1;
+        vertical-align: middle;
+
+        &::before { display: block; line-height: 1; }
+    }
+    &:hover, &:focus-visible { background: #303744; text-decoration: none; }
+}
+@media (max-width: 767px) {
+    .page-modal-listing .modal-content { width: calc(100% - 28px); bottom: 20px; left: 14px; padding: 0; }
+    .page-modal-listing .modal-content > div { max-width: 100%; }
+    .page-modal-listing .modal-qr-code { display: none; }
+}

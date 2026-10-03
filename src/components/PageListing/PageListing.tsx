@@ -4,8 +4,7 @@ import { TListing } from "../../types/types";
 import { Icon } from "semantic-ui-react";
 import { EventSchema } from "../EventSchema";
 import { Helmet } from "react-helmet-async";
-import { google } from "calendar-link";
-import { EmailShareButton, FacebookShareButton } from "react-share";
+
 import moment from "moment";
 import "./PageListing.scss";
 import { buildGigUrl } from "../../utils/gigUrl";
@@ -28,22 +27,26 @@ export const PageListing = ({
 
     const event_url = buildGigUrl(gig);
 
-    const bg = `url(${gig.location_image_url})`;
-    const gigBackground = bg === "url()" ? `url('./placeholder-gig.jpeg')` : bg;
-    const eventImage =
-        gig.location_image_url || "https://giglist.com.au/favicon.png";
-    const eventTitle = `${gig.artist} @${gig.name}`;
-    const eventDescription = `${gig.artist} live at ${gig.name}, ${gig.suburb}. ${gig.start}`;
+    const eventImage = new URL(gig.location_image_url || "/placeholder-gig.jpeg", "https://giglist.com.au").href;
+    const gigBackground = `url(${eventImage})`;
+    const eventTitle = `${gig.artist} @ ${gig.name}`.replace(/&amp;/g, "&");
+    const eventDescription = `${moment(gig.date).format("dddd, D MMMM YYYY")} at ${gig.start}. ${gig.name}, ${gig.address}, ${gig.suburb}, ${gig.state || ""}`.replace(/&amp;/g, "&");
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(event_url)}`;
 
-    // Set event as an object
-    const event = {
-        title: eventTitle,
-        description: eventDescription,
-        start: moment(gig.datestamp.date).format("YYYY-MM-DD HH:mm:ss +0800"),
-        end: moment(gig.datestamp.date)
-            .add(1, "hours")
-            .format("YYYY-MM-DD HH:mm:ss +0800"),
+    const externalUrl = (value: string) => {
+        const text = (value || "").trim();
+        if (!text || /^(n\/?a|none|null|undefined|-)$/.test(text.toLowerCase())) return "";
+        try {
+            const url = new URL(/^https?:\/\//i.test(text) ? text : `https://${text}`);
+            return ["http:", "https:"].includes(url.protocol) && url.hostname.includes(".") ? url.href : "";
+        } catch { return ""; }
     };
+    const artistUrl = externalUrl(gig.artist_url);
+    const venueUrl = externalUrl(gig.location_url);
+    const lat = Number(gig.lat), lng = Number(gig.lng);
+    const destination = gig.lat && gig.lng && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 && (lat !== 0 || lng !== 0)
+        ? `${lat},${lng}` : `${gig.name}, ${gig.address}, ${gig.suburb}, ${gig.state}`;
+    const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
 
     return (
         <>
@@ -55,8 +58,9 @@ export const PageListing = ({
                 <meta property="og:site_name" content="Giglist" />
                 <meta property="og:url" content={event_url} />
                 <meta property="og:description" content={eventDescription} />
-                <meta property="og:type" content="event" />
+                <meta property="og:type" content="website" />
                 <meta property="og:image" content={eventImage} />
+                <meta property="og:image:alt" content={eventTitle} />
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={eventTitle} />
                 <meta name="twitter:description" content={eventDescription} />
@@ -69,18 +73,9 @@ export const PageListing = ({
                 style={{ backgroundImage: gigBackground }}
             >
                 <div className="ui heading giglist-header modal-content-header">
-                    <a
-                        href={gig.artist_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{ textTransform: "uppercase" }}
-                    >
-                        {gig.artist}
-                    </a>{" "}
+                    <span style={{ textTransform: "uppercase" }}>{gig.artist.replace(/&amp;/g, "&")}</span>{" "}
                     <span style={{ fontFamily: "arial" }}>@</span>{" "}
-                    <a href={gig.location_url} target="_blank" rel="noreferrer">
-                        {gig.name.replace(/&amp;/g, "&")}
-                    </a>
+                    <span>{gig.name.replace(/&amp;/g, "&")}</span>
                     {/* <Icon
                         style={{
                             cursor: "pointer",
@@ -148,39 +143,13 @@ export const PageListing = ({
                         <div className="address">
                             {gig.address} {gig.suburb}
                         </div>
-                        <div className="address" style={{ marginTop: 10 }}>
-                            <a href={gig.artist_url} target="_blank">
-                                Artist/Event Link{" "}
-                            </a>{" "}
-                            |&nbsp;
-                            <a href={gig.location_url} target="_blank">
-                                Venue Link{" "}
+                        <div className="listing-actions">
+                            {artistUrl && <a className="listing-action" href={artistUrl} target="_blank" rel="noopener noreferrer"><Icon name="music" />Artist/Event</a>}
+                            {venueUrl && <a className="listing-action" href={venueUrl} target="_blank" rel="noopener noreferrer"><Icon name="map marker alternate" />Venue</a>}
+                            <a className="listing-action" href={directionsUrl} target="_blank" rel="noopener noreferrer"><Icon name="location arrow" />Directions</a>
+                            <a href={facebookShareUrl} className="listing-action" target="_blank" rel="noopener noreferrer">
+                                <Icon name="facebook" />Share on Facebook
                             </a>
-                        </div>
-                        <div style={{ float: "right" }}>
-                            {/* <a href={event_url} target="_blank">
-                                Share Link
-                            </a> */}
-                            {/* <a
-                                title="Add to Google Calendar"
-                                target="_blank"
-                                rel="noreferrer"
-                                href={google(event)}
-                            >
-                                <Icon name="google" />
-                            </a> */}
-                            {/* <EmailShareButton url={event_url}>
-                                <Icon name="mail" /> 
-                            </EmailShareButton>*/}
-                            <FacebookShareButton url={event_url}>
-                                <Icon name="facebook" />
-                            </FacebookShareButton>
-
-                            {/* <Icon size="large" name="map" />
-                            &nbsp;&nbsp;&nbsp;
-                            <Icon size="large" name="share square" />
-                            &nbsp;&nbsp;&nbsp;
-                            <Icon size="large" name="facebook" /> */}
                         </div>
                     </div>
                 </div>
