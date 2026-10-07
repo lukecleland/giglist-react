@@ -86,7 +86,7 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
                     icon={{ url: markerIcon, scaledSize: new window.google.maps.Size(32, 32), anchor: new window.google.maps.Point(16, 16) }}
                 />)}</>}
             </MarkerClusterer>
-            {selectedLocation && <InfoWindow position={selectedLocation.position} options={{ pixelOffset: new window.google.maps.Size(0, -16) }} onCloseClick={() => setSelectedKey(null)}>
+            {selectedLocation && <InfoWindow position={selectedLocation.position} options={{ pixelOffset: new window.google.maps.Size(0, -20) }} onCloseClick={() => setSelectedKey(null)}>
                 <div style={{ maxHeight: "min(60vh, 480px)", overflowY: "auto" }}>
                     {selectedLocation.listings.map((listing, index) => <div className="gigmap-preview" key={`${listing.id}-${index}`}>
                         <img src={listing.location_image_url?.trim() || "/placeholder-gig.jpeg"}
@@ -102,7 +102,7 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
                             </div>
                             <div className="gigmap-preview-details">
                                 <div>{[listing.address, listing.suburb, listing.state].filter(Boolean).join(", ").replace(/&amp;/g, "&")}</div>
-                                <div>{moment(listing.date).format("ddd, D MMM YYYY")} · {listing.start}</div>
+                                <div className="gigmap-preview-datetime">{moment(listing.date).format("ddd, D MMM YYYY")} · {listing.start}</div>
                             </div>
                             <div className="gigmap-preview-actions">
                             <a className="gigmap-directions"

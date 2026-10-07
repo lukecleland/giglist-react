@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
+import "./ShareGig.scss";
 import { TListing } from "../types/types";
 import { buildGigUrl } from "../utils/gigUrl";
 
-export const ShareGig = ({ listing }: { listing: TListing }) => {
+export const ShareGig = ({ listing, className = "" }: { listing: TListing; className?: string }) => {
     const [copied, setCopied] = useState(false);
     const [open, setOpen] = useState(false);
     const root = useRef<HTMLDivElement>(null);
@@ -57,7 +58,7 @@ export const ShareGig = ({ listing }: { listing: TListing }) => {
                 trigger.current?.focus();
             }
         }}>
-        <button ref={trigger} type="button" className="gigmap-share" onClick={share} aria-expanded={open}>
+        <button ref={trigger} type="button" className={`gigmap-share ${className}`} onClick={share} aria-expanded={open}>
         <span>Share</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
             <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />

@@ -1193,3 +1193,18 @@ svg text {
     transform: rotate(180deg);
     padding-top: 0px;
 }
+
+@font-face {
+    font-family: "Courier Prime";
+    src: url("./font/courier-prime/CourierPrime-Bold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+}
+
+.event-title,
+.gigmap-preview-artist,
+.page-modal-listing .listing-artist-heading {
+    font-family: "Courier Prime", "Courier New", monospace;
+    font-weight: 700;
+}

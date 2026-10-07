@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { act } from 'react-dom/test-utils';
+import { act, Simulate } from 'react-dom/test-utils';
 import { HelmetProvider } from 'react-helmet-async';
 import { PageListing } from './PageListing';
 import { buildGigUrl } from '../../utils/gigUrl';
@@ -15,6 +15,8 @@ test('NA artist has no link; directions, venue and Facebook use consistent butto
     render(gig);
     expect(container.querySelectorAll('.listing-action')).toHaveLength(4);
     expect(Array.from(container.querySelectorAll("a")).some(link => link.textContent === "Artist/Event")).toBe(false);
+    act(() => { Simulate.click(container.querySelector('.gigmap-share')); });
+    expect(container.querySelector('.gigmap-share-options').textContent).toContain('Copy linkEmailFacebookWhatsApp');
     const share = container.querySelector('a[href^="https://www.facebook.com/sharer/sharer.php"]');
     expect(new URL(share.href).searchParams.get('u')).toBe(buildGigUrl(gig));
     expect(share.target).toBe('_blank');

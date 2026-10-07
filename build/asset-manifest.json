@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "./static/css/main.c4106ea1.css",
-    "main.js": "./static/js/main.a8034391.js",
+    "main.css": "./static/css/main.034a98d5.css",
+    "main.js": "./static/js/main.f8084ddc.js",
     "static/media/canvas.jpg": "./static/media/canvas.72504fc3e61e09ff6b15.jpg",
     "static/media/goldenland.jpg": "./static/media/goldenland.d84570a384b41b53a31b.jpg",
     "static/media/art21720.jpg": "./static/media/art21720.51bf602dbd319f1b6065.jpg",
@@ -85,6 +85,7 @@
     "static/media/Sancreek-Regular.ttf": "./static/media/Sancreek-Regular.7b2cccc262a5b61cf791.ttf",
     "static/media/sunrisepeaks.jpg": "./static/media/sunrisepeaks.7eabf04998c3dae25ff7.jpg",
     "static/media/DMSerifDisplay-Regular.ttf": "./static/media/DMSerifDisplay-Regular.017d6097eeee33a0bad9.ttf",
+    "static/media/CourierPrime-Bold.ttf": "./static/media/CourierPrime-Bold.51eec3aa41d66cf80809.ttf",
     "static/media/Ewert-Regular.ttf": "./static/media/Ewert-Regular.139a609cf6ea0e89769e.ttf",
     "static/media/AbrilFatface-Regular.ttf": "./static/media/AbrilFatface-Regular.177ac6ac91c9243697e8.ttf",
     "service-worker.js": "./service-worker.js",
@@ -107,11 +108,11 @@
     "static/media/outline-icons.woff2": "./static/media/outline-icons.687a4990ea22bb1a49d4.woff2",
     "index.html": "./index.html",
     "static/media/gigmap-cluster.svg": "./static/media/gigmap-cluster.91accabeb2b880e11cfc174f57903669.svg",
-    "main.c4106ea1.css.map": "./static/css/main.c4106ea1.css.map",
-    "main.a8034391.js.map": "./static/js/main.a8034391.js.map"
+    "main.034a98d5.css.map": "./static/css/main.034a98d5.css.map",
+    "main.f8084ddc.js.map": "./static/js/main.f8084ddc.js.map"
   },
   "entrypoints": [
-    "static/css/main.c4106ea1.css",
-    "static/js/main.a8034391.js"
+    "static/css/main.034a98d5.css",
+    "static/js/main.f8084ddc.js"
   ]
 }

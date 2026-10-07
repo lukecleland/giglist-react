@@ -67,7 +67,7 @@ export const ListingModal = ({ listing, children }: { listing: TListing; childre
                             position: "relative",
                             width: "100%",
                             maxWidth: "1200px",
-                            border: "4px solid #fff",
+                            border: "6px solid #fff",
                             borderRadius: "20px",
                             overflow: "hidden",
                         }}

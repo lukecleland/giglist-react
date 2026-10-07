@@ -7,6 +7,7 @@ import { Helmet } from "react-helmet-async";
 
 import moment from "moment";
 import "./PageListing.scss";
+import { ShareGig } from "../ShareGig";
 import { AddToCalendar } from "../AddToCalendar";
 import { buildGigUrl } from "../../utils/gigUrl";
 
@@ -32,7 +33,6 @@ export const PageListing = ({
     const gigBackground = `url(${eventImage})`;
     const eventTitle = `${gig.artist} @ ${gig.name}`.replace(/&amp;/g, "&");
     const eventDescription = `${moment(gig.date).format("dddd, D MMMM YYYY")} at ${gig.start}. ${gig.name}, ${gig.address}, ${gig.suburb}, ${gig.state || ""}`.replace(/&amp;/g, "&");
-    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(event_url)}`;
 
     const externalUrl = (value: string) => {
         const text = (value || "").trim();
@@ -74,7 +74,7 @@ export const PageListing = ({
                 style={{ backgroundImage: gigBackground }}
             >
                 <div className="ui heading giglist-header modal-content-header">
-                    <span style={{ textTransform: "uppercase" }}>{gig.artist.replace(/&amp;/g, "&")}</span>{" "}
+                    <span className="listing-artist-heading" style={{ textTransform: "uppercase" }}>{gig.artist.replace(/&amp;/g, "&")}</span>{" "}
                     <span style={{ fontFamily: "arial" }}>@</span>{" "}
                     <span>{gig.name.replace(/&amp;/g, "&")}</span>
                     {/* <Icon
@@ -87,16 +87,6 @@ export const PageListing = ({
                         title={"Copy Link"}
                         onClick={() => navigator.clipboard.writeText(event_url)}
                     /> */}
-                </div>
-
-                <div className={"modal-qr-code"}>
-                    <QRCode
-                        level={"L"}
-                        size={130}
-                        value={event_url}
-                        bgColor="#fff"
-                        fgColor="#000"
-                    />
                 </div>
 
                 {/* <img src={ gig.location_image_url } width="400" alt="" /> */}
@@ -123,37 +113,24 @@ export const PageListing = ({
                     <div className="event-time">{gig.start}</div>
                 </li>
 
-                <div className={"modal-content"}>
-                    <div
-                        style={{
-                            fontFamily:
-                                "Lato,'Helvetica Neue',Arial,Helvetica,sans-serif",
-                            letterSpacing: "0.5px",
-                            backgroundColor: "black",
-                            float: "left",
-                            display: "inline-block",
-                            borderTopRightRadius: "6px",
-                            padding: "20px",
-                        }}
-                    >
-                        {moment(gig.datestamp.date).format("dddd, MMMM Do, ")}
-
-                        {gig.start.toLowerCase()}
-
-                        <div>{gig.name.replace(/&amp;/g, "&")}</div>
-                        <div className="address">
-                            {gig.address} {gig.suburb}
+                <div className="listing-footer-area">
+                    <footer className="listing-poster-footer">
+                        <a className="listing-footer-qr" href={event_url} aria-label="Open gig details">
+                            <QRCode level="L" size={88} value={event_url} bgColor="#fff" fgColor="#000" />
+                        </a>
+                        <div className="listing-footer-details">
+                            <div className="listing-footer-venue">{gig.name.replace(/&amp;/g, "&")}</div>
+                            <div>{[gig.address, gig.suburb, gig.state].filter(Boolean).join(", ")}</div>
+                            <div>{moment(gig.date).format("ddd, D MMM YYYY")} · {gig.start}</div>
                         </div>
                         <div className="listing-actions">
+                            <a className="listing-action" href={directionsUrl} target="_blank" rel="noopener noreferrer">Directions<Icon name="location arrow" /></a>
                             <AddToCalendar listing={gig} className="listing-action" />
-                            {artistUrl && <a className="listing-action" href={artistUrl} target="_blank" rel="noopener noreferrer"><Icon name="music" />Artist/Event</a>}
-                            {venueUrl && <a className="listing-action" href={venueUrl} target="_blank" rel="noopener noreferrer"><Icon name="map marker alternate" />Venue</a>}
-                            <a className="listing-action" href={directionsUrl} target="_blank" rel="noopener noreferrer"><Icon name="location arrow" />Directions</a>
-                            <a href={facebookShareUrl} className="listing-action" target="_blank" rel="noopener noreferrer">
-                                <Icon name="facebook" />Share on Facebook
-                            </a>
+                            {artistUrl && <a className="listing-action" href={artistUrl} target="_blank" rel="noopener noreferrer">Artist/Event<Icon name="music" /></a>}
+                            {venueUrl && <a className="listing-action" href={venueUrl} target="_blank" rel="noopener noreferrer">Venue<Icon name="map marker alternate" /></a>}
+                            <ShareGig listing={gig} className="listing-action" />
                         </div>
-                    </div>
+                    </footer>
                 </div>
                 {/* <div className={"mini-map"}>
                     <img
