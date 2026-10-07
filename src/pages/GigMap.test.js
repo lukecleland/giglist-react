@@ -33,6 +33,12 @@ test("dark clustered map shows co-located gigs and clears them when changing dat
         act(() => Simulate.click(container.querySelector("[data-marker=true]")));
         expect(container.querySelector("[data-popup]").textContent).toContain("First Act");
         expect(container.querySelector("[data-popup]").textContent).toContain("Second Act");
+        expect(container.querySelector(".gigmap-preview-image").getAttribute("src")).toBe("/placeholder-gig.jpeg");
+        const calendar = container.querySelector(".gigmap-calendar");
+        const event = decodeURIComponent(calendar.getAttribute("href").split(",")[1]);
+        expect(event).toContain("SUMMARY:First Act at Venue");
+        expect(event).toContain("T200000");
+        expect(calendar.download).toMatch(/\.ics$/);
         const directions = container.querySelector(".gigmap-directions");
         const directionsUrl = new URL(directions.href);
         expect(directionsUrl.origin).toBe("https://www.google.com");

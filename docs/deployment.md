@@ -73,3 +73,16 @@ The handler requires PHP cURL and the public national feed. After deployment,
 fetch a gig URL with a `facebookexternalhit` user agent and check its `og:title`,
 `og:url`, and `og:image`, then refresh the URL in Facebook's Sharing Debugger
 if Facebook still displays its cached generic site preview.
+
+Verify a current gig before testing the Facebook Share button:
+
+```sh
+node scripts/check-gig-preview.cjs https://giglist.com.au/gig-ARTIST-VENUE-YYYY-MM-DD
+```
+
+Use a real URL from the current feed. This checks the initial HTML using Facebook's
+crawler user agent, not the tags React adds later. A homepage `og:url` makes
+Facebook treat the gig as the homepage. The deployment script refreshes the gig
+rewrite block at the top of `.htaccess` on every deployment. If the check still
+fails, check parent-directory rewrites in cPanel as well: a parent SPA fallback
+must not intercept gig requests before they reach this document root.

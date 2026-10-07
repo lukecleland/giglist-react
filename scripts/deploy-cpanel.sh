@@ -29,9 +29,9 @@ echo "Deployed React build and PHP endpoints to $deploy_dir"
 
 # Prepend the gig handler before existing SPA fallback rules; preserve host config.
 htaccess_file="$deploy_dir/.htaccess"
-if ! /usr/bin/grep -q '^# BEGIN Giglist gig previews$' "$htaccess_file" 2>/dev/null; then
-    preview_rules=$(mktemp)
-    cat > "$preview_rules" <<'RULES'
+preview_rules=$(mktemp)
+trap 'rm -f "$preview_rules"' EXIT
+cat > "$preview_rules" <<'RULES'
 # BEGIN Giglist gig previews
 <IfModule mod_rewrite.c>
 RewriteEngine On
@@ -39,7 +39,14 @@ RewriteRule ^gig-[^/]+/?$ gig-preview.php [END]
 </IfModule>
 # END Giglist gig previews
 RULES
-    if [ -f "$htaccess_file" ]; then cat "$htaccess_file" >> "$preview_rules"; fi
-    /bin/cp "$preview_rules" "$htaccess_file"
-    rm "$preview_rules"
+# Refresh and move our block first on every deployment. An existing block below
+# the SPA fallback never receives gig requests, even though it is present.
+if [ -f "$htaccess_file" ]; then
+    /usr/bin/awk '
+        /^# BEGIN Giglist gig previews$/ { skip = 1; next }
+        /^# END Giglist gig previews$/ { skip = 0; next }
+        !skip { print }
+    ' "$htaccess_file" >> "$preview_rules"
 fi
+/bin/cp "$preview_rules" "$htaccess_file"
+echo "Installed gig Open Graph routing before the SPA fallback"

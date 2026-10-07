@@ -13,8 +13,8 @@ afterEach(() => {act(() => {ReactDOM.unmountComponentAtNode(container);});contai
 const render = data => act(() => {ReactDOM.render(<HelmetProvider><PageListing listing={data}/></HelmetProvider>,container);});
 test('NA artist has no link; directions, venue and Facebook use consistent buttons', () => {
     render(gig);
-    expect(container.querySelectorAll('.listing-action')).toHaveLength(3);
-    expect(container.querySelector('a[href*="NA"]')).toBeNull();
+    expect(container.querySelectorAll('.listing-action')).toHaveLength(4);
+    expect(Array.from(container.querySelectorAll("a")).some(link => link.textContent === "Artist/Event")).toBe(false);
     const share = container.querySelector('a[href^="https://www.facebook.com/sharer/sharer.php"]');
     expect(new URL(share.href).searchParams.get('u')).toBe(buildGigUrl(gig));
     expect(share.target).toBe('_blank');

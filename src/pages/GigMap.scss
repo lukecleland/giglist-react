@@ -90,31 +90,102 @@
     }
 
     .gigmap-preview {
+        width: max-content;
         border: 0;
         border-radius: 0;
         box-shadow: none;
-        max-width: 100%;
+        max-width: min(100%, calc(100vw - 48px));
+    }
+
+    // Let the button row determine the width; wrap the other content to fit it.
+    .gigmap-preview-image {
+        contain: inline-size;
+    }
+
+    .gigmap-preview-body > :not(.gigmap-preview-actions) {
+        contain: inline-size;
+        overflow-wrap: anywhere;
     }
 
     .gigmap-preview + .gigmap-preview { border-top: 2px solid #fff; }
 }
 
-.gigmap-preview .gigmap-directions {
+.gigmap-preview-details {
+    font: 12px/1.5 Arial, sans-serif;
+    letter-spacing: normal;
+    color: #ddd;
+}
+
+.gigmap-preview-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.gigmap-preview-actions a,
+.gigmap-preview-actions button {
     display: flex;
     align-items: center;
-    gap: 6px;
-    width: fit-content;
-    margin: 10px 0 0 auto;
+    justify-content: space-between;
+    gap: 8px;
+    flex: 0 0 auto;
+    min-height: 28px;
+    margin: 0;
     padding: 4px 8px;
     border: 1px solid #aaa;
     border-radius: 4px;
     color: #fff;
+    background: transparent;
+    cursor: pointer;
     font: 11px/1.4 Arial, sans-serif;
     text-decoration: none;
+
+    svg { flex-shrink: 0; }
+
+    i.icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 12px;
+        width: 12px;
+        height: 12px;
+        margin: 0;
+        font-size: 12px;
+        line-height: 1;
+
+        &::before { display: block; line-height: 1; }
+    }
 
     &:hover, &:focus-visible { background: #303744; text-decoration: none; }
 }
 
 @media (max-width: 767px) {
     .ui.page.grid.gigmap-layout { padding-top: 50px; }
+}
+
+.gigmap-share-control {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.gigmap-share-options {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    right: 0;
+    z-index: 2;
+    width: 150px;
+    padding: 6px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    background: #15181e;
+    box-shadow: 0 4px 16px #0008;
+
+    a, button {
+        width: 100%;
+        border: 0;
+        min-height: 32px;
+        font-size: 12px;
+        text-align: left;
+    }
 }

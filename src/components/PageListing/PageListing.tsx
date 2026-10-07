@@ -7,6 +7,7 @@ import { Helmet } from "react-helmet-async";
 
 import moment from "moment";
 import "./PageListing.scss";
+import { AddToCalendar } from "../AddToCalendar";
 import { buildGigUrl } from "../../utils/gigUrl";
 
 // // Then fetch the link
@@ -144,6 +145,7 @@ export const PageListing = ({
                             {gig.address} {gig.suburb}
                         </div>
                         <div className="listing-actions">
+                            <AddToCalendar listing={gig} className="listing-action" />
                             {artistUrl && <a className="listing-action" href={artistUrl} target="_blank" rel="noopener noreferrer"><Icon name="music" />Artist/Event</a>}
                             {venueUrl && <a className="listing-action" href={venueUrl} target="_blank" rel="noopener noreferrer"><Icon name="map marker alternate" />Venue</a>}
                             <a className="listing-action" href={directionsUrl} target="_blank" rel="noopener noreferrer"><Icon name="location arrow" />Directions</a>

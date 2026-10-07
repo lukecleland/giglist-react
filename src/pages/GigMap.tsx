@@ -4,6 +4,8 @@ import { mapStyles } from "../styles/mapStyles";
 import { TGiglist } from "../types/types";
 import { getMapLocations } from "../utils/mapLocations";
 import moment from "moment";
+import { AddToCalendar } from "../components/AddToCalendar";
+import { ShareGig } from "../components/ShareGig";
 import { Helmet } from "react-helmet-async";
 import markerIcon from "../styles/assets/gigmap-marker.svg";
 import clusterIcon from "../styles/assets/gigmap-cluster.svg";
@@ -84,15 +86,25 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
                     icon={{ url: markerIcon, scaledSize: new window.google.maps.Size(32, 32), anchor: new window.google.maps.Point(16, 16) }}
                 />)}</>}
             </MarkerClusterer>
-            {selectedLocation && <InfoWindow position={selectedLocation.position} onCloseClick={() => setSelectedKey(null)}>
+            {selectedLocation && <InfoWindow position={selectedLocation.position} options={{ pixelOffset: new window.google.maps.Size(0, -16) }} onCloseClick={() => setSelectedKey(null)}>
                 <div style={{ maxHeight: "min(60vh, 480px)", overflowY: "auto" }}>
                     {selectedLocation.listings.map((listing, index) => <div className="gigmap-preview" key={`${listing.id}-${index}`}>
-                        <img src={listing.location_image_url || "https://giglist.com.au/newLogoGiglist.png"}
-                            alt={listing.name} className="gigmap-preview-image" />
+                        <img src={listing.location_image_url?.trim() || "/placeholder-gig.jpeg"}
+                            alt={listing.name} className="gigmap-preview-image"
+                            onError={(event) => {
+                                const image = event.currentTarget;
+                                if (image.getAttribute("src") !== "/placeholder-gig.jpeg") image.src = "/placeholder-gig.jpeg";
+                            }} />
                         <div className="gigmap-preview-body">
                             <div className="gigmap-preview-artist">{listing.artist.replace(/&amp;/g, "&")}</div>
-                            <div className="gigmap-preview-venue">{listing.name.replace(/&amp;/g, "&")}, {listing.suburb}</div>
-                            <div className="gigmap-preview-time">{listing.start}</div>
+                            <div className="gigmap-preview-venue">
+                                {listing.name.replace(/&amp;/g, "&")}
+                            </div>
+                            <div className="gigmap-preview-details">
+                                <div>{[listing.address, listing.suburb, listing.state].filter(Boolean).join(", ").replace(/&amp;/g, "&")}</div>
+                                <div>{moment(listing.date).format("ddd, D MMM YYYY")} · {listing.start}</div>
+                            </div>
+                            <div className="gigmap-preview-actions">
                             <a className="gigmap-directions"
                                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${selectedLocation.position.lat},${selectedLocation.position.lng}`)}`}
                                 target="_blank" rel="noopener noreferrer"
@@ -103,6 +115,9 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
                                     <path d="M9 15v-4h7m-3-3 3 3-3 3" />
                                 </svg>
                             </a>
+                            <AddToCalendar listing={listing} className="gigmap-calendar" />
+                            <ShareGig listing={listing} />
+                            </div>
                         </div>
                     </div>)}
                 </div>
