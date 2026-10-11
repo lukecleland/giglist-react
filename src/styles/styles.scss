@@ -1202,8 +1202,12 @@ svg text {
     font-display: swap;
 }
 
-.gigmap-preview-artist,
-.page-modal-listing .listing-artist-heading {
+.gigmap-preview-artist {
     font-family: "Courier Prime", "Courier New", monospace;
     font-weight: 700;
+}
+
+.page-modal-listing .listing-artist-heading {
+    font-family: "carbontyperegular", "Courier New", monospace;
+    font-weight: 400;
 }

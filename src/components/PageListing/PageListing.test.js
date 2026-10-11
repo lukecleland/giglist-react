@@ -13,7 +13,7 @@ afterEach(() => {act(() => {ReactDOM.unmountComponentAtNode(container);});contai
 const render = data => act(() => {ReactDOM.render(<HelmetProvider><PageListing listing={data}/></HelmetProvider>,container);});
 test('NA artist has no link; directions, venue and Facebook use consistent buttons', () => {
     render(gig);
-    expect(container.querySelectorAll('.listing-action')).toHaveLength(4);
+    expect(container.querySelectorAll('.listing-action')).toHaveLength(5);
     expect(Array.from(container.querySelectorAll("a")).some(link => link.textContent === "Artist/Event")).toBe(false);
     act(() => { Simulate.click(container.querySelector('.gigmap-share')); });
     expect(container.querySelector('.gigmap-share-options').textContent).toContain('Copy linkEmailFacebookWhatsApp');

@@ -125,6 +125,7 @@ export const PageListing = ({
                         </div>
                         <div className="listing-actions">
                             <a className="listing-action" href={directionsUrl} target="_blank" rel="noopener noreferrer">Directions<Icon name="location arrow" /></a>
+                            <a className="listing-action" href="https://www.seabreeze.com.au/" target="_blank" rel="noopener noreferrer">Weather<Icon name="sun" /></a>
                             <AddToCalendar listing={gig} className="listing-action" />
                             {artistUrl && <a className="listing-action" href={artistUrl} target="_blank" rel="noopener noreferrer">Artist/Event<Icon name="music" /></a>}
                             {venueUrl && <a className="listing-action" href={venueUrl} target="_blank" rel="noopener noreferrer">Venue<Icon name="map marker alternate" /></a>}
