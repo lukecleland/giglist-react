@@ -8,12 +8,15 @@ import { buildGigUrl } from '../../utils/gigUrl';
 jest.mock('../EventSchema', () => ({ EventSchema: () => null }));
 const gig = {artist:'Kyle Hearn',name:'Landing7',artist_url:' NA ',location_url:'https://example.com',location_image_url:'',address:'140 Blue Plains Road',suburb:'Chittering',state:'WA',lat:'-31.4',lng:'116.1',date:'2026-10-03',start:'1:00PM',datestamp:{date:'2026-10-03T13:00:00'}};
 let container;
-beforeEach(() => {container=document.createElement('div');document.body.appendChild(container);});
-afterEach(() => {act(() => {ReactDOM.unmountComponentAtNode(container);});container.remove();});
+beforeEach(() => {jest.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-10-02T00:00:00Z'));container=document.createElement('div');document.body.appendChild(container);});
+afterEach(() => {act(() => {ReactDOM.unmountComponentAtNode(container);});container.remove();jest.restoreAllMocks();});
 const render = data => act(() => {ReactDOM.render(<HelmetProvider><PageListing listing={data}/></HelmetProvider>,container);});
 test('NA artist has no link; directions, venue and Facebook use consistent buttons', () => {
     render(gig);
     expect(container.querySelectorAll('.listing-action')).toHaveLength(5);
+    const weather = container.querySelector('a[href^="https://www.windy.com/"]');
+    expect(weather.previousElementSibling.textContent).toBe('Directions');
+    expect(weather.href).toContain('2026-10-03-06');
     expect(Array.from(container.querySelectorAll("a")).some(link => link.textContent === "Artist/Event")).toBe(false);
     act(() => { Simulate.click(container.querySelector('.gigmap-share')); });
     expect(container.querySelector('.gigmap-share-options').textContent).toContain('Copy linkEmailFacebookWhatsApp');
@@ -26,5 +29,6 @@ test('NA artist has no link; directions, venue and Facebook use consistent butto
 test('artist URL is normalized and missing coordinates use the venue address', () => {
     render({...gig,artist_url:'example.org/artist',lat:'',lng:''});
     expect(container.querySelector('a[href="https://example.org/artist"]')).not.toBeNull();
+    expect(container.querySelector('a[href^="https://www.windy.com/"]')).toBeNull();
     expect(new URL(container.querySelector('a[href*="maps/dir"]').href).searchParams.get('destination')).toContain('140 Blue Plains Road');
 });

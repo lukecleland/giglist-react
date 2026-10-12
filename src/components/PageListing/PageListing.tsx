@@ -10,6 +10,7 @@ import "./PageListing.scss";
 import { ShareGig } from "../ShareGig";
 import { AddToCalendar } from "../AddToCalendar";
 import { buildGigUrl } from "../../utils/gigUrl";
+import { weatherUrl } from "../../utils/weatherUrl";
 
 // // Then fetch the link
 // google(event); // https://calendar.google.com/calendar/render...
@@ -48,6 +49,7 @@ export const PageListing = ({
     const destination = gig.lat && gig.lng && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 && (lat !== 0 || lng !== 0)
         ? `${lat},${lng}` : `${gig.name}, ${gig.address}, ${gig.suburb}, ${gig.state}`;
     const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+    const forecastUrl = weatherUrl(gig);
 
     return (
         <>
@@ -125,7 +127,7 @@ export const PageListing = ({
                         </div>
                         <div className="listing-actions">
                             <a className="listing-action" href={directionsUrl} target="_blank" rel="noopener noreferrer">Directions<Icon name="location arrow" /></a>
-                            <a className="listing-action" href="https://www.seabreeze.com.au/" target="_blank" rel="noopener noreferrer">Weather<Icon name="sun" /></a>
+                            {forecastUrl && <a className="listing-action" href={forecastUrl} target="_blank" rel="noopener noreferrer" title="View the forecast on Windy">Weather<Icon name="sun" /></a>}
                             <AddToCalendar listing={gig} className="listing-action" />
                             {artistUrl && <a className="listing-action" href={artistUrl} target="_blank" rel="noopener noreferrer">Artist/Event<Icon name="music" /></a>}
                             {venueUrl && <a className="listing-action" href={venueUrl} target="_blank" rel="noopener noreferrer">Venue<Icon name="map marker alternate" /></a>}
