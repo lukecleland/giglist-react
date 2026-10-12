@@ -26,7 +26,12 @@
     padding: 2px 0;
 }
 
-.page-modal-listing .modal-content-header { padding-right: 56px; }
+.page-modal-listing .modal-content-header {
+    padding-right: 56px;
+    overflow-wrap: anywhere;
+}
+.listing-venue-heading { margin-top: 6px; font-size: 0.85em; }
+.listing-date-heading { margin-top: 6px; font-size: 0.65em; }
 .page-modal-listing {
     display: flex;
     flex-direction: column;

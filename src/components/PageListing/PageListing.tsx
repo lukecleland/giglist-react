@@ -76,9 +76,9 @@ export const PageListing = ({
                 style={{ backgroundImage: gigBackground }}
             >
                 <div className="ui heading giglist-header modal-content-header">
-                    <span className="listing-artist-heading" style={{ textTransform: "uppercase" }}>{gig.artist.replace(/&amp;/g, "&")}</span>{" "}
-                    <span style={{ fontFamily: "arial" }}>@</span>{" "}
-                    <span>{gig.name.replace(/&amp;/g, "&")}</span>
+                    <div className="listing-artist-heading" style={{ textTransform: "uppercase" }}>{gig.artist.replace(/&amp;/g, "&")}</div>
+                    <div className="listing-venue-heading">{gig.name.replace(/&amp;/g, "&")}</div>
+                    <div className="listing-date-heading">{moment(gig.date).format("ddd, D MMM YYYY")} · {gig.start}</div>
                     {/* <Icon
                         style={{
                             cursor: "pointer",
