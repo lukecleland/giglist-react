@@ -13,6 +13,7 @@ let context;
 let originalImage;
 let originalFonts;
 beforeEach(() => {
+    jest.spyOn(Date, "now").mockReturnValue(new Date("2026-10-13T12:00:00Z").getTime());
     axios.get.mockResolvedValue({ data: [{ listings: [{ artist: "Clayton Bulger", name: "Windsor Hotel", address: "Main Street", suburb: "Perth" }] }] });
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -61,7 +62,7 @@ test("creates a branded PNG and enables print after the preview loads", async ()
     act(() => Simulate.click(print));
     expect(window.print).toHaveBeenCalledTimes(1);
     expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:qr");
-    expect(container.querySelector('.poster-panel-heading h2').textContent).toBe('QR code settings');
+    expect(container.querySelector('.poster-panel-heading h2').textContent).toBe('QR Code Settings');
     const toggle = container.querySelector('.poster-panel-toggle');
     act(() => Simulate.click(toggle));
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
@@ -151,9 +152,9 @@ test("March poster filters listings and includes month in export name", async ()
     await act(async () => {
         ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster month={2} /></HelmetProvider></MemoryRouter>, container);
     });
-    expect(container.querySelector('a[download]').download).toContain('-poster-mar.png');
+    expect(container.querySelector('a[download]').download).toContain('-poster-mar-2027.png');
     const text = context.fillText.mock.calls.map(([value]) => value);
-    expect(text).toContain('LIVE MUSIC IN MARCH');
+    expect(text).toContain('LIVE MUSIC IN MARCH 2027');
     expect(text).toContain('March Band');
     expect(text).not.toContain('April Band');
 });
@@ -169,7 +170,7 @@ test("random theme updates the selector and export while preserving the target a
     await act(async () => { Simulate.click(container.querySelector('.poster-random')); });
     const chosen = container.querySelector('select').value;
     expect(chosen).not.toBe(old);
-    expect(container.querySelector('a[download]').download).toBe(`giglist-windsorhotel-${chosen}-poster-mar.png`);
+    expect(container.querySelector('a[download]').download).toBe(`giglist-windsorhotel-${chosen}-poster-mar-2027.png`);
     expect(container.querySelector('.qr-poster-controls a').href).toBe('https://giglist.com.au/windsorhotel');
     expect(document.fonts.load).toHaveBeenCalledWith('700 40px "Poster Grotesk"');
 });
@@ -235,13 +236,13 @@ test('venues with their own photo can shuffle imagery and restore the venue phot
     axios.get.mockResolvedValue({data: [{listings: [{artist: 'Band', name: 'Windsor Hotel', address: 'Main Street', suburb: 'Perth', date: '2027-03-01', start: '8pm', location_image_url: venuePhoto}]}]});
     await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider></MemoryRouter>, container); });
     expect(loaded).toContain(venuePhoto);
-    expect(container.querySelector('.poster-venue-photo').textContent).toBe('Venue photo selected');
+    expect(container.querySelector('.poster-venue-photo').textContent).toBe('Venue Photo Selected');
     expect(container.querySelector('.poster-venue-photo').getAttribute('aria-pressed')).toBe('true');
     loaded.length = 0;
     await act(async () => { Simulate.click(container.querySelector('.poster-shuffle')); });
     expect(loaded).not.toContain(venuePhoto);
     expect(loaded.some((url) => url !== 'blob:qr')).toBe(true);
-    const restore = [...container.querySelectorAll('button')].find((button) => button.textContent === 'Use venue photo');
+    const restore = [...container.querySelectorAll('button')].find((button) => button.textContent === 'Use Venue Photo');
     await act(async () => { Simulate.click(restore); });
     expect(loaded).toContain(venuePhoto);
 });
@@ -254,13 +255,13 @@ test('shuffle everything changes theme, fonts and artwork while preserving the g
     await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster month={2} /></HelmetProvider></MemoryRouter>, container); });
     const theme = container.querySelector('select').value;
     const exports = HTMLCanvasElement.prototype.toDataURL.mock.calls.length;
-    expect(container.querySelector('.poster-random').textContent).toContain('Shuffle theme');
+    expect(container.querySelector('.poster-random').textContent).toContain('Shuffle Theme');
     await act(async () => { Simulate.click(container.querySelector('.poster-shuffle-everything')); });
     expect(container.querySelector('select').value).not.toBe(theme);
     expect(HTMLCanvasElement.prototype.toDataURL.mock.calls.length).toBeGreaterThan(exports);
     expect(document.fonts.load).toHaveBeenCalledWith('100px "Poster Grotesk"');
     expect(container.querySelector('.qr-poster-controls a').href).toBe('https://giglist.com.au/claytonbulger');
-    expect(container.querySelector('a[download]').download).toContain('-poster-mar.png');
+    expect(container.querySelector('a[download]').download).toContain('-poster-mar-2027.png');
 });
 
 
@@ -277,12 +278,12 @@ test('keeps the poster visible and shows a configuration panel spinner until a s
     expect(container.querySelector('.qr-poster-image')).toBe(preview);
     expect(preview.src).toBe(previous);
     expect(container.querySelector('.poster-panel-loading .poster-button-spinner')).not.toBeNull();
-    expect(button.textContent).toBe('Shuffle header');
-    expect(button.getAttribute('aria-label')).toBe('Shuffle header');
+    expect(button.textContent).toBe('Shuffle Header');
+    expect(button.getAttribute('aria-label')).toBe('Shuffle Header');
     expect(button.disabled).toBe(true);
     await act(async () => { finish([{}]); });
     expect(container.querySelector('.poster-panel-loading .poster-button-spinner')).toBeNull();
-    expect(button.textContent).toBe('Shuffle header');
+    expect(button.textContent).toBe('Shuffle Header');
     expect(button.disabled).toBe(false);
 });
 
@@ -293,7 +294,7 @@ test('list style dropdown selects Festival layout while keeping theme and target
     await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider></MemoryRouter>, container); });
     const theme = container.querySelector('select').value;
     jest.spyOn(Math, 'random').mockReturnValue(0);
-    const button = container.querySelector('select[aria-label="List style"]');
+    const button = container.querySelector('select[aria-label="List Style"]');
     expect(container.querySelector('.poster-weekend-toggle input').checked).toBe(false);
     expect(button.value).toBe('columns');
     const count = HTMLCanvasElement.prototype.toDataURL.mock.calls.length;
@@ -312,17 +313,20 @@ test('weekend mode overrides month filtering and restores the month when uncheck
     context.measureText = value => ({width:value.length * Number(/([\d.]+)px/.exec(context.font)?.[1] || 30) * .5});
     const weekendMonth = Number(range.start.slice(5,7))-1;
     const otherMonth = (weekendMonth+6)%12;
-    const otherDate = `${range.start.slice(0,4)}-${String(otherMonth+1).padStart(2,'0')}-15`;
+    const otherDate = `${otherMonth < 9 ? 2027 : 2026}-${String(otherMonth+1).padStart(2,'0')}-15`;
     axios.get.mockResolvedValue({data:[{listings:[['Friday Act',range.start],['Sunday Act',range.end],['Other Month Act',otherDate]].map(([artist,date])=>({artist,date,name:'Local Venue',suburb:'Perth',address:'Main Street',start:'7PM'}))}]});
     await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/localvenue" poster month={otherMonth} /></HelmetProvider></MemoryRouter>,container); });
     const checkbox = container.querySelector('.poster-weekend-toggle input');
+    expect(container.querySelector('.poster-date-range').nextElementSibling.contains(checkbox)).toBe(true);
     context.fillText.mockClear();
     await act(async () => { Simulate.change(checkbox,{target:{checked:true}}); });
+    expect(container.querySelector('[aria-label="Poster start date"]').value).toBe(range.start);
+    expect(container.querySelector('[aria-label="Poster end date"]').value).toBe(range.end);
     const text = context.fillText.mock.calls.map(([t])=>t).join(' ');
     expect(text).toContain('FRIDAY ACT'); expect(text).toContain('SUNDAY ACT');
     expect(text).not.toContain('Other Month Act'); expect(text).not.toContain('7PM');
     expect(text).toContain('LIVE MUSIC THIS WEEKEND');
-    expect(container.querySelector('select[aria-label="List style"]').disabled).toBe(true);
+    expect(container.querySelector('select[aria-label="List Style"]').disabled).toBe(true);
     context.fillText.mockClear();
     await act(async () => { Simulate.change(checkbox,{target:{checked:false}}); });
     expect(context.fillText.mock.calls.map(([t])=>t).join(' ')).toContain('Other Month Act');
@@ -342,12 +346,12 @@ test('fonts always match and header controls preserve the selected font', async 
     expect(drawn['windsor hotel']).toBe(matchedFont);
     await act(async () => { Simulate.click(container.querySelector('.poster-header-shuffle')); });
     expect(drawn['clayton bulger']).toBe(matchedFont);
-    await act(async () => { Simulate.change(container.querySelector('[aria-label="Header artwork"]'),{target:{value:'western-centered'}}); });
+    await act(async () => { Simulate.change(container.querySelector('[aria-label="Header Artwork"]'),{target:{value:'western-centered'}}); });
     expect(drawn['clayton bulger']).toBe(matchedFont);
     expect(drawn['windsor hotel']).toBe(matchedFont);
     await act(async () => { Simulate.click(container.querySelector('[aria-label="Next header artwork"]')); });
     expect(drawn['clayton bulger']).toBe(matchedFont);
-    await act(async () => { Simulate.change(container.querySelector('[aria-label="Poster font"]'),{target:{value:'Rye'}}); });
+    await act(async () => { Simulate.change(container.querySelector('[aria-label="Poster Font"]'),{target:{value:'Rye'}}); });
     expect(drawn['clayton bulger']).toBe('Rye');
     expect(drawn['windsor hotel']).toBe('Rye');
 });
@@ -360,18 +364,18 @@ test('separate custom banner and background uploads can be selected and removed'
     jest.spyOn(uploads,'readPosterUpload').mockImplementation(async file=>({name:file.name,image,palette:{background:'#223344',backdrop:'#223344dd',ink:'#ffffff',accent:'#cceeff'}}));
     await act(async()=>{ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider></MemoryRouter>,container);});
     for(const kind of ['banner','background']) {
-        const input=container.querySelector(`input[aria-label="Upload ${kind}"]`);
+        const input=container.querySelector(`input[aria-label="Upload ${kind[0].toUpperCase()+kind.slice(1)}"]`);
         await act(async()=>{Simulate.change(input,{target:{files:[new File(['image'],`${kind}.png`,{type:'image/png'})],value:''}});});
     }
-    expect(container.querySelector('[aria-label="Header artwork"]').value).toBe('custom');
-    expect(container.querySelector('[aria-label="Image"]').value).toBe('custom');
+    expect(container.querySelector('[aria-label="Header Artwork"]').value).toBe('custom');
+    expect(container.querySelector('[aria-label="Background"]').value).toBe('custom');
     expect(context.drawImage.mock.calls.some(args=>args[0]===image)).toBe(true);
     expect(container.querySelector('a[download]')).not.toBeNull();
-    await act(async()=>{Simulate.click(container.querySelector('[aria-label="Remove custom banner"]'));});
-    expect(container.querySelector('[aria-label="Header artwork"]').value).toBe('gradient');
-    expect(container.querySelector('[aria-label="Image"]').value).toBe('custom');
-    await act(async()=>{Simulate.click(container.querySelector('[aria-label="Remove custom background"]'));});
-    expect(container.querySelector('[aria-label="Image"]').value).not.toBe('custom');
+    await act(async()=>{Simulate.click(container.querySelector('[aria-label="Remove Custom Banner"]'));});
+    expect(container.querySelector('[aria-label="Header Artwork"]').value).toBe('gradient');
+    expect(container.querySelector('[aria-label="Background"]').value).toBe('custom');
+    await act(async()=>{Simulate.click(container.querySelector('[aria-label="Remove Custom Background"]'));});
+    expect(container.querySelector('[aria-label="Background"]').value).not.toBe('custom');
 });
 
 test('QR background upload keeps a solid quiet zone and can be removed', async () => {
@@ -379,13 +383,49 @@ test('QR background upload keeps a solid quiet zone and can be removed', async (
     const image={naturalWidth:1600,naturalHeight:800};
     jest.spyOn(uploads,'readPosterUpload').mockResolvedValue({name:'background.png',image,palette:{}});
     await act(async()=>{ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" /></HelmetProvider></MemoryRouter>,container);});
-    await act(async()=>{Simulate.change(container.querySelector('input[aria-label="Upload background"]'),{target:{files:[new File(['image'],'background.png',{type:'image/png'})],value:''}});});
+    await act(async()=>{Simulate.change(container.querySelector('input[aria-label="Upload Background"]'),{target:{files:[new File(['image'],'background.png',{type:'image/png'})],value:''}});});
     expect(context.drawImage.mock.calls.some(args=>args[0]===image)).toBe(true);
     expect(context.fillRect).toHaveBeenCalledWith(288,478,1024,1024);
     expect(context.drawImage).toHaveBeenCalledWith(expect.anything(),352,542,896,896);
     expect(container.querySelector('a[download]')).not.toBeNull();
     context.drawImage.mockClear();
-    await act(async()=>Simulate.click(container.querySelector('[aria-label="Remove custom background"]')));
+    await act(async()=>Simulate.click(container.querySelector('[aria-label="Remove Custom Background"]')));
     expect(context.drawImage.mock.calls.some(args=>args[0]===image)).toBe(false);
     expect(context.drawImage).toHaveBeenCalledWith(expect.anything(),240,430,1120,1120);
+});
+
+test('poster month and custom dates update the listings, subtitle and export', async()=>{
+    for (const method of ['strokeText','strokeRect','beginPath','arc','fill','stroke','moveTo','lineTo','save','restore','scale','translate','rotate','ellipse','closePath']) context[method]=jest.fn();
+    axios.get.mockResolvedValue({data:[{listings:[
+        {artist:'First Show',name:'Windsor Hotel',address:'Main Street',suburb:'Perth',date:'2027-03-15',start:'8pm'},
+        {artist:'Last Show',name:'Windsor Hotel',address:'Main Street',suburb:'Perth',date:'2027-03-17',start:'8pm'},
+        {artist:'Later Show',name:'Windsor Hotel',address:'Main Street',suburb:'Perth',date:'2027-04-01',start:'8pm'},
+    ]}]});
+    await act(async()=>{ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider></MemoryRouter>,container);});
+    const monthOptions=Array.from(container.querySelector('[aria-label="Poster month"]').options).slice(1);
+    expect(monthOptions).toHaveLength(12);
+    expect(monthOptions.map(option=>option.value)).toEqual(['2026-10','2026-11','2026-12','2027-01','2027-02','2027-03','2027-04','2027-05','2027-06','2027-07','2027-08','2027-09']);
+    expect(monthOptions[0].textContent).toBe('October 2026');
+    expect(monthOptions[11].textContent).toBe('September 2027');
+    await act(async()=>{Simulate.change(container.querySelector('[aria-label="Poster month"]'),{target:{value:'2027-04'}});});
+    expect(container.querySelector('[aria-label="Poster start date"]').value).toBe('2027-04-01');
+    expect(container.querySelector('[aria-label="Poster end date"]').value).toBe('2027-04-30');
+    expect(container.querySelector('.poster-date-range button').textContent).toBe('Apply Date Range');
+    expect(container.querySelector('.qr-poster-image').alt).toContain('LIVE MUSIC IN APRIL 2027. 1 listings');
+    expect(container.querySelector('a[download]').download).toContain('-poster-apr-2027.png');
+    await act(async()=>{
+        Simulate.change(container.querySelector('[aria-label="Poster start date"]'),{target:{value:'2027-03-15'}});
+        Simulate.change(container.querySelector('[aria-label="Poster end date"]'),{target:{value:'2027-03-17'}});
+    });
+    context.fillText.mockClear();
+    await act(async()=>{Simulate.click(container.querySelector('.poster-date-range button'));});
+    const text=context.fillText.mock.calls.map(([value])=>value).join(' ');
+    expect(text).toContain('First Show');expect(text).toContain('Last Show');expect(text).not.toContain('Later Show');
+    expect(container.querySelector('.qr-poster-image').alt).toContain('15 Mar 2027–17 Mar 2027');
+    expect(container.querySelector('a[download]').download).toContain('-2027-03-15-to-2027-03-17.png');
+    await act(async()=>{Simulate.change(container.querySelector('[aria-label="Poster end date"]'),{target:{value:'2027-03-14'}});});
+    expect(container.querySelector('.poster-date-range button').disabled).toBe(true);
+    expect(container.querySelector('.poster-date-range [role=alert]')).not.toBeNull();
+    await act(async()=>{Simulate.change(container.querySelector('[aria-label="Poster month"]'),{target:{value:'all'}});});
+    expect(container.querySelector('.qr-poster-image').alt).toContain('Upcoming gigs. 3 listings');
 });

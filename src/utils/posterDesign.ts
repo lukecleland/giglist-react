@@ -481,7 +481,7 @@ export const drawPoster = (ctx: CanvasRenderingContext2D, options: PosterOptions
     const rowBounds: Box[] = [];
     if (!gigs.length) {
         ctx.fillStyle = ink;
-        fittedText(ctx, options.periodLabel ? 'No gigs listed for this weekend.' : options.month === undefined ? 'No upcoming gigs listed.' : `No gigs listed in ${posterMonthNames[options.month]}.`, { x: area.x, y: area.y, width: area.width, height: 180 }, 'Poster Grotesk', 44);
+        fittedText(ctx, options.periodLabel ? 'No gigs listed for this period.' : options.month === undefined ? 'No upcoming gigs listed.' : `No gigs listed in ${posterMonthNames[options.month]}.`, { x: area.x, y: area.y, width: area.width, height: 180 }, 'Poster Grotesk', 44);
     }
     if (options.listStyle && options.listStyle !== 'columns' && gigs.length) {
         const cloud = drawFestivalWordCloud(ctx, {

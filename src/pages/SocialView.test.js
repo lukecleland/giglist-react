@@ -36,7 +36,7 @@ test('panel selections update the exported format, palette and image',async()=>{
     await render();
     const toggle=container.querySelector('.poster-panel-toggle');
     act(()=>Simulate.click(toggle));expect(toggle.getAttribute('aria-expanded')).toBe('true');
-    await change('Size','square');await change('Colour','paper');await change('Image','forest');
+    await change('Size','square');await change('Colour','paper');await change('Background','forest');
     expect(output()).toMatchObject({format:'square',palette:'paper',gigs});
     expect(loadPosterImage).toHaveBeenLastCalledWith('forest.jpg');
     expect(container.querySelector('a[download]').download).toBe('giglist-perth-square.png');
@@ -52,14 +52,14 @@ test('weekend filter updates both listings and the graphic period',async()=>{
 
 test('None removes the image without a fetch and image labels are readable',async()=>{
     await render();
-    const options=Array.from(container.querySelector('select[aria-label="Image"]').options).map(option=>option.textContent);
+    const options=Array.from(container.querySelector('select[aria-label="Background"]').options).map(option=>option.textContent);
     expect(options).toEqual(['None','Concert Lights','Forest']);
     loadPosterImage.mockClear();
-    await change('Image','none');
+    await change('Background','none');
     expect(output().image).toBeNull();
     expect(loadPosterImage).not.toHaveBeenCalled();
     expect(container.querySelector('a[download]')).not.toBeNull();
-    await change('Image','forest');
+    await change('Background','forest');
     expect(loadPosterImage).toHaveBeenCalledWith('forest.jpg');
 });
 
@@ -95,20 +95,20 @@ test('font colour inversion toggles and persists across format changes',async()=
 
 test('auto contrast reaches the export and manual inversion switches back to manual colour',async()=>{
     await render();
-    const auto=Array.from(container.querySelectorAll('button')).find(button=>button.textContent==='Auto contrast');
+    const auto=Array.from(container.querySelectorAll('button')).find(button=>button.textContent==='Auto Contrast');
     await act(async()=>Simulate.click(auto));
     expect(auto.getAttribute('aria-pressed')).toBe('true');
     expect(output().autoContrast).toBe(true);
-    await change('Image','none');await change('Colour','paper');
+    await change('Background','none');await change('Colour','paper');
     expect(output().autoContrast).toBe(true);
-    const invert=Array.from(container.querySelectorAll('button')).find(button=>button.textContent==='Invert font colour');
+    const invert=Array.from(container.querySelectorAll('button')).find(button=>button.textContent==='Invert Font Colour');
     await act(async()=>Simulate.click(invert));
     expect(output()).toMatchObject({autoContrast:false,invertFontColour:true});
 });
 
 test('failed image render removes the stale download and reports the error',async()=>{
     await render();loadPosterImage.mockRejectedValueOnce(new Error('offline'));
-    await change('Image','forest');
+    await change('Background','forest');
     expect(container.querySelector('a[download]')).toBeNull();
     expect(container.querySelector('[role=alert]').textContent).toContain('couldn’t load');
 });
@@ -119,11 +119,11 @@ test('uploaded background reaches the export, survives format changes, and can b
     await render();
     await act(async()=>Simulate.change(container.querySelector('input[type=file]'),{target:{files:[new File(['image'],'my-photo.png',{type:'image/png'})],value:''}}));
     expect(output().image).toBe(image);
-    expect(container.querySelector('select[aria-label="Image"]').value).toBe('custom');
+    expect(container.querySelector('select[aria-label="Background"]').value).toBe('custom');
     await change('Size','square');expect(output().image).toBe(image);
-    await act(async()=>Simulate.click(container.querySelector('[aria-label="Remove custom background"]')));
+    await act(async()=>Simulate.click(container.querySelector('[aria-label="Remove Custom Background"]')));
     expect(output().image).not.toBe(image);
-    expect(container.querySelector('select[aria-label="Image"]').value).toBe('concertlights');
+    expect(container.querySelector('select[aria-label="Background"]').value).toBe('concertlights');
 });
 
 test('rejected background upload preserves the current graphic and reports the reason',async()=>{

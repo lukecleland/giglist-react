@@ -163,7 +163,7 @@ body.qr-poster-body.gig-poster-body {
         }
         .poster-photo-credit { font-size: 11px; }
         .poster-export-actions { display: flex; gap: 6px; padding-top: 8px; border-top: 1px solid #ccc; margin-top: 6px; }
-        .poster-export-actions .qr-poster-button { flex: 1.5; }
+        .poster-export-actions .qr-poster-button { flex: 1.5; display: inline-flex; align-items: center; justify-content: center; }
         .poster-export-actions button { flex: 1; }
     }
     @media (max-width: 760px) {
@@ -297,14 +297,6 @@ body.qr-poster-body.gig-poster-body {
     margin: 0 0 8px;
     min-width: 0;
     .poster-theme-label { margin: 0 0 3px; font-size: 11px; line-height: 1.3; }
-    .poster-theme-label select {
-        appearance: none;
-        padding-right: 30px;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 5 5 5 5-5' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-size: 14px 14px;
-        background-position: right 6px center;
-    }
     .poster-shuffle-row {
         display: grid;
         grid-template-columns: 28px minmax(0, 1fr) 28px;
@@ -331,7 +323,8 @@ body.qr-poster-body.gig-poster-body {
 .poster-editor .qr-poster-controls .poster-upload-row {
     display: flex; gap: 6px; align-items: center; margin: -4px 0 8px;
     .poster-upload-button {
-        position: relative; flex: 1; padding: 5px 8px; border: 0; border-radius: 4px;
+        position: relative; flex: 1; display: flex; align-items: center; justify-content: center;
+        box-sizing: border-box; min-height: 28px; margin: 0; padding: 5px 8px; border: 0; border-radius: 4px;
         background: var(--qr-page-foreground); color: var(--qr-control-foreground, var(--qr-page-background));
         text-align: center; font: inherit; font-size: 12px; line-height: 1.4; cursor: pointer;
         &:has(input:disabled) { opacity: 0.4; cursor: default; }
@@ -348,4 +341,65 @@ body.qr-poster-body.gig-poster-body {
     button:active:not(:focus-visible) { outline: none; box-shadow: none; }
     .poster-upload-button:focus-within { outline: none; }
     .poster-upload-button:has(input:focus-visible) { outline: 2px solid #345dd4; outline-offset: 2px; }
+}
+
+.poster-date-range {
+    display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px;
+    label {flex:1;min-width:0;font-weight:600;font-size:12px;}
+    input {box-sizing:border-box;display:block;width:100%;min-width:0;margin-top:4px;padding:5px;border:1px solid #aaa;border-radius:4px;background:#fff;color:#111;font:12px Arial,sans-serif;}
+    p {width:100%;margin:0;color:#a32323;font-size:11px;}
+}
+
+@media screen {
+    .poster-editor .qr-poster-controls {
+        padding:10px;
+        font:12px/1.4 Arial,sans-serif;
+        .poster-panel-heading {margin-bottom:8px;}
+        .poster-panel-heading h2 {font-size:14px;line-height:1.3;}
+        .poster-controls-content {display:grid;gap:6px;}
+        .poster-controls-content > * {margin:0;}
+        .poster-controls-content > p {font-size:11px;line-height:1.4;}
+        .poster-theme-label,.poster-shuffle-control .poster-theme-label,
+        .poster-date-range label,.poster-randomise-label,.poster-weekend-toggle {
+            font:600 11px/1.3 Arial,sans-serif;
+            margin:0;
+        }
+        .poster-theme-label {display:block;}
+        .poster-theme-label select,.poster-date-range input {
+            box-sizing:border-box;width:100%;height:28px;min-height:28px;
+            margin:3px 0 0;padding:4px 8px;font:400 12px/1.3 Arial,sans-serif;
+        }
+        button,.qr-poster-button,.poster-upload-row .poster-upload-button {
+            box-sizing:border-box;min-height:28px;margin:0;padding:4px 8px;
+            font:400 11px/1.4 Arial,sans-serif;
+        }
+        .poster-shuffle-control {margin:0;}
+        .poster-shuffle-control .poster-theme-label {margin:0 0 4px;}
+        .poster-shuffle-control .poster-shuffle-row {gap:4px;}
+        .poster-shuffle-control .poster-shuffle-row button {min-height:28px;margin:0;}
+        .poster-weekend-toggle {min-height:24px;gap:6px;}
+        .poster-weekend-toggle input {margin:0;}
+        .poster-date-range {gap:4px;margin:0;}
+        .poster-date-range button {flex-basis:100%;}
+        .poster-upload-row {gap:4px;margin:0;}
+        .poster-settings-gap {display:none;}
+        .poster-export-actions {gap:4px;margin:2px 0 0;padding-top:8px;}
+        @media(max-width:760px) {
+            .poster-controls-content {display:none;}
+            .poster-controls-content.is-open {display:grid;margin-top:10px;}
+            button,.qr-poster-button,.poster-upload-row .poster-upload-button,
+            .poster-theme-label select,.poster-date-range input,
+            .poster-shuffle-control .poster-shuffle-row button {min-height:34px;}
+        }
+    }
+}
+
+// Keep every dropdown, including Month, on the same custom chevron.
+.poster-editor .qr-poster-controls .poster-theme-label select {
+    appearance: none;
+    padding-right: 30px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 5 5 5 5-5' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 14px 14px;
+    background-position: right 6px center;
 }

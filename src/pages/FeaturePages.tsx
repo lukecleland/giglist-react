@@ -65,7 +65,7 @@ const EmbedView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListing[];pro
     const snippet = `<iframe src="${route.targetUrl}_embed${route.month === undefined ? '' : '_'+posterMonths[route.month]}?embed=1&theme=${theme}" title="${profile.title.replace(/"/g,'&quot;')} gigs" loading="lazy" style="width:100%;height:${iframeHeight}px;border:0"></iframe>`;
     const [copied,setCopied] = useState(false);
     const content = <div className={`feature-embed ${embedded ? 'feature-embed-only' : ''}`}>
-        {!embedded && <div className="feature-tools"><p><strong>{profile.title}</strong></p><p>Put this live gig list on your website. It updates as Giglist adds shows.</p><label htmlFor="embed-theme">Theme</label><select id="embed-theme" value={theme} onChange={event=>{setTheme(event.target.value as EmbedTheme);setCopied(false);}}><option value="giglist">Giglist</option><option value="night">Night</option><option value="paper">Paper</option><option value="colour">Colour</option></select><label htmlFor="embed-code">Copy this code</label><textarea id="embed-code" readOnly value={snippet} /><button onClick={() => {void navigator.clipboard?.writeText(snippet).then(() => setCopied(true));}}>{copied?'Copied':'Copy embed code'}</button></div>}
+        {!embedded && <div className="feature-tools"><p><strong>{profile.title}</strong></p><p>Put this live gig list on your website. It updates as Giglist adds shows.</p><label htmlFor="embed-theme">Theme</label><select id="embed-theme" value={theme} onChange={event=>{setTheme(event.target.value as EmbedTheme);setCopied(false);}}><option value="giglist">Giglist</option><option value="night">Night</option><option value="paper">Paper</option><option value="colour">Colour</option></select><label htmlFor="embed-code">Copy This Code</label><textarea id="embed-code" readOnly value={snippet} /><button onClick={() => {void navigator.clipboard?.writeText(snippet).then(() => setCopied(true));}}>{copied?'Copied':'Copy Embed Code'}</button></div>}
         <section className={`feature-embed-card feature-embed-${theme}`} aria-label={`${profile.title} upcoming gigs`}>
             <header><div className="feature-embed-kicker"><span className="feature-embed-logo">Giglist</span><small>{periodLabel(route).toUpperCase()}</small></div><h2>{profile.title}</h2></header>
             {gigs.length ? gigs.slice(0,10).map((gig,index) => <ListingLink key={`${gig.id}-${index}`} gig={gig} title={gigDisplayName(gig,profile.isVenue,profile.isSuburb)} sub={gigSecondaryName(gig,profile.isVenue,profile.isSuburb)} />) : <p className="feature-empty">No upcoming gigs listed.</p>}
@@ -131,7 +131,7 @@ const MapView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListing[];profi
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[points,isLoaded]);
     const selectedPoint=points.find(point=>point.key===selected);
-    return <ToolFrame title={`${profile.title} gig map${route.month === undefined ? "" : " · "+moment().month(route.month).format("MMMM")}`} url={route.targetUrl}><div className="feature-map"><header><a href={route.targetUrl}>View all gigs ↗</a></header><div className="feature-map-date"><label htmlFor="feature-map-day">Show gigs on</label><select id="feature-map-day" value={date} onChange={event=>{setSelectedDate(event.target.value);setSelected(null);}}>{futureDates.map(day=><option key={day} value={day}>{moment(day).format('dddd D MMM YYYY')}</option>)}</select><span>{points.length} venue{points.length===1?'':'s'}</span></div>
+    return <ToolFrame title={`${profile.title} gig map${route.month === undefined ? "" : " · "+moment().month(route.month).format("MMMM")}`} url={route.targetUrl}><div className="feature-map"><header><a href={route.targetUrl}>View all gigs ↗</a></header><div className="feature-map-date"><label htmlFor="feature-map-day">Show Gigs On</label><select id="feature-map-day" value={date} onChange={event=>{setSelectedDate(event.target.value);setSelected(null);}}>{futureDates.map(day=><option key={day} value={day}>{moment(day).format('dddd D MMM YYYY')}</option>)}</select><span>{points.length} venue{points.length===1?'':'s'}</span></div>
         <div className="feature-map-canvas">{loadError?<p role="alert">The map couldn’t load.</p>:!isLoaded?<p>Loading map…</p>:!points.length?<p>No mapped venues for this date.</p>:<GoogleMap mapContainerStyle={{width:'100%',height:'100%'}} onLoad={map=>{mapRef.current=map;fitPoints(map);}} onUnmount={()=>{mapRef.current=null;}} options={{styles:mapStyles,zoomControl:true,disableDefaultUI:true}} center={points[0].position} zoom={12}>{points.map(point=><Marker key={point.key} position={point.position} onClick={()=>setSelected(point.key)}/>)}</GoogleMap>}
             {isLoaded&&selectedPoint&&<div className="feature-map-selected"><button aria-label="Close venue details" onClick={()=>setSelected(null)}>×</button>{selectedPoint.gigs.map((gig,index)=><ListingLink key={`${gig.id}-${index}`} gig={gig} title={clean(gig.artist)} sub={clean(gig.name)}/>)}</div>}</div>
     </div></ToolFrame>;
@@ -200,34 +200,34 @@ export const SocialView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListi
     };
     return <ToolFrame title="Create Social Card" url={route.targetUrl}><div className="feature-social"><header><p>{route.month === undefined ? 'Share the next seven days of live music.' : periodLabel(route)+'.'}</p></header>
         <div className="poster-editor social-editor">
-            <aside className="qr-poster-controls" aria-label="Social post settings" aria-busy={rendering||uploading}>
-                <div className="poster-panel-heading"><h2>Social post settings</h2>
+            <aside className="qr-poster-controls" aria-label="Social Post Settings" aria-busy={rendering||uploading}>
+                <div className="poster-panel-heading"><h2>Social Post Settings</h2>
                     <button type="button" className="poster-panel-toggle" aria-expanded={configOpen} aria-controls="social-settings-content" onClick={()=>setConfigOpen(value=>!value)}>{configOpen?'Close':'Configure'}</button>
                 </div>
                 <div id="social-settings-content" className={`poster-controls-content${configOpen?' is-open':''}`}>
                     <p>QR code links to <a href={route.targetUrl}>{route.targetUrl}</a></p>
                     <p>{weekendOnly?weekend.label:route.month === undefined?'Next seven days':periodLabel(route)} · {weekly.length} listings</p>
-                    <label className="poster-weekend-toggle"><input type="checkbox" checked={weekendOnly} onChange={event=>{setWeekend(upcomingWeekend());setWeekendOnly(event.target.checked);}} /> Upcoming weekend (Fri–Sun)</label>
+                    <label className="poster-weekend-toggle"><input type="checkbox" checked={weekendOnly} onChange={event=>{setWeekend(upcomingWeekend());setWeekendOnly(event.target.checked);}} /> Upcoming Weekend (Fri–Sun)</label>
                     <label className="poster-theme-label">Size<select aria-label="Size" value={format} onChange={event=>setFormat(event.target.value as SocialFormat)}><option value="story">Story · 1080 × 1920</option><option value="square">Square · 1080 × 1080</option></select></label>
                     <ShuffleControl label="Colour" value={palette} options={palettes} onChange={value=>setPalette(value as SocialPalette)}>
-                        <button type="button" onClick={()=>setPalette(next(palettes.map(item=>item.value),palette) as SocialPalette)}>Shuffle colours</button>
+                        <button type="button" onClick={()=>setPalette(next(palettes.map(item=>item.value),palette) as SocialPalette)}>Shuffle Colours</button>
                     </ShuffleControl>
                     <ShuffleControl label="Font" value={font} options={posterFontFamilies.map(value=>({value,label:value}))} onChange={setFont}>
-                        <button type="button" onClick={()=>setFont(next(posterFontFamilies,font))}>Shuffle fonts</button>
+                        <button type="button" onClick={()=>setFont(next(posterFontFamilies,font))}>Shuffle Fonts</button>
                     </ShuffleControl>
-                    <button type="button" aria-pressed={!autoContrast&&invertFontColour} onClick={()=>{setAutoContrast(false);setInvertFontColour(value=>!value);}}>Invert font colour</button>
-                    <button type="button" aria-pressed={autoContrast} onClick={()=>setAutoContrast(value=>!value)}>Auto contrast</button>
-                    <ShuffleControl label="Image" value={backgroundUpload?'custom':imageKey} options={[...images.map(value=>({value,label:artworkLabel(value)})),...(backgroundUpload?[{value:'custom',label:backgroundUpload.name}]:[])]} onChange={value=>{if(value!=='custom')chooseImage(value);}}>
-                        <button type="button" onClick={()=>chooseImage(next(images,imageKey))}>Shuffle image</button>
+                    <button type="button" aria-pressed={!autoContrast&&invertFontColour} onClick={()=>{setAutoContrast(false);setInvertFontColour(value=>!value);}}>Invert Font Colour</button>
+                    <button type="button" aria-pressed={autoContrast} onClick={()=>setAutoContrast(value=>!value)}>Auto Contrast</button>
+                    <ShuffleControl label="Background" value={backgroundUpload?'custom':imageKey} options={[...images.map(value=>({value,label:artworkLabel(value)})),...(backgroundUpload?[{value:'custom',label:backgroundUpload.name}]:[])]} onChange={value=>{if(value!=='custom')chooseImage(value);}}>
+                        <button type="button" onClick={()=>chooseImage(next(images,imageKey))}>Shuffle Background</button>
                     </ShuffleControl>
                     <div className="poster-upload-row">
-                        <label className="poster-upload-button">Upload background<input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload background" aria-invalid={!!uploadError} aria-describedby={uploadError?'social-upload-error':undefined} onChange={event=>{const file=event.target.files?.[0];event.target.value='';void uploadBackground(file);}} /></label>
-                        {backgroundUpload&&<button type="button" aria-label="Remove custom background" onClick={()=>chooseImage(imageKey)}>Remove</button>}
+                        <label className="poster-upload-button">Upload Background<input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload Background" aria-invalid={!!uploadError} aria-describedby={uploadError?'social-upload-error':undefined} onChange={event=>{const file=event.target.files?.[0];event.target.value='';void uploadBackground(file);}} /></label>
+                        {backgroundUpload&&<button type="button" aria-label="Remove Custom Background" onClick={()=>chooseImage(imageKey)}>Remove</button>}
                     </div>
                     {uploadError&&<p id="social-upload-error" className="poster-upload-error" role="alert">{uploadError}</p>}
                     {uploading&&<p role="status">Preparing background image…</p>}
                     <div className="poster-randomise-label">Randomise</div>
-                    <button type="button" onClick={()=>{setPalette(next(palettes.map(item=>item.value),palette) as SocialPalette);chooseImage(next(images,imageKey));setFont(next(posterFontFamilies,font));}}>Shuffle everything</button>
+                    <button type="button" onClick={()=>{setPalette(next(palettes.map(item=>item.value),palette) as SocialPalette);chooseImage(next(images,imageKey));setFont(next(posterFontFamilies,font));}}>Shuffle All Styles</button>
                     <div className="poster-export-actions">{png&&!rendering&&!uploading&&<a className="qr-poster-button" download={`giglist-${route.slug}-${format}.png`} href={png}>Download PNG</a>}</div>
                     {rendering&&<p role="status">Updating social graphic…</p>}
                     {error&&<p role="alert">{error}</p>}

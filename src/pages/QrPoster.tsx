@@ -1,3 +1,5 @@
+import { artworkLabel } from '../utils/artworkLabel';
+import moment from 'moment';
 import { ToolFrame } from './ToolFrame';
 import { PosterUpload, readPosterUpload } from '../utils/posterUpload';
 import { ShuffleControl } from '../components/Poster/ShuffleControl';
@@ -19,7 +21,7 @@ import { TListing } from "../types/types";
 import { posterMonths } from "../utils/qrUrl";
 import { filterGigSearch } from "../utils/searchUrl";
 
-export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: string; poster?: boolean; month?: number }) => {
+export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { targetUrl: string; poster?: boolean; month?: number }) => {
     const [bannerUpload, setBannerUpload] = useState<PosterUpload | null>(null);
     const [backgroundUpload, setBackgroundUpload] = useState<PosterUpload | null>(null);
     const [useCustomBackground, setUseCustomBackground] = useState(false);
@@ -40,11 +42,26 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
             if (version === uploadVersion.current) setUploadErrors(errors => ({...errors, [kind]: error instanceof Error ? error.message : 'Image could not load.'}));
         } finally { if (version === uploadVersion.current) setUploading(false); }
     };
+    const [months] = useState(() => Array.from({length:12}, (_,index) => {
+        const date = moment().startOf('month').add(index,'months');
+        return {value:date.format('YYYY-MM'),label:date.format('MMMM YYYY'),month:date.month()};
+    }));
+    const [selectedMonth, setSelectedMonth] = useState(() => months.find(item=>item.month===initialMonth)?.value);
+    const month = selectedMonth ? Number(selectedMonth.slice(5,7))-1 : undefined;
+    const [dateRange, setDateRange] = useState<{start:string;end:string} | null>(null);
+    const [rangeStart, setRangeStart] = useState('');
+    const [rangeEnd, setRangeEnd] = useState('');
+    const validRange = moment(rangeStart, 'YYYY-MM-DD', true).isValid() && moment(rangeEnd, 'YYYY-MM-DD', true).isValid() && rangeStart <= rangeEnd;
     const [allGigs, setGigs] = useState<TListing[]>([]);
     const [weekendOnly, setWeekendOnly] = useState(false);
     const [weekend, setWeekend] = useState(() => upcomingWeekend());
-    const gigs = useMemo(() => weekendOnly ? weekendGigs(allGigs, weekend) : allGigs.filter(gig => month === undefined || Number(gig.date.slice(5,7)) === month + 1), [allGigs, weekendOnly, weekend, month]);
-    const periodLabel = weekendOnly ? weekend.label : undefined;
+    useEffect(() => {
+        const activeRange = weekendOnly ? weekend : dateRange;
+        setRangeStart(activeRange?.start || (selectedMonth ? moment(selectedMonth, 'YYYY-MM').startOf('month').format('YYYY-MM-DD') : ''));
+        setRangeEnd(activeRange?.end || (selectedMonth ? moment(selectedMonth, 'YYYY-MM').endOf('month').format('YYYY-MM-DD') : ''));
+    }, [weekendOnly, weekend, dateRange, selectedMonth]);
+    const gigs = useMemo(() => weekendOnly ? weekendGigs(allGigs, weekend) : allGigs.filter(gig => dateRange ? gig.date.slice(0,10) >= dateRange.start && gig.date.slice(0,10) <= dateRange.end : !selectedMonth || gig.date.slice(0,7) === selectedMonth), [allGigs, weekendOnly, weekend, selectedMonth, dateRange]);
+    const periodLabel = weekendOnly ? weekend.label : dateRange ? `LIVE MUSIC · ${moment(dateRange.start).format('D MMM YYYY')}–${moment(dateRange.end).format('D MMM YYYY')}` : selectedMonth ? `LIVE MUSIC IN ${moment(selectedMonth, 'YYYY-MM').format('MMMM YYYY').toUpperCase()}` : undefined;
     const [rendering, setRendering] = useState(false);
     const [listStyle, setListStyle] = useState<ListStyle>("columns");
     const seenListStyles = useRef<ListStyle[]>(['columns']);
@@ -137,10 +154,10 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
         setPosterFonts({...next, title: next.listing});
     };
     const imageOptions = [
-        ...(backgroundUpload ? [{value: "custom", label: backgroundUpload.name}] : []),
-        ...(venueImage ? [{value: 'venue', label: 'Venue photo'}] : []),
-        ...locationPhotos.map(photo => ({value: 'local:' + photo.id, label: photo.title})),
-        ...Object.keys(posterArtwork).map(key => ({value: key, label: key.replace(/([a-z])([A-Z])/g, '$1 $2')})),
+        ...(backgroundUpload ? [{value: "custom", label: artworkLabel(backgroundUpload.name)}] : []),
+        ...(venueImage ? [{value: 'venue', label: 'Venue Photo'}] : []),
+        ...locationPhotos.map(photo => ({value: 'local:' + photo.id, label: artworkLabel(photo.title)})),
+        ...Object.keys(posterArtwork).map(key => ({value: key, label: artworkLabel(key)})),
     ];
     const imageValue = useCustomBackground && backgroundUpload ? "custom" : useVenuePhoto && venueImage && !venuePhotoFailed ? 'venue' : locationPhoto ? 'local:' + locationPhoto.id : artwork;
     const chooseImage = (value: string) => {
@@ -202,7 +219,7 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                 }
             });
         return () => { cancelled = true; locationRequest.current?.abort(); locationRequest.current = null; };
-    }, [targetUrl, poster, month]);
+    }, [targetUrl, poster]);
 
     useEffect(() => {
         let cancelled = false;
@@ -228,7 +245,7 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                         document.fonts.load('700 40px "Poster Grotesk"'),
                         document.fonts.load('60px "Poster Condensed"'),
                     ]);
-                    if (loaded.some((faces) => !faces.length)) throw new Error("Poster font could not load");
+                    if (loaded.some((faces) => !faces.length)) throw new Error("Poster Font could not load");
                 }
                 if (cancelled) return;
                 const svg = qrRef.current?.querySelector("svg");
@@ -265,7 +282,7 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                     let localImage: HTMLImageElement | null = null;
                     if (!photo && locationPhoto) {
                         try { localImage = await loadPosterImage(locationPhoto.url); }
-                        catch { if (!cancelled) setImageWarning("This local photo couldn’t load. Showing theme artwork; try Shuffle image for another photo."); }
+                        catch { if (!cancelled) setImageWarning("This local photo couldn’t load. Showing theme artwork; try Shuffle Background for another photo."); }
                     }
                     const art = photo ? null : localImage || await loadPosterImage(posterArtwork[artwork]);
                     if (cancelled) return;
@@ -351,9 +368,17 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
         };
     }, [bannerUpload, backgroundUpload, useCustomBackground, targetUrl, background, foreground, displayName, poster, theme, header, headerCaps, selectedListStyle, weekendOnly, periodLabel, artwork, inverted, venueImage, gigs, month, isVenue, isSuburb, locationPhoto, posterFonts, useVenuePhoto, venuePhotoAttempt]);
 
+    const backgroundUploadControls = <>
+                    <div className="poster-upload-row">
+                        <label className="poster-upload-button">Upload Background<input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload Background" aria-invalid={!!uploadErrors.background} aria-describedby={uploadErrors.background ? "background-upload-error" : undefined} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void upload(file, 'background'); }} /></label>
+                        {backgroundUpload && <button type="button" aria-label="Remove Custom Background" onClick={() => { setBackgroundUpload(null); setUseCustomBackground(false); }}>Remove</button>}
+                    </div>
+                    {uploadErrors.background && <p id="background-upload-error" className="poster-upload-error" role="alert">{uploadErrors.background}</p>}
+    </>;
+
     return (
         <ToolFrame title={poster ? "Create Poster" : "Create QR Code"} url={targetUrl}>
-        <div className={`qr-poster-page poster-editor${poster ? "" : " qr-code-editor"}`}>
+        <div className={`qr-poster-page poster-editor${poster ? " poster-print-editor" : " qr-code-editor"}`}>
             <Helmet>
                 <title>{poster ? "Giglist | Printable gig poster" : "Giglist | Printable QR code"}</title>
                 <meta name="robots" content="noindex" />
@@ -364,7 +389,7 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                     <span className="poster-button-spinner" aria-hidden="true" />
                 </div>}
                 <fieldset className="poster-controls-fieldset" disabled={uploading || (poster && (rendering || !!activeShuffle || locationLoading))}>
-                <div className="poster-panel-heading"><h2>{poster ? "Poster settings" : "QR code settings"}</h2>
+                <div className="poster-panel-heading"><h2>{poster ? "Poster Settings" : "QR Code Settings"}</h2>
                     <button type="button" className="poster-panel-toggle" aria-expanded={configOpen} aria-controls="poster-settings-content"
                         onClick={() => setConfigOpen(value => !value)}>{configOpen ? "Close" : "Configure"}</button>
                 </div>
@@ -373,55 +398,69 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                 {poster && <p>{periodLabel || (month === undefined ? "Upcoming gigs" : `Live music in ${posterMonthNames[month]}`)} · {gigs.length} listings</p>}
 
 
-                {poster && <label className="poster-weekend-toggle"><input type="checkbox" checked={weekendOnly} onChange={event => { setWeekend(upcomingWeekend()); setWeekendOnly(event.target.checked); }} /> Upcoming weekend (Fri–Sun)</label>}
 
 
                 {poster && <>
-                    <ShuffleControl label="Poster theme" value={theme} options={posterThemes.map(item => ({value: item.id, label: item.name}))} onChange={chooseTheme}>
-                    <button type="button" className="poster-random" {...shuffleProps("Shuffle theme")} onClick={() => {
-                        setActiveShuffle("Shuffle theme");
+                    <ShuffleControl label="Poster Theme" value={theme} options={posterThemes.map(item => ({value: item.id, label: item.name}))} onChange={chooseTheme}>
+                    <button type="button" className="poster-random" {...shuffleProps("Shuffle Theme")} onClick={() => {
+                        setActiveShuffle("Shuffle Theme");
                         const next = randomPosterTheme(theme); setTheme(next);
                         setArtwork(nextPosterArtwork(next, artwork));
                     }}>
-                        {shuffleLabel("Shuffle theme")}
+                        {shuffleLabel("Shuffle Theme")}
                     </button>
                     </ShuffleControl>
-                    <ShuffleControl label="Header artwork" value={header} options={[...posterHeaders.map(value => ({value, label: posterHeaderNames[value]})), ...(bannerUpload ? [{value: "custom", label: bannerUpload.name}] : [])]} onChange={chooseHeader}>
-                    <button type="button" className="poster-header-shuffle" {...shuffleProps("Shuffle header")} title={`Current header: ${header}`} onClick={() => { setActiveShuffle("Shuffle header"); const next = nextPosterHeader(header); setHeader(next); setHeaderCaps(!(headerCaps ?? (currentPosterFonts().title === "Poster Condensed"))); }}>{shuffleLabel("Shuffle header")}</button>
+                    <label className="poster-theme-label">Month
+                        <select aria-label="Poster month" value={dateRange ? 'custom' : selectedMonth ?? 'all'} onChange={event=>{setSelectedMonth(event.target.value==='all'?undefined:event.target.value);setDateRange(null);setWeekendOnly(false);}}>
+                            <option value="all">All dates</option>
+                            {months.map(item=><option key={item.value} value={item.value}>{item.label}</option>)}
+                            {dateRange&&<option value="custom" disabled>Custom Date Range</option>}
+                        </select>
+                    </label>
+                    <div className="poster-date-range">
+                        <label>From<input type="date" aria-label="Poster start date" value={rangeStart} onChange={event=>setRangeStart(event.target.value)} /></label>
+                        <label>To<input type="date" aria-label="Poster end date" value={rangeEnd} min={rangeStart || undefined} onChange={event=>setRangeEnd(event.target.value)} /></label>
+                        <button type="button" disabled={!validRange} onClick={()=>{setDateRange({start:rangeStart,end:rangeEnd});setSelectedMonth(undefined);setWeekendOnly(false);}}>Apply Date Range</button>
+                        {rangeStart&&rangeEnd&&rangeStart>rangeEnd&&<p role="alert">End date must be on or after the start date.</p>}
+                    </div>
+                    <label className="poster-weekend-toggle"><input type="checkbox" checked={weekendOnly} onChange={event => { setWeekend(upcomingWeekend()); setWeekendOnly(event.target.checked); }} /> Upcoming Weekend (Fri–Sun)</label>
+                    <ShuffleControl label="Header Artwork" value={header} options={[...posterHeaders.map(value => ({value, label: artworkLabel(posterHeaderNames[value])})), ...(bannerUpload ? [{value: "custom", label: artworkLabel(bannerUpload.name)}] : [])]} onChange={chooseHeader}>
+                    <button type="button" className="poster-header-shuffle" {...shuffleProps("Shuffle Header")} title={`Current header: ${header}`} onClick={() => { setActiveShuffle("Shuffle Header"); const next = nextPosterHeader(header); setHeader(next); setHeaderCaps(!(headerCaps ?? (currentPosterFonts().title === "Poster Condensed"))); }}>{shuffleLabel("Shuffle Header")}</button>
                     </ShuffleControl>
                     <div className="poster-upload-row">
-                        <label className="poster-upload-button">Upload banner<input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload banner" aria-invalid={!!uploadErrors.banner} aria-describedby={uploadErrors.banner ? "banner-upload-error" : undefined} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void upload(file, 'banner'); }} /></label>
-                        {bannerUpload && <button type="button" aria-label="Remove custom banner" onClick={() => { setBannerUpload(null); if (header === 'custom') setHeader('gradient'); }}>Remove</button>}
+                        <label className="poster-upload-button">Upload Banner<input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload Banner" aria-invalid={!!uploadErrors.banner} aria-describedby={uploadErrors.banner ? "banner-upload-error" : undefined} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void upload(file, 'banner'); }} /></label>
+                        {bannerUpload && <button type="button" aria-label="Remove Custom Banner" onClick={() => { setBannerUpload(null); if (header === 'custom') setHeader('gradient'); }}>Remove</button>}
                     </div>
                     {uploadErrors.banner && <p id="banner-upload-error" className="poster-upload-error" role="alert">{uploadErrors.banner}</p>}
-                    <ShuffleControl label="Poster font" value={currentPosterFonts().listing} options={posterFontFamilies.map(value => ({value, label: value}))} onChange={chooseFont}>
-                    <button type="button" className="poster-font-shuffle" {...shuffleProps("Shuffle fonts")} onClick={() => {
-                        setActiveShuffle("Shuffle fonts");
+                    <ShuffleControl label="Poster Font" value={currentPosterFonts().listing} options={posterFontFamilies.map(value => ({value, label: value}))} onChange={chooseFont}>
+                    <button type="button" className="poster-font-shuffle" {...shuffleProps("Shuffle Fonts")} onClick={() => {
+                        setActiveShuffle("Shuffle Fonts");
                         const next = nextListingFonts(currentPosterFonts());
                         setPosterFonts({...next, title: next.listing});
-                    }}>{shuffleLabel("Shuffle fonts")}</button>
+                    }}>{shuffleLabel("Shuffle Fonts")}</button>
                     </ShuffleControl>
-                    <ShuffleControl label="Image" value={imageValue} options={imageOptions} onChange={chooseImage}>
-                    <button type="button" className="poster-shuffle" {...shuffleProps("Shuffle image")} disabled={!!activeShuffle || (!!locationPhoto && locationPhotos.length < 2)} onClick={() => { setActiveShuffle("Shuffle image"); shuffleImage(); }}>{shuffleLabel("Shuffle image")}</button>
+                    <ShuffleControl label="Background" value={imageValue} options={imageOptions} onChange={chooseImage}>
+                    <button type="button" className="poster-shuffle" {...shuffleProps("Shuffle Background")} disabled={!!activeShuffle || (!!locationPhoto && locationPhotos.length < 2)} onClick={() => { setActiveShuffle("Shuffle Background"); shuffleImage(); }}>{shuffleLabel("Shuffle Background")}</button>
                     </ShuffleControl>
+                    {backgroundUploadControls}
                     {venueImage && <button type="button" className="poster-venue-photo"
                         aria-pressed={useVenuePhoto && !venuePhotoFailed} onClick={() => {
                             setUseCustomBackground(false); setUseVenuePhoto(true);
                             setVenuePhotoAttempt((attempt) => attempt + 1);
-                        }}>{useVenuePhoto && !venuePhotoFailed ? "Venue photo selected" : "Use venue photo"}</button>}
+                        }}>{useVenuePhoto && !venuePhotoFailed ? "Venue Photo Selected" : "Use Venue Photo"}</button>}
                     {isSuburb && !locationPhoto && <button type="button" className="poster-location" aria-pressed={!!locationPhoto}
                         disabled={locationLoading || !displayName} onClick={useLocationImagery}>
-                        {locationLoading ? "Finding local photos…" : "Location imagery"}
+                        {locationLoading ? "Finding Local Photos…" : "Location Imagery"}
                     </button>}
                     {locationMessage && <p role="status">{locationMessage}</p>}
-                    <ShuffleControl label="List style" value={selectedListStyle}
+                    <ShuffleControl label="List Style" value={selectedListStyle}
                         options={availableListStyles.map(value => ({value, label: listStyleNames[value]}))} disabled={weekendOnly && !isArtistPoster}
                         onChange={value => {setListStyle(value as ListStyle); seenListStyles.current = [value as ListStyle];}}>
-                        <button type="button" className="poster-list-style" disabled={weekendOnly && !isArtistPoster} onClick={() => {shuffleListStyle();}}>Shuffle list style</button>
+                        <button type="button" className="poster-list-style" disabled={weekendOnly && !isArtistPoster} onClick={() => {shuffleListStyle();}}>Shuffle List Style</button>
                     </ShuffleControl>
                     <div className="poster-randomise-label">Randomise</div>
-                    <button type="button" className="poster-shuffle-everything" {...shuffleProps("Shuffle everything")} onClick={() => {
-                        setActiveShuffle("Shuffle everything");
+                    <button type="button" className="poster-shuffle-everything" {...shuffleProps("Shuffle All Styles")} onClick={() => {
+                        setActiveShuffle("Shuffle All Styles");
                         setUseCustomBackground(false);
                         const nextHeader = nextPosterHeader(header);
                         setHeader(nextHeader);
@@ -439,21 +478,17 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                         setLocationLoading(false);
                         setLocationPhoto(null);
                         setLocationMessage("");
-                    }}>{shuffleLabel("Shuffle everything")}</button>
+                    }}>{shuffleLabel("Shuffle All Styles")}</button>
                     <div className="poster-settings-gap" aria-hidden="true" />
                 </>}
-                    <div className="poster-upload-row">
-                        <label className="poster-upload-button">Upload background<input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload background" aria-invalid={!!uploadErrors.background} aria-describedby={uploadErrors.background ? "background-upload-error" : undefined} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void upload(file, 'background'); }} /></label>
-                        {backgroundUpload && <button type="button" aria-label="Remove custom background" onClick={() => { setBackgroundUpload(null); setUseCustomBackground(false); }}>Remove</button>}
-                    </div>
-                    {uploadErrors.background && <p id="background-upload-error" className="poster-upload-error" role="alert">{uploadErrors.background}</p>}
+                {!poster && backgroundUploadControls}
                 {!poster && <label className="poster-theme-label">Colours
                     <select aria-label="QR colours" value={inverted ? "light" : "dark"} onChange={event => setInverted(event.target.value === "light")}><option value="dark">Black on white</option><option value="light">White on black</option></select>
                 </label>}
-                {!poster && <button type="button" aria-pressed={inverted} onClick={() => setInverted(value => !value)}>Invert colours</button>}
+                {!poster && <button type="button" aria-pressed={inverted} onClick={() => setInverted(value => !value)}>Invert Colours</button>}
                 <div className="poster-export-actions">
                 {png && !rendering && !uploading && <a className="qr-poster-button" href={png}
-                    download={`giglist-${targetUrl.split("/").pop()}-${poster ? theme + "-poster" + (weekendOnly ? "-weekend-" + weekend.start : "") + (weekendOnly || month === undefined ? "" : "-" + posterMonths[month]) : "qr"}.png`}>Download PNG</a>}
+                    download={`giglist-${targetUrl.split("/").pop()}-${poster ? theme + "-poster" + (weekendOnly ? "-weekend-" + weekend.start : "") + (weekendOnly ? "" : dateRange ? "-" + dateRange.start + "-to-" + dateRange.end : month === undefined ? "" : "-" + posterMonths[month] + "-" + selectedMonth!.slice(0,4)) : "qr"}.png`}>Download PNG</a>}
                 <button type="button" disabled={!ready || uploading || rendering} onClick={() => window.print()}>Print</button>
                 </div>
                 {!png && !error && <p role="status">{poster ? "Preparing your poster…" : "Preparing your QR code…"}</p>}
