@@ -38,6 +38,7 @@ test.each([['therose','The Rose','Venue'],['fitzroy','Fitzroy','Suburb'],['sydne
     await render(`/gigwidgets?for=${slug}`);
     expect(container.querySelector('h1').textContent).toBe(name);
     expect(container.querySelector('.gigwidgets-kicker').textContent).toBe(kind);
+    expect(!!container.querySelector(`a[href="/${slug}_map"]`)).toBe(kind!=='Venue');
 });
 
 test('failed feed can be retried and unmatched searches give feedback',async()=>{

@@ -48,9 +48,9 @@ const useFeatureFeed = (slug: string, month?: number) => {
     return {profile,gigs,status};
 };
 
-const ListingLink = ({gig,title,sub}: {gig:TListing;title:string;sub:string}) =>
+const ListingLink = ({gig,title,sub,fullDate=false}: {gig:TListing;title:string;sub:string;fullDate?:boolean}) =>
     <a className="feature-gig" href={buildGigPath(gig)}>
-        <time dateTime={gig.date}>{gigDateLabel(gig)}</time>
+        <time dateTime={gig.date}>{fullDate ? `${moment(gig.date).format('ddd D MMM YYYY')} · ${gig.start || 'Time TBA'}` : gigDateLabel(gig)}</time>
         <strong>{title}</strong>
         <span>{sub}</span>
     </a>;
@@ -104,21 +104,18 @@ const ScreenView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListing[];pr
 };
 
 const MapView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListing[];profile:ReturnType<typeof getTourProfile>}) => {
-    const futureDates=Array.from(new Set(gigs.filter(gig=>gig.date>=moment().format('YYYY-MM-DD')).map(gig=>gig.date))).sort();
-    const [selectedDate,setSelectedDate]=useState('');
-    const date=selectedDate||futureDates[0]||'';
     const [selected,setSelected]=useState<string|null>(null);
     const mapRef=useRef<google.maps.Map|null>(null);
     const points=useMemo(()=>{
         const grouped=new Map<string,{position:{lat:number;lng:number};gigs:TListing[]}>();
-        gigs.filter(gig=>gig.date===date).forEach(gig=>{
+        gigs.forEach(gig=>{
             const lat=Number(gig.lat),lng=Number(gig.lng);
             if(!gig.lat||!gig.lng||!Number.isFinite(lat)||!Number.isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180||!lat&&!lng)return;
             const key=`${lat},${lng}`;
             const point=grouped.get(key)||{position:{lat,lng},gigs:[]};point.gigs.push(gig);grouped.set(key,point);
         });
         return Array.from(grouped.entries()).map(([key,value])=>({key,...value}));
-    },[gigs,date]);
+    },[gigs]);
     const {isLoaded,loadError}=useJsApiLoader({id:'google-map-script',googleMapsApiKey:'AIzaSyDTkZauLKxFmJ3qW2jKsgjLvgt30kqJ3AM'});
     const fitPoints = (map: google.maps.Map) => {
         if(!points.length)return;
@@ -127,13 +124,13 @@ const MapView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListing[];profi
     };
     useEffect(()=>{
         const map=mapRef.current;if(map)fitPoints(map);
-        // Refit when the selected day changes.
+        // Refit when the matching gigs change.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[points,isLoaded]);
     const selectedPoint=points.find(point=>point.key===selected);
-    return <ToolFrame title={`${profile.title} gig map${route.month === undefined ? "" : " · "+moment().month(route.month).format("MMMM")}`} url={route.targetUrl}><div className="feature-map"><header><a href={route.targetUrl}>View all gigs ↗</a></header><div className="feature-map-date"><label htmlFor="feature-map-day">Show Gigs On</label><select id="feature-map-day" value={date} onChange={event=>{setSelectedDate(event.target.value);setSelected(null);}}>{futureDates.map(day=><option key={day} value={day}>{moment(day).format('dddd D MMM YYYY')}</option>)}</select><span>{points.length} venue{points.length===1?'':'s'}</span></div>
-        <div className="feature-map-canvas">{loadError?<p role="alert">The map couldn’t load.</p>:!isLoaded?<p>Loading map…</p>:!points.length?<p>No mapped venues for this date.</p>:<GoogleMap mapContainerStyle={{width:'100%',height:'100%'}} onLoad={map=>{mapRef.current=map;fitPoints(map);}} onUnmount={()=>{mapRef.current=null;}} options={{styles:mapStyles,zoomControl:true,disableDefaultUI:true}} center={points[0].position} zoom={12}>{points.map(point=><Marker key={point.key} position={point.position} onClick={()=>setSelected(point.key)}/>)}</GoogleMap>}
-            {isLoaded&&selectedPoint&&<div className="feature-map-selected"><button aria-label="Close venue details" onClick={()=>setSelected(null)}>×</button>{selectedPoint.gigs.map((gig,index)=><ListingLink key={`${gig.id}-${index}`} gig={gig} title={clean(gig.artist)} sub={clean(gig.name)}/>)}</div>}</div>
+    return <ToolFrame title={`${profile.title} gig map${route.month === undefined ? "" : " · "+moment().month(route.month).format("MMMM")}`} url={route.targetUrl}><div className="feature-map"><header><a href={route.targetUrl}>View all gigs ↗</a></header><div className="feature-map-summary"><span>{points.length} venue{points.length===1?'':'s'}</span></div>
+        <div className="feature-map-canvas">{loadError?<p role="alert">The map couldn’t load.</p>:!isLoaded?<p>Loading map…</p>:!points.length?<p>No mapped venues for these gigs.</p>:<GoogleMap mapContainerStyle={{width:'100%',height:'100%'}} onLoad={map=>{mapRef.current=map;fitPoints(map);}} onUnmount={()=>{mapRef.current=null;}} options={{styles:mapStyles,zoomControl:true,disableDefaultUI:true}} center={points[0].position} zoom={12}>{points.map(point=><Marker key={point.key} position={point.position} onClick={()=>setSelected(point.key)}/>)}</GoogleMap>}
+            {isLoaded&&selectedPoint&&<div className="feature-map-selected"><button aria-label="Close venue details" onClick={()=>setSelected(null)}>×</button>{selectedPoint.gigs.map((gig,index)=><ListingLink key={`${gig.id}-${index}`} gig={gig} title={clean(gig.artist)} sub={clean(gig.name)} fullDate/>)}</div>}</div>
     </div></ToolFrame>;
 };
 

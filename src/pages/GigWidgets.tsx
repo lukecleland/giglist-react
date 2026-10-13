@@ -75,7 +75,7 @@ export const GigWidgets = () => {
                 <p className="gigwidgets-intro">Choose a tool to get started.</p>
                 <p className="gigwidgets-alpha-note">* Please note, these experimental tools are new and in alpha development.</p>
                 <nav className="gigwidgets-cards" aria-label={`Tools for ${selected.name}`}>
-                    {tools.map(tool=><Link key={tool.name} to={`/${encodeURIComponent(selected.slug)}${tool.suffix}`} className="gigwidgets-card">
+                    {tools.filter(tool=>selected.kind!=='Venue'||tool.suffix!=='_map').map(tool=><Link key={tool.name} to={`/${encodeURIComponent(selected.slug)}${tool.suffix}`} className="gigwidgets-card">
                         <Icon name={tool.icon} aria-hidden="true" /><h2>{tool.name}</h2><p>{tool.description}</p><span aria-hidden="true">Open tool ↗</span>
                     </Link>)}
                 </nav>
