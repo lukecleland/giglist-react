@@ -134,7 +134,7 @@ test("poster provides researched themes and exports the selected layout", async 
     });
     const select = container.querySelector('select');
     expect(select.options).toHaveLength(posterThemes.length);
-    expect(container.querySelector('button[aria-pressed]')).toBeNull();
+    expect(container.querySelector('.poster-invert-fonts').getAttribute('aria-pressed')).toBe('false');
     expect(container.querySelector('a[download]').download).toBe('giglist-windsorhotel-nocturne-poster.png');
     await act(async () => { Simulate.change(select, { target: { value: 'wildflower' } }); });
     expect(container.querySelector('a[download]').download).toBe('giglist-windsorhotel-wildflower-poster.png');
@@ -185,7 +185,7 @@ test("artist posters shuffle imagery without changing their theme, listings or t
     expect(HTMLCanvasElement.prototype.toDataURL.mock.calls.length).toBe(calls + 1);
     expect(container.querySelector('select').value).toBe(originalTheme);
     expect(container.querySelector('.qr-poster-controls a').href).toBe('https://giglist.com.au/claytonbulger');
-    expect(container.querySelector('button[aria-pressed]')).toBeNull();
+    expect(container.querySelector('.poster-invert-fonts').getAttribute('aria-pressed')).toBe('false');
 });
 
 test('suburb location imagery loads by default and survives theme changes', async () => {
@@ -230,34 +230,43 @@ test('venues with their own photo can shuffle imagery and restore the venue phot
     const loaded = [];
     window.Image = class {
         naturalWidth = 1200; naturalHeight = 800;
-        set src(value) { loaded.push(value); Promise.resolve().then(() => this.onload()); }
+        set src(value) { this.source=value; loaded.push(value); Promise.resolve().then(() => this.onload()); }
     };
     const venuePhoto = 'https://giglist.com.au/venues/windsor.jpg';
     axios.get.mockResolvedValue({data: [{listings: [{artist: 'Band', name: 'Windsor Hotel', address: 'Main Street', suburb: 'Perth', date: '2027-03-01', start: '8pm', location_image_url: venuePhoto}]}]});
     await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider></MemoryRouter>, container); });
     expect(loaded).toContain(venuePhoto);
-    expect(container.querySelector('.poster-venue-photo').textContent).toBe('Venue Photo Selected');
-    expect(container.querySelector('.poster-venue-photo').getAttribute('aria-pressed')).toBe('true');
+    expect(container.querySelector('.poster-venue-photo').textContent.trim()).toBe('Use Venue Photo');
+    expect(container.querySelector('.poster-venue-photo input').checked).toBe(true);
     loaded.length = 0;
     await act(async () => { Simulate.click(container.querySelector('.poster-shuffle')); });
     expect(loaded).not.toContain(venuePhoto);
     expect(loaded.some((url) => url !== 'blob:qr')).toBe(true);
-    const restore = [...container.querySelectorAll('button')].find((button) => button.textContent === 'Use Venue Photo');
-    await act(async () => { Simulate.click(restore); });
+    const restore = container.querySelector('.poster-venue-photo input');
+    expect(restore.checked).toBe(false);
+    await act(async () => { Simulate.change(restore,{target:{checked:true}}); });
     expect(loaded).toContain(venuePhoto);
+    expect(context.drawImage.mock.calls.some(([image])=>image.source===venuePhoto)).toBe(true);
+    expect(container.querySelector('[aria-label="Background"]').value).toBe('venue');
+    loaded.length=0;
+    await act(async()=>{Simulate.change(restore,{target:{checked:false}});});
+    expect(loaded).not.toContain(venuePhoto);
+    expect(container.querySelector('[aria-label="Background"]').value).not.toBe('venue');
 });
 
-test('shuffle everything changes theme, fonts and artwork while preserving the gig target', async () => {
+test('shuffle all styles changes theme and fonts while preserving background and gig target', async () => {
     axios.get.mockResolvedValue({data: [{listings: [{artist: 'Clayton Bulger', name: 'Windsor Hotel', suburb: 'Perth', address: 'Main Street', date: '2027-03-01', start: '8pm'}]}]});
     for (const method of ['strokeText', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'save', 'restore', 'scale','translate', 'rotate', 'ellipse', 'closePath']) context[method] = jest.fn();
     context.measureText = (value) => ({width: value.length * 20});
     jest.spyOn(Math, 'random').mockReturnValue(0);
     await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster month={2} /></HelmetProvider></MemoryRouter>, container); });
     const theme = container.querySelector('select').value;
+    const background = container.querySelector('[aria-label="Background"]').value;
     const exports = HTMLCanvasElement.prototype.toDataURL.mock.calls.length;
     expect(container.querySelector('.poster-random').textContent).toContain('Shuffle Theme');
     await act(async () => { Simulate.click(container.querySelector('.poster-shuffle-everything')); });
     expect(container.querySelector('select').value).not.toBe(theme);
+    expect(container.querySelector('[aria-label="Background"]').value).toBe(background);
     expect(HTMLCanvasElement.prototype.toDataURL.mock.calls.length).toBeGreaterThan(exports);
     expect(document.fonts.load).toHaveBeenCalledWith('100px "Poster Grotesk"');
     expect(container.querySelector('.qr-poster-controls a').href).toBe('https://giglist.com.au/claytonbulger');
@@ -428,4 +437,53 @@ test('poster month and custom dates update the listings, subtitle and export', a
     expect(container.querySelector('.poster-date-range [role=alert]')).not.toBeNull();
     await act(async()=>{Simulate.change(container.querySelector('[aria-label="Poster month"]'),{target:{value:'all'}});});
     expect(container.querySelector('.qr-poster-image').alt).toContain('Upcoming gigs. 3 listings');
+});
+
+test('listing background and font inversion persist through style shuffling',async()=>{
+    for(const method of ['strokeText','strokeRect','beginPath','arc','fill','stroke','moveTo','lineTo','save','restore','scale','translate','rotate','ellipse','closePath'])context[method]=jest.fn();
+    axios.get.mockResolvedValue({data:[{listings:[{artist:'Band',name:'Windsor Hotel',address:'Main Street',suburb:'Perth',date:'2027-03-15',start:'8pm'}]}]});
+    await act(async()=>{ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider></MemoryRouter>,container);});
+    const background=Array.from(container.querySelectorAll('label')).find(label=>label.textContent.trim()==='Listing Background').querySelector('input');
+    const invert=container.querySelector('.poster-invert-fonts');
+    expect(background.checked).toBe(true);
+    expect(invert.previousElementSibling.querySelector('[aria-label="Poster Font"]')).not.toBeNull();
+    const exports=HTMLCanvasElement.prototype.toDataURL.mock.calls.length;
+    await act(async()=>{Simulate.change(background,{target:{checked:false}});});
+    await act(async()=>{Simulate.click(invert);});
+    expect(HTMLCanvasElement.prototype.toDataURL.mock.calls.length).toBeGreaterThan(exports);
+    await act(async()=>{Simulate.click(container.querySelector('.poster-shuffle-everything'));});
+    expect(background.checked).toBe(false);
+    expect(invert.getAttribute('aria-pressed')).toBe('true');
+});
+
+test('failed venue photos uncheck the control and can be retried',async()=>{
+    for(const method of ['strokeText','strokeRect','beginPath','arc','fill','stroke','moveTo','lineTo','save','restore','scale','translate','rotate','ellipse','closePath'])context[method]=jest.fn();
+    const venuePhoto='https://giglist.com.au/venues/test.jpg';
+    let fail=true;
+    window.Image=class {
+        naturalWidth=1200;naturalHeight=800;
+        set src(value){this.source=value;Promise.resolve().then(()=>value===venuePhoto&&fail?this.onerror():this.onload());}
+    };
+    axios.get.mockResolvedValue({data:[{listings:[{artist:'Band',name:'Test Venue',address:'Main Street',suburb:'Perth',date:'2027-03-15',start:'8pm',location_image_url:venuePhoto}]}]});
+    await act(async()=>{ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/testvenue" poster /></HelmetProvider></MemoryRouter>,container);});
+    const checkbox=container.querySelector('.poster-venue-photo input');
+    expect(checkbox.checked).toBe(false);
+    expect(container.textContent).toContain('check Use Venue Photo again to retry');
+    fail=false;context.drawImage.mockClear();
+    await act(async()=>{Simulate.change(checkbox,{target:{checked:true}});});
+    expect(checkbox.checked).toBe(true);
+    expect(context.drawImage.mock.calls.some(([image])=>image.source===venuePhoto)).toBe(true);
+    expect(container.textContent).not.toContain('check Use Venue Photo again to retry');
+});
+
+test('feed outages explain the missing preview and Retry restores the poster',async()=>{
+    for(const method of ['strokeText','strokeRect','beginPath','arc','fill','stroke','moveTo','lineTo','save','restore','scale','translate','rotate','ellipse','closePath'])context[method]=jest.fn();
+    jest.spyOn(console,'error').mockImplementation(()=>{});
+    axios.get.mockRejectedValueOnce({response:{status:500}}).mockResolvedValue({data:[{listings:[{artist:'Band',name:'Windsor Hotel',address:'Main Street',suburb:'Perth',date:'2027-03-15',start:'8pm'}]}]});
+    await act(async()=>{ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider></MemoryRouter>,container);});
+    expect(container.querySelector('.poster-preview-status [role=alert]').textContent).toContain('HTTP 500');
+    expect(container.querySelector('.qr-poster-image')).toBeNull();
+    await act(async()=>{Simulate.click(container.querySelector('.poster-preview-status button'));});
+    expect(container.querySelector('.qr-poster-image')).not.toBeNull();
+    expect(container.querySelector('.poster-preview-status')).toBeNull();
 });

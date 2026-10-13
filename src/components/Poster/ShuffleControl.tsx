@@ -1,9 +1,9 @@
 import { ReactNode } from 'react';
 
 type Option = {value: string; label: string};
-export const ShuffleControl = ({label, value, options, onChange, disabled = false, children}: {
+export const ShuffleControl = ({label, value, options, onChange, disabled = false, afterSelect, children}: {
     label: string; value: string; options: Option[]; onChange: (value: string) => void;
-    disabled?: boolean; children: ReactNode;
+    disabled?: boolean; afterSelect?: ReactNode; children: ReactNode;
 }) => {
     const step = (direction: number) => {
         const current = options.findIndex(option => option.value === value);
@@ -17,6 +17,7 @@ export const ShuffleControl = ({label, value, options, onChange, disabled = fals
                 {options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
         </label>
+        {afterSelect}
         <div className="poster-shuffle-row">
             <button type="button" aria-label={`Previous ${label.toLowerCase()}`} disabled={disabled || options.length < 2} onClick={() => step(-1)}><svg aria-hidden="true" viewBox="0 0 16 16"><path d="M10 3 5 8l5 5" /></svg></button>
             {children}

@@ -62,3 +62,24 @@ test.each([.6, .9])('row whitespace stays fixed with glyph height ratio %f', rat
     expect(bounds[1].y-(bounds[0].y+bounds[0].height)).toBeCloseTo(24);
     expect(bounds[2].y-(bounds[1].y+bounds[1].height)).toBeCloseTo(24);
 });
+
+test('alternating bands dates match the artist font size', () => {
+    const ctx=Object.fromEntries(['save','restore','fillRect','fillText','strokeText','beginPath','arc','moveTo','lineTo','closePath','fill'].map(name=>[name,jest.fn()]));
+    ctx.measureText=text=>({width:text.length*Number(/([\d.]+)px/.exec(ctx.font)?.[1]||30)*.5});
+    const sizes={};
+    ctx.fillText.mockImplementation(text=>{sizes[text]=Number(/([\d.]+)px/.exec(ctx.font)?.[1]);});
+    drawFestivalWordCloud(ctx,{area:{x:0,y:0,width:1470,height:500},entries:[{name:'Neon',details:'Fri'}],font:'Outfit',ink:'#fff',accent:'#ddd',divider:'bands'});
+    expect(sizes.Fri).toBe(sizes.Neon);
+});
+
+test('hiding the listing background preserves text placement and removes panel and bands',()=>{
+    const ctx=Object.fromEntries(['save','restore','fillRect','fillText','strokeText','beginPath','arc','moveTo','lineTo','closePath','fill'].map(name=>[name,jest.fn()]));
+    ctx.measureText=text=>({width:text.length*Number(/([\d.]+)px/.exec(ctx.font)?.[1]||30)*.5});
+    const options={area:{x:0,y:0,width:1470,height:500},entries:[{name:'Neon',details:'Fri'}],font:'Outfit',ink:'#ffffff',accent:'#dddddd',divider:'bands',backdrop:'#000000bb'};
+    const visible=drawFestivalWordCloud(ctx,options);
+    expect(ctx.fill).toHaveBeenCalled();expect(ctx.fillRect).toHaveBeenCalled();
+    ctx.fill.mockClear();ctx.fillRect.mockClear();
+    const hidden=drawFestivalWordCloud(ctx,{...options,showBackdrop:false});
+    expect(hidden.bounds).toEqual(visible.bounds);
+    expect(ctx.fill).not.toHaveBeenCalled();expect(ctx.fillRect).not.toHaveBeenCalled();
+});

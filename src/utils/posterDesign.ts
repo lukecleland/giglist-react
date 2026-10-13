@@ -53,6 +53,8 @@ type PosterOptions = {
     customBanner?: HTMLImageElement;
     customPalette?: ImagePalette;
     listStyle?: ListStyle;
+    listingBackground?: boolean;
+    invertFonts?: boolean;
     periodLabel?: string;
     photoCredit?: string;
     gigs?: TListing[]; month?: number; isVenue?: boolean; isSuburb?: boolean;
@@ -179,6 +181,8 @@ const headerBackground = (ctx: CanvasRenderingContext2D, theme: PosterTheme, opt
     return isArtworkBanner(options.header || '') ? '#ffffff' : light ? theme.background : theme.ink;
 };
 
+const invertedInk = (colour: string) => '#' + (0xffffff ^ parseInt(colour.slice(1),16)).toString(16).padStart(6,'0');
+
 // Measure first so unused title space cannot become invisible banner padding.
 const drawHeader = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options: PosterOptions, box: Box, align: CanvasTextAlign, month: string, effect: PosterTextEffect = 'plain') => {
     const title = (options.headerCaps ?? (theme.font === 'Poster Condensed')) ? options.title.toUpperCase() : options.title;
@@ -190,9 +194,9 @@ const drawHeader = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options: 
     const subtitleHeight = ctx.measureText(month).actualBoundingBoxDescent ?? 34;
     const bottom = subtitle.y + subtitleHeight + 48;
     const ink = headerBackground(ctx, theme, options, {...box, y: 40, height: bottom - 75});
-    ctx.fillStyle = ink;
+    ctx.fillStyle = options.invertFonts ? invertedInk(ink) : ink;
     fittedHeading(ctx, title, padded, theme.font, align, false, effect);
-    ctx.fillStyle = ink;
+    ctx.fillStyle = options.invertFonts ? invertedInk(ink) : ink;
     fittedText(ctx, month, subtitle, 'Poster Grotesk', 34, align, true, false, effect);
 };
 
@@ -362,6 +366,7 @@ const composition = (ctx: CanvasRenderingContext2D, theme: PosterTheme, options:
         ctx.save();
         if (shadow) { ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3; }
         headingInk = headerBackground(ctx, theme, options, {x: 65, y: 40, width: 1470, height: 165});
+        if (options.invertFonts) headingInk = invertedInk(headingInk);
         headingAccent = headingInk;
         ctx.fillStyle = headingInk;
         const title = (options.headerCaps ?? (theme.font === 'Poster Condensed')) ? options.title.toUpperCase() : options.title;
@@ -476,17 +481,18 @@ export const drawPoster = (ctx: CanvasRenderingContext2D, options: PosterOptions
         Object.assign(area, bannerListingColours[options.header]);
     }
     if (options.customPalette) Object.assign(area, options.customPalette);
+    if (options.invertFonts) { area.ink = invertedInk(area.ink); area.accent = invertedInk(area.accent); }
     paperGrain(ctx);
     const layout = listingLayout(ctx, gigs, options, area.width, area.height, area.columns);
     const rowBounds: Box[] = [];
     if (!gigs.length) {
-        ctx.fillStyle = ink;
+        ctx.fillStyle = area.ink;
         fittedText(ctx, options.periodLabel ? 'No gigs listed for this period.' : options.month === undefined ? 'No upcoming gigs listed.' : `No gigs listed in ${posterMonthNames[options.month]}.`, { x: area.x, y: area.y, width: area.width, height: 180 }, 'Poster Grotesk', 44);
     }
     if (options.listStyle && options.listStyle !== 'columns' && gigs.length) {
         const cloud = drawFestivalWordCloud(ctx, {
             area, effect: options.fonts?.effect, divider: options.listStyle, font: options.fonts?.listing || theme.font, ink: area.ink, accent: area.accent,
-            backdrop: area.backdrop || bg + 'bb',
+            backdrop: area.backdrop || bg + 'bb', showBackdrop: options.listingBackground,
             entries: gigs.map(gig => ({
                 dateKey: gig.date, dateLabel: moment(gig.date).format(options.listStyle === 'festivalDays' ? 'dddd D MMM YYYY' : 'ddd D MMM YYYY'),
                 name: (options.listStyle === 'festivalDays' ? gig.artist.toUpperCase() : options.isVenue || options.isSuburb ? gig.artist : gig.name).replace(/&amp;/gi, '&'),
@@ -500,7 +506,7 @@ export const drawPoster = (ctx: CanvasRenderingContext2D, options: PosterOptions
     } else for (let c = 0; c < layout.columns; c++) {
         const x = area.x + c * (layout.columnWidth + 52);
         let y = area.y;
-        if (area.backdrop) rect(ctx, area.backdrop, x - 12, area.y - 14, layout.columnWidth + 24, area.height + 28);
+        if (area.backdrop && options.listingBackground !== false) rect(ctx, area.backdrop, x - 12, area.y - 14, layout.columnWidth + 24, area.height + 28);
         ctx.save();
         if (area.shadow) { ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 2; }
         layout.rows.slice(c * layout.perColumn, (c + 1) * layout.perColumn).forEach((row) => {

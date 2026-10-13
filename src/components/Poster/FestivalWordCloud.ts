@@ -14,7 +14,7 @@ export const nextListStyle = (current: ListStyle, random = Math.random, seen: re
 };
 export type CloudEntry = { name: string; details: string; dateLabel?: string; dateKey?: string };
 type Box = { x: number; y: number; width: number; height: number };
-type CloudOptions = { area: Box; entries: CloudEntry[]; font: string; ink: string; accent: string; backdrop?: string; divider?: ListStyle; effect?: PosterTextEffect };
+type CloudOptions = { area: Box; entries: CloudEntry[]; font: string; ink: string; accent: string; backdrop?: string; showBackdrop?: boolean; divider?: ListStyle; effect?: PosterTextEffect };
 const fontString = (size: number, family: string) => `700 ${size}px "${family}", sans-serif`;
 const wrap = (ctx: CanvasRenderingContext2D, text: string, width: number) => {
     const lines: string[] = [];
@@ -83,7 +83,7 @@ export const drawFestivalWordCloud = (ctx: CanvasRenderingContext2D, options: Cl
                 const lineHeight = Math.max(singleLineInk, fontSize * .95);
                 const inkHeight = singleLineInk + (nameLines.length - 1) * lineHeight;
                 const nameWidth = Math.min(columnWidth, Math.max(...nameLines.map(line => ctx.measureText(line).width)));
-                const detailSize = Math.min(size * .42, fontSize * .53);
+                const detailSize = style === 'bands' ? fontSize : Math.min(size * .42, fontSize * .53);
                 ctx.font = `${detailSize}px "Poster Grotesk", sans-serif`;
                 const details = wrap(ctx, entry.details, sideBySide ? columnWidth * .32 : isSingle ? columnWidth : Math.min(columnWidth, Math.max(nameWidth, size * 8)));
                 const width = isSingle ? columnWidth : Math.min(columnWidth, Math.max(nameWidth, ...details.map(line => ctx.measureText(line).width)));
@@ -125,7 +125,7 @@ export const drawFestivalWordCloud = (ctx: CanvasRenderingContext2D, options: Cl
     const columns = pack(low);
     const bounds: Box[] = [];
     ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-    if (options.backdrop) {
+    if (options.backdrop && options.showBackdrop !== false) {
         const {x, y, width, height} = panel;
         const radius = 18;
         ctx.fillStyle = options.backdrop;
@@ -167,7 +167,7 @@ export const drawFestivalWordCloud = (ctx: CanvasRenderingContext2D, options: Cl
                 paintListingText(ctx, row.label.toUpperCase(), left + columnWidth / 2, y + (Number.isFinite(ascent) ? ascent : 0), options.effect);
                 y += column.labelHeights[rowIndex] + column.labelGap;
             }
-            if (style === 'bands' && rowIndex % 2 === 0) {
+            if (style === 'bands' && options.showBackdrop !== false && rowIndex % 2 === 0) {
                 ctx.save(); ctx.globalAlpha = .12; ctx.fillStyle = options.ink;
                 ctx.fillRect(left, y - column.rowGap * .25, columnWidth, row.height + column.rowGap * .5); ctx.restore();
             }
