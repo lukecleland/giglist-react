@@ -1,3 +1,4 @@
+import { ToolFrame } from './ToolFrame';
 import { PosterUpload, readPosterUpload } from '../utils/posterUpload';
 import { ShuffleControl } from '../components/Poster/ShuffleControl';
 import { upcomingWeekend, weekendGigs } from "../utils/posterWeekend";
@@ -92,8 +93,7 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
     const isArtistPoster = !isSuburb && !isVenue;
     const availableListStyles = isArtistPoster ? listStyles.filter(style => style !== 'festivalDays') : listStyles;
     const selectedListStyle = weekendOnly && !isArtistPoster ? 'festivalDays' : isArtistPoster && listStyle === 'festivalDays' ? 'columns' : listStyle;
-    const captionLine = `upcoming gigs ${isSuburb ? "in" : isVenue ? "at" : "for"}`;
-    const caption = `Scan the QR Code to see ${captionLine}\n${displayName || ""}`;
+    const caption = "Scan the QR Code to see upcoming gigs on Giglist";
     const [locationPhotos, setLocationPhotos] = useState<LocationPhoto[]>([]);
     const [locationPhoto, setLocationPhoto] = useState<LocationPhoto | null>(null);
     const [locationStates, setLocationStates] = useState<string[]>([]);
@@ -271,21 +271,59 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                     if (cancelled) return;
                     drawPoster(context, { theme, header, headerCaps, customBanner: header === "custom" ? bannerUpload?.image : undefined, customPalette: (header === "custom" ? bannerUpload?.palette : undefined) || (useCustomBackground ? backgroundUpload?.palette : undefined), listStyle: selectedListStyle, periodLabel, fonts: posterFonts || undefined, artwork: art, title: displayName, targetUrl, qr: image, photo, gigs, month, isVenue, isSuburb, photoCredit: localImage ? locationPhoto?.credit : undefined });
                 } else {
+                const size = useCustomBackground && backgroundUpload ? 896 : 1120;
+                const qrX = (canvas.width - size) / 2;
+                const qrY = 990 - size / 2;
+                const quietSpace = 64;
                 context.fillStyle = background;
                 context.fillRect(0, 0, canvas.width, canvas.height);
+                if (useCustomBackground && backgroundUpload) {
+                    const photo = backgroundUpload.image;
+                    const scale = Math.max(canvas.width / photo.naturalWidth, canvas.height / photo.naturalHeight);
+                    context.drawImage(photo, (canvas.width - photo.naturalWidth * scale) / 2, (canvas.height - photo.naturalHeight * scale) / 2, photo.naturalWidth * scale, photo.naturalHeight * scale);
+                    // Preserve the QR's clear border independently of text-panel padding.
+                    context.fillStyle = background;
+                    context.fillRect(qrX - quietSpace, qrY - quietSpace, size + quietSpace * 2, size + quietSpace * 2);
+                }
                 context.fillStyle = foreground;
                 context.textAlign = "center";
-                context.font = '184px "carbontyperegular"';
-                context.fillText("Giglist", 800, 275);
+                const drawTextPanel = (lines: {text: string; y: number}[], fontSize: number) => {
+                    // Measure the visible letters, rather than padding a fixed oversized rectangle.
+                    const padding = 30;
+                    const bounds = lines.map(({text, y}) => {
+                        const metrics = context.measureText(text);
+                        return {
+                            left: 800 - (metrics.actualBoundingBoxLeft ?? metrics.width / 2),
+                            right: 800 + (metrics.actualBoundingBoxRight ?? metrics.width / 2),
+                            top: y - (metrics.actualBoundingBoxAscent ?? fontSize * .8),
+                            bottom: y + (metrics.actualBoundingBoxDescent ?? fontSize * .2),
+                        };
+                    });
+                    if (useCustomBackground && backgroundUpload) {
+                        const left = Math.min(...bounds.map(box => box.left));
+                        const right = Math.max(...bounds.map(box => box.right));
+                        const top = Math.min(...bounds.map(box => box.top));
+                        const bottom = Math.max(...bounds.map(box => box.bottom));
+                        context.fillStyle = background;
+                        context.fillRect(left - padding, top - padding, right - left + padding * 2, bottom - top + padding * 2);
+                    }
+                    context.fillStyle = foreground;
+                    lines.forEach(({text, y}) => context.fillText(text, 800, y, 1360));
+                };
+                const heading = displayName;
+                let nameSize = 184;
+                context.font = `${nameSize}px "carbontyperegular"`;
+                while (context.measureText(heading).width > 1360 && nameSize > 32) {
+                    nameSize -= 2;
+                    context.font = `${nameSize}px "carbontyperegular"`;
+                }
+                drawTextPanel([{text: heading, y: 275}], nameSize);
 
                 // Render at the SVG's native size, with ample quiet space.
-                const size = 1120;
                 context.imageSmoothingEnabled = false;
-                context.drawImage(image, (1600 - size) / 2, 430, size, size);
+                context.drawImage(image, qrX, qrY, size, size);
                 context.font = '64px "carbontyperegular"';
-                context.fillText("Scan the QR Code to see", 800, 1680, 1360);
-                context.fillText(captionLine, 800, 1770, 1360);
-                context.fillText(displayName, 800, 1870, 1360);
+                drawTextPanel([{text: "Scan the QR Code to see", y: 1730}, {text: "upcoming gigs on Giglist", y: 1830}], 64);
                 }
                 if (cancelled) return;
                 const nextPng = canvas.toDataURL("image/png");
@@ -311,25 +349,26 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
             cancelled = true;
             if (objectUrl) URL.revokeObjectURL(objectUrl);
         };
-    }, [bannerUpload, backgroundUpload, useCustomBackground, targetUrl, background, foreground, displayName, captionLine, poster, theme, header, headerCaps, selectedListStyle, weekendOnly, periodLabel, artwork, inverted, venueImage, gigs, month, isVenue, isSuburb, locationPhoto, posterFonts, useVenuePhoto, venuePhotoAttempt]);
+    }, [bannerUpload, backgroundUpload, useCustomBackground, targetUrl, background, foreground, displayName, poster, theme, header, headerCaps, selectedListStyle, weekendOnly, periodLabel, artwork, inverted, venueImage, gigs, month, isVenue, isSuburb, locationPhoto, posterFonts, useVenuePhoto, venuePhotoAttempt]);
 
     return (
-        <div className={`qr-poster-page${poster ? " poster-editor" : ""}`}>
+        <ToolFrame title={poster ? "Create Poster" : "Create QR Code"} url={targetUrl}>
+        <div className={`qr-poster-page poster-editor${poster ? "" : " qr-code-editor"}`}>
             <Helmet>
                 <title>{poster ? "Giglist | Printable gig poster" : "Giglist | Printable QR code"}</title>
                 <meta name="robots" content="noindex" />
                 <body className={`qr-poster-body${inverted ? " qr-poster-inverted" : ""}${poster ? " gig-poster-body" : ""}`} />
             </Helmet>
-            <aside className="qr-poster-controls" aria-busy={poster && (rendering || uploading || !!activeShuffle || locationLoading)}>
+            <aside className="qr-poster-controls" aria-busy={rendering || uploading || !!activeShuffle || locationLoading}>
                 {poster && (rendering || uploading || !!activeShuffle || locationLoading) && <div className="poster-panel-loading" role="status" aria-label="Updating poster">
                     <span className="poster-button-spinner" aria-hidden="true" />
                 </div>}
-                <fieldset className="poster-controls-fieldset" disabled={poster && (rendering || uploading || !!activeShuffle || locationLoading)}>
-                {poster && <div className="poster-panel-heading"><h2>Poster settings</h2>
+                <fieldset className="poster-controls-fieldset" disabled={uploading || (poster && (rendering || !!activeShuffle || locationLoading))}>
+                <div className="poster-panel-heading"><h2>{poster ? "Poster settings" : "QR code settings"}</h2>
                     <button type="button" className="poster-panel-toggle" aria-expanded={configOpen} aria-controls="poster-settings-content"
                         onClick={() => setConfigOpen(value => !value)}>{configOpen ? "Close" : "Configure"}</button>
-                </div>}
-                <div id={poster ? "poster-settings-content" : undefined} className={`poster-controls-content${configOpen ? " is-open" : ""}`}>
+                </div>
+                <div id="poster-settings-content" className={`poster-controls-content${configOpen ? " is-open" : ""}`}>
                 <p>QR code links to <a href={targetUrl}>{targetUrl}</a></p>
                 {poster && <p>{periodLabel || (month === undefined ? "Upcoming gigs" : `Live music in ${posterMonthNames[month]}`)} · {gigs.length} listings</p>}
 
@@ -365,11 +404,6 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                     <ShuffleControl label="Image" value={imageValue} options={imageOptions} onChange={chooseImage}>
                     <button type="button" className="poster-shuffle" {...shuffleProps("Shuffle image")} disabled={!!activeShuffle || (!!locationPhoto && locationPhotos.length < 2)} onClick={() => { setActiveShuffle("Shuffle image"); shuffleImage(); }}>{shuffleLabel("Shuffle image")}</button>
                     </ShuffleControl>
-                    <div className="poster-upload-row">
-                        <label className="poster-upload-button">Upload background<input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload background" aria-invalid={!!uploadErrors.background} aria-describedby={uploadErrors.background ? "background-upload-error" : undefined} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void upload(file, 'background'); }} /></label>
-                        {backgroundUpload && <button type="button" aria-label="Remove custom background" onClick={() => { setBackgroundUpload(null); setUseCustomBackground(false); }}>Remove</button>}
-                    </div>
-                    {uploadErrors.background && <p id="background-upload-error" className="poster-upload-error" role="alert">{uploadErrors.background}</p>}
                     {venueImage && <button type="button" className="poster-venue-photo"
                         aria-pressed={useVenuePhoto && !venuePhotoFailed} onClick={() => {
                             setUseCustomBackground(false); setUseVenuePhoto(true);
@@ -408,26 +442,36 @@ export const QrPoster = ({ targetUrl, poster = false, month }: { targetUrl: stri
                     }}>{shuffleLabel("Shuffle everything")}</button>
                     <div className="poster-settings-gap" aria-hidden="true" />
                 </>}
+                    <div className="poster-upload-row">
+                        <label className="poster-upload-button">Upload background<input type="file" accept="image/jpeg,image/png,image/webp" aria-label="Upload background" aria-invalid={!!uploadErrors.background} aria-describedby={uploadErrors.background ? "background-upload-error" : undefined} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void upload(file, 'background'); }} /></label>
+                        {backgroundUpload && <button type="button" aria-label="Remove custom background" onClick={() => { setBackgroundUpload(null); setUseCustomBackground(false); }}>Remove</button>}
+                    </div>
+                    {uploadErrors.background && <p id="background-upload-error" className="poster-upload-error" role="alert">{uploadErrors.background}</p>}
+                {!poster && <label className="poster-theme-label">Colours
+                    <select aria-label="QR colours" value={inverted ? "light" : "dark"} onChange={event => setInverted(event.target.value === "light")}><option value="dark">Black on white</option><option value="light">White on black</option></select>
+                </label>}
+                {!poster && <button type="button" aria-pressed={inverted} onClick={() => setInverted(value => !value)}>Invert colours</button>}
                 <div className="poster-export-actions">
-                {png && <a className="qr-poster-button" href={png}
+                {png && !rendering && !uploading && <a className="qr-poster-button" href={png}
                     download={`giglist-${targetUrl.split("/").pop()}-${poster ? theme + "-poster" + (weekendOnly ? "-weekend-" + weekend.start : "") + (weekendOnly || month === undefined ? "" : "-" + posterMonths[month]) : "qr"}.png`}>Download PNG</a>}
-                <button type="button" disabled={!ready} onClick={() => window.print()}>Print</button>
-                {!poster && <button type="button" aria-pressed={inverted}
-                    onClick={() => setInverted((value) => !value)}>Invert colours</button>}
+                <button type="button" disabled={!ready || uploading || rendering} onClick={() => window.print()}>Print</button>
                 </div>
                 {!png && !error && <p role="status">{poster ? "Preparing your poster…" : "Preparing your QR code…"}</p>}
+                {uploading && <p role="status">Preparing background image…</p>}
                 {imageWarning && <p role="status">{imageWarning}</p>}
                 {error && <p role="alert">{error}</p>}
+                {!poster && <p className="qr-config-footnote">Giglist can make mistakes, please check the QR Code before sharing</p>}
                 </div>
                 </fieldset>
             </aside>
             <div ref={qrRef} hidden aria-hidden="true">
-                <QRCode value={targetUrl} level="M" size={1120}
+                <QRCode value={targetUrl} level="M" size={!poster && useCustomBackground && backgroundUpload ? 896 : 1120}
                     bgColor={poster ? "#fff" : background} fgColor={poster ? "#000" : foreground} />
             </div>
             {png && <img className="qr-poster-image" src={png}
                 onLoad={() => setReady(true)}
-                alt={poster ? `${displayName}: ${periodLabel || (month === undefined ? "Upcoming gigs" : "Live music in " + posterMonthNames[month])}. ${gigs.length} listings. Scan QR code for gig details.` : `Giglist. QR code for ${targetUrl}. ${caption}`} />}
+                alt={poster ? `${displayName}: ${periodLabel || (month === undefined ? "Upcoming gigs" : "Live music in " + posterMonthNames[month])}. ${gigs.length} listings. Scan QR code for gig details.` : `${displayName}. QR code for ${targetUrl}. ${caption}`} />}
         </div>
+        </ToolFrame>
     );
 };

@@ -1,3 +1,4 @@
+import { MemoryRouter } from 'react-router-dom';
 import React from "react";
 import ReactDOM from "react-dom";
 import { act, Simulate } from "react-dom/test-utils";
@@ -25,7 +26,7 @@ beforeEach(() => {
     };
     URL.createObjectURL = jest.fn(() => "blob:qr");
     URL.revokeObjectURL = jest.fn();
-    context = { createLinearGradient: () => ({addColorStop: jest.fn()}), fillRect: jest.fn(), fillText: jest.fn(), drawImage: jest.fn() };
+    context = { measureText: value => ({width: value.length * Number(/([\d.]+)px/.exec(context.font)?.[1] || 30) * .5}), createLinearGradient: () => ({addColorStop: jest.fn()}), fillRect: jest.fn(), fillText: jest.fn(), drawImage: jest.fn() };
     jest.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context);
     jest.spyOn(HTMLCanvasElement.prototype, "toDataURL").mockReturnValue("data:image/png;base64,poster");
     jest.spyOn(window, "print").mockImplementation(() => {});
@@ -40,11 +41,11 @@ afterEach(() => {
 
 test("creates a branded PNG and enables print after the preview loads", async () => {
     await act(async () => {
-        ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" /></HelmetProvider>, container);
+        ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" /></HelmetProvider></MemoryRouter>, container);
     });
     expect(document.fonts.load).toHaveBeenCalledWith('184px "carbontyperegular"');
     expect(context.fillText.mock.calls.map(([text]) => text)).toEqual([
-        "Giglist", "Scan the QR Code to see", "upcoming gigs for", "Clayton Bulger",
+        "Clayton Bulger", "Scan the QR Code to see", "upcoming gigs on Giglist",
     ]);
     const canvas = HTMLCanvasElement.prototype.toDataURL.mock.instances[0];
     expect([canvas.width, canvas.height]).toEqual([1600, 2000]);
@@ -52,24 +53,30 @@ test("creates a branded PNG and enables print after the preview loads", async ()
     const download = container.querySelector("a[download]");
     expect(download.download).toBe("giglist-claytonbulger-qr.png");
     expect(download.href).toBe("data:image/png;base64,poster");
-    expect(container.querySelector("a").href).toBe("https://giglist.com.au/claytonbulger");
-    const print = container.querySelector("button");
+    expect(container.querySelector(".qr-poster-controls a").href).toBe("https://giglist.com.au/claytonbulger");
+    const print = container.querySelector(".poster-export-actions button");
     expect(print.disabled).toBe(false);
     act(() => Simulate.load(container.querySelector("img.qr-poster-image")));
     expect(print.disabled).toBe(false);
     act(() => Simulate.click(print));
     expect(window.print).toHaveBeenCalledTimes(1);
     expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:qr");
+    expect(container.querySelector('.poster-panel-heading h2').textContent).toBe('QR code settings');
+    const toggle = container.querySelector('.poster-panel-toggle');
+    act(() => Simulate.click(toggle));
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    await act(async () => Simulate.change(container.querySelector('select[aria-label="QR colours"]'), {target:{value:'light'}}));
+    expect(container.querySelector('button[aria-pressed]').getAttribute('aria-pressed')).toBe('true');
 });
 
 test("font failures show a recoverable error instead of a misbranded PNG", async () => {
     document.fonts.load.mockRejectedValue(new Error("offline"));
     await act(async () => {
-        ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" /></HelmetProvider>, container);
+        ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" /></HelmetProvider></MemoryRouter>, container);
     });
     expect(container.querySelector("[role=alert]").textContent).toContain("reload");
     expect(container.querySelector("a[download]")).toBeNull();
-    expect(container.querySelector("button").disabled).toBe(true);
+    expect(container.querySelector(".poster-export-actions button").disabled).toBe(true);
 });
 
 test("inverting regenerates the PNG and QR with the opposite colours", async () => {
@@ -78,22 +85,21 @@ test("inverting regenerates the PNG and QR with the opposite colours", async () 
     context.fillRect.mockImplementation(() => fills.push(context.fillStyle));
     context.fillText.mockImplementation(() => textStyles.push([context.fillStyle, context.font]));
     await act(async () => {
-        ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" /></HelmetProvider>, container);
+        ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" /></HelmetProvider></MemoryRouter>, container);
     });
     expect(fills).toEqual(["#fff"]);
     expect(textStyles).toEqual([
         ["#000", '184px "carbontyperegular"'],
         ["#000", '64px "carbontyperegular"'],
         ["#000", '64px "carbontyperegular"'],
-        ["#000", '64px "carbontyperegular"'],
     ]);
     const invert = container.querySelector("button[aria-pressed]");
-    const originalCells = Array.from(container.querySelectorAll("svg path"), (path) => path.getAttribute("fill"));
+    const originalCells = Array.from(container.querySelectorAll(".qr-poster-page [hidden] svg path"), (path) => path.getAttribute("fill"));
     await act(async () => { Simulate.click(invert); });
     expect(invert.getAttribute("aria-pressed")).toBe("true");
     expect(fills).toEqual(["#fff", "#000"]);
-    expect(textStyles.slice(4).every(([colour]) => colour === "#fff")).toBe(true);
-    const invertedCells = Array.from(container.querySelectorAll("svg path"), (path) => path.getAttribute("fill"));
+    expect(textStyles.slice(3).every(([colour]) => colour === "#fff")).toBe(true);
+    const invertedCells = Array.from(container.querySelectorAll(".qr-poster-page [hidden] svg path"), (path) => path.getAttribute("fill"));
     expect(invertedCells).toEqual(originalCells.map((colour) => colour === "#000" ? "#fff" : "#000"));
     expect(HTMLCanvasElement.prototype.toDataURL).toHaveBeenCalledTimes(2);
     await act(async () => { Simulate.click(invert); });
@@ -101,29 +107,29 @@ test("inverting regenerates the PNG and QR with the opposite colours", async () 
     expect(fills).toEqual(["#fff", "#000", "#fff"]);
 });
 
-test("venue name appears on its own caption line", async () => {
+test("venue name is the header above the QR code", async () => {
     await act(async () => {
-        ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" /></HelmetProvider>, container);
+        ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" /></HelmetProvider></MemoryRouter>, container);
     });
-    expect(context.fillText).toHaveBeenCalledWith("upcoming gigs at", 800, 1770, 1360);
-    expect(context.fillText).toHaveBeenCalledWith("Windsor Hotel", 800, 1870, 1360);
-    expect(container.querySelector(".qr-poster-image").alt).toContain("upcoming gigs at\nWindsor Hotel");
+    expect(context.fillText).toHaveBeenCalledWith("upcoming gigs on Giglist", 800, 1830, 1360);
+    expect(context.fillText).toHaveBeenCalledWith("Windsor Hotel", 800, 275, 1360);
+    expect(container.querySelector(".qr-poster-image").alt).toContain("Windsor Hotel. QR code");
 });
 
-test("suburb QR caption uses in with the suburb on its own line", async () => {
+test("suburb name is the header above the QR code", async () => {
     await act(async () => {
-        ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/perth" /></HelmetProvider>, container);
+        ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/perth" /></HelmetProvider></MemoryRouter>, container);
     });
-    expect(context.fillText).toHaveBeenCalledWith("upcoming gigs in", 800, 1770, 1360);
-    expect(context.fillText).toHaveBeenCalledWith("Perth", 800, 1870, 1360);
-    expect(container.querySelector(".qr-poster-image").alt).toContain("upcoming gigs in\nPerth");
+    expect(context.fillText).toHaveBeenCalledWith("upcoming gigs on Giglist", 800, 1830, 1360);
+    expect(context.fillText).toHaveBeenCalledWith("Perth", 800, 275, 1360);
+    expect(container.querySelector(".qr-poster-image").alt).toContain("Perth. QR code");
 });
 
 test("poster provides researched themes and exports the selected layout", async () => {
     for (const method of ['strokeText', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'save', 'restore', 'scale','translate', 'rotate', 'ellipse', 'closePath']) context[method] = jest.fn();
     context.measureText = (value) => ({ width: value.length * 20 });
     await act(async () => {
-        ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider>, container);
+        ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider></MemoryRouter>, container);
     });
     const select = container.querySelector('select');
     expect(select.options).toHaveLength(posterThemes.length);
@@ -143,7 +149,7 @@ test("March poster filters listings and includes month in export name", async ()
         {artist: 'April Band', name: 'Windsor Hotel', suburb: 'Perth', address: 'Main Street', date: '2027-04-15', start: '8pm'},
     ]}]});
     await act(async () => {
-        ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster month={2} /></HelmetProvider>, container);
+        ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster month={2} /></HelmetProvider></MemoryRouter>, container);
     });
     expect(container.querySelector('a[download]').download).toContain('-poster-mar.png');
     const text = context.fillText.mock.calls.map(([value]) => value);
@@ -158,26 +164,26 @@ test("random theme updates the selector and export while preserving the target a
     context.measureText = (value) => ({width: value.length * 20});
     axios.get.mockResolvedValue({data: [{listings: [{artist: 'Band', name: 'Windsor Hotel', address: 'Main Street', suburb: 'Perth', date: '2027-03-01', start: '8pm'}]}]});
     jest.spyOn(Math, 'random').mockReturnValue(0);
-    await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster month={2} /></HelmetProvider>, container); });
+    await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster month={2} /></HelmetProvider></MemoryRouter>, container); });
     const old = container.querySelector('select').value;
     await act(async () => { Simulate.click(container.querySelector('.poster-random')); });
     const chosen = container.querySelector('select').value;
     expect(chosen).not.toBe(old);
     expect(container.querySelector('a[download]').download).toBe(`giglist-windsorhotel-${chosen}-poster-mar.png`);
-    expect(container.querySelector('a').href).toBe('https://giglist.com.au/windsorhotel');
+    expect(container.querySelector('.qr-poster-controls a').href).toBe('https://giglist.com.au/windsorhotel');
     expect(document.fonts.load).toHaveBeenCalledWith('700 40px "Poster Grotesk"');
 });
 
 test("artist posters shuffle imagery without changing their theme, listings or target", async () => {
     for (const method of ['strokeText', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'save', 'restore', 'scale','translate', 'rotate', 'ellipse', 'closePath']) context[method] = jest.fn();
     context.measureText = (value) => ({width: value.length * 20});
-    await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider>, container); });
+    await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider></MemoryRouter>, container); });
     const originalTheme = container.querySelector('select').value;
     const calls = HTMLCanvasElement.prototype.toDataURL.mock.calls.length;
     await act(async () => { Simulate.click(container.querySelector('.poster-shuffle')); });
     expect(HTMLCanvasElement.prototype.toDataURL.mock.calls.length).toBe(calls + 1);
     expect(container.querySelector('select').value).toBe(originalTheme);
-    expect(container.querySelector('a').href).toBe('https://giglist.com.au/claytonbulger');
+    expect(container.querySelector('.qr-poster-controls a').href).toBe('https://giglist.com.au/claytonbulger');
     expect(container.querySelector('button[aria-pressed]')).toBeNull();
 });
 
@@ -191,7 +197,7 @@ test('suburb location imagery loads by default and survives theme changes', asyn
             thumburl: 'https://upload.wikimedia.org/brunswick.jpg', extmetadata: {Artist: {value: 'Jane'}, LicenseShortName: {value: 'CC BY 4.0'}, LicenseUrl: {value: 'https://creativecommons.org/licenses/by/4.0/'}}}],
     }}}})});
     try {
-        await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/brunswick" poster /></HelmetProvider>, container); });
+        await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/brunswick" poster /></HelmetProvider></MemoryRouter>, container); });
         expect(global.fetch).toHaveBeenCalledTimes(1);
         expect(container.querySelector('.poster-location')).toBeNull();
         expect(context.fillText.mock.calls.some(([value]) => value.includes('Photo: Jane'))).toBe(true);
@@ -206,7 +212,7 @@ test('font shuffle regenerates typography without changing theme or image mode',
     for (const method of ['strokeText', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'save', 'restore', 'scale','translate', 'rotate', 'ellipse', 'closePath']) context[method] = jest.fn();
     context.measureText = (value) => ({width: value.length * 20});
     jest.spyOn(Math, 'random').mockReturnValue(0);
-    await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider>, container); });
+    await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider></MemoryRouter>, container); });
     const theme = container.querySelector('select').value;
     const count = HTMLCanvasElement.prototype.toDataURL.mock.calls.length;
     await act(async () => { Simulate.click(container.querySelector('.poster-font-shuffle')); });
@@ -214,7 +220,7 @@ test('font shuffle regenerates typography without changing theme or image mode',
     expect(HTMLCanvasElement.prototype.toDataURL.mock.calls.length).toBe(count + 1);
     expect(document.fonts.load).toHaveBeenCalledWith('700 100px "Poster Condensed"');
     expect(context.fillText.mock.calls.some(([text]) => text === 'Giglist')).toBe(true);
-    expect(container.querySelector('a').href).toBe('https://giglist.com.au/claytonbulger');
+    expect(container.querySelector('.qr-poster-controls a').href).toBe('https://giglist.com.au/claytonbulger');
 });
 
 test('venues with their own photo can shuffle imagery and restore the venue photo', async () => {
@@ -227,7 +233,7 @@ test('venues with their own photo can shuffle imagery and restore the venue phot
     };
     const venuePhoto = 'https://giglist.com.au/venues/windsor.jpg';
     axios.get.mockResolvedValue({data: [{listings: [{artist: 'Band', name: 'Windsor Hotel', address: 'Main Street', suburb: 'Perth', date: '2027-03-01', start: '8pm', location_image_url: venuePhoto}]}]});
-    await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider>, container); });
+    await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider></MemoryRouter>, container); });
     expect(loaded).toContain(venuePhoto);
     expect(container.querySelector('.poster-venue-photo').textContent).toBe('Venue photo selected');
     expect(container.querySelector('.poster-venue-photo').getAttribute('aria-pressed')).toBe('true');
@@ -245,7 +251,7 @@ test('shuffle everything changes theme, fonts and artwork while preserving the g
     for (const method of ['strokeText', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'save', 'restore', 'scale','translate', 'rotate', 'ellipse', 'closePath']) context[method] = jest.fn();
     context.measureText = (value) => ({width: value.length * 20});
     jest.spyOn(Math, 'random').mockReturnValue(0);
-    await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster month={2} /></HelmetProvider>, container); });
+    await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster month={2} /></HelmetProvider></MemoryRouter>, container); });
     const theme = container.querySelector('select').value;
     const exports = HTMLCanvasElement.prototype.toDataURL.mock.calls.length;
     expect(container.querySelector('.poster-random').textContent).toContain('Shuffle theme');
@@ -253,7 +259,7 @@ test('shuffle everything changes theme, fonts and artwork while preserving the g
     expect(container.querySelector('select').value).not.toBe(theme);
     expect(HTMLCanvasElement.prototype.toDataURL.mock.calls.length).toBeGreaterThan(exports);
     expect(document.fonts.load).toHaveBeenCalledWith('100px "Poster Grotesk"');
-    expect(container.querySelector('a').href).toBe('https://giglist.com.au/claytonbulger');
+    expect(container.querySelector('.qr-poster-controls a').href).toBe('https://giglist.com.au/claytonbulger');
     expect(container.querySelector('a[download]').download).toContain('-poster-mar.png');
 });
 
@@ -261,7 +267,7 @@ test('shuffle everything changes theme, fonts and artwork while preserving the g
 test('keeps the poster visible and shows a configuration panel spinner until a shuffle completes', async () => {
     for (const method of ['strokeText', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'save', 'restore', 'scale','translate', 'rotate', 'ellipse', 'closePath']) context[method] = jest.fn();
     context.measureText = value => ({width: value.length * 20});
-    await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider>, container); });
+    await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider></MemoryRouter>, container); });
     const preview = container.querySelector('.qr-poster-image');
     const previous = preview.src;
     let finish;
@@ -284,7 +290,7 @@ test('list style dropdown selects Festival layout while keeping theme and target
     for (const method of ['strokeText', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'save', 'restore', 'scale','translate', 'rotate', 'ellipse', 'closePath']) context[method] = jest.fn();
     context.measureText = value => ({width: value.length * Number(/([\d.]+)px/.exec(context.font)?.[1] || 30) * .5});
     axios.get.mockResolvedValue({data:[{listings:[{artist:'Band',name:'Windsor Hotel',address:'Main Street',suburb:'Perth',date:'2026-10-02',start:'7PM'}]}]});
-    await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider>, container); });
+    await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider></MemoryRouter>, container); });
     const theme = container.querySelector('select').value;
     jest.spyOn(Math, 'random').mockReturnValue(0);
     const button = container.querySelector('select[aria-label="List style"]');
@@ -295,7 +301,7 @@ test('list style dropdown selects Festival layout while keeping theme and target
     expect(button.value).toBe('festivalDays');
     expect(HTMLCanvasElement.prototype.toDataURL.mock.calls.length).toBe(count + 1);
     expect(container.querySelector('select').value).toBe(theme);
-    expect(container.querySelector('a').href).toBe('https://giglist.com.au/windsorhotel');
+    expect(container.querySelector('.qr-poster-controls a').href).toBe('https://giglist.com.au/windsorhotel');
     expect(context.fillText.mock.calls.some(([text]) => text === 'BAND')).toBe(true);
 });
 
@@ -308,7 +314,7 @@ test('weekend mode overrides month filtering and restores the month when uncheck
     const otherMonth = (weekendMonth+6)%12;
     const otherDate = `${range.start.slice(0,4)}-${String(otherMonth+1).padStart(2,'0')}-15`;
     axios.get.mockResolvedValue({data:[{listings:[['Friday Act',range.start],['Sunday Act',range.end],['Other Month Act',otherDate]].map(([artist,date])=>({artist,date,name:'Local Venue',suburb:'Perth',address:'Main Street',start:'7PM'}))}]});
-    await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/localvenue" poster month={otherMonth} /></HelmetProvider>,container); });
+    await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/localvenue" poster month={otherMonth} /></HelmetProvider></MemoryRouter>,container); });
     const checkbox = container.querySelector('.poster-weekend-toggle input');
     context.fillText.mockClear();
     await act(async () => { Simulate.change(checkbox,{target:{checked:true}}); });
@@ -328,7 +334,7 @@ test('fonts always match and header controls preserve the selected font', async 
     const drawn = {};
     context.fillText.mockImplementation(text => { const key = text.toLowerCase().startsWith('clayton') ? 'clayton bulger' : text.toLowerCase(); drawn[key] = /"([^"]+)"/.exec(context.font)?.[1]; });
     jest.spyOn(Math,'random').mockReturnValue(0);
-    await act(async () => { ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider>, container); });
+    await act(async () => { ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider></MemoryRouter>, container); });
     expect(container.querySelector('.poster-match-fonts')).toBeNull();
     expect(drawn['clayton bulger']).toBe(drawn['windsor hotel']);
     await act(async () => { Simulate.click(container.querySelector('.poster-font-shuffle')); });
@@ -352,7 +358,7 @@ test('separate custom banner and background uploads can be selected and removed'
     const uploads=require('../utils/posterUpload');
     const image={naturalWidth:1600,naturalHeight:800};
     jest.spyOn(uploads,'readPosterUpload').mockImplementation(async file=>({name:file.name,image,palette:{background:'#223344',backdrop:'#223344dd',ink:'#ffffff',accent:'#cceeff'}}));
-    await act(async()=>{ReactDOM.render(<HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider>,container);});
+    await act(async()=>{ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider></MemoryRouter>,container);});
     for(const kind of ['banner','background']) {
         const input=container.querySelector(`input[aria-label="Upload ${kind}"]`);
         await act(async()=>{Simulate.change(input,{target:{files:[new File(['image'],`${kind}.png`,{type:'image/png'})],value:''}});});
@@ -366,4 +372,20 @@ test('separate custom banner and background uploads can be selected and removed'
     expect(container.querySelector('[aria-label="Image"]').value).toBe('custom');
     await act(async()=>{Simulate.click(container.querySelector('[aria-label="Remove custom background"]'));});
     expect(container.querySelector('[aria-label="Image"]').value).not.toBe('custom');
+});
+
+test('QR background upload keeps a solid quiet zone and can be removed', async () => {
+    const uploads=require('../utils/posterUpload');
+    const image={naturalWidth:1600,naturalHeight:800};
+    jest.spyOn(uploads,'readPosterUpload').mockResolvedValue({name:'background.png',image,palette:{}});
+    await act(async()=>{ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" /></HelmetProvider></MemoryRouter>,container);});
+    await act(async()=>{Simulate.change(container.querySelector('input[aria-label="Upload background"]'),{target:{files:[new File(['image'],'background.png',{type:'image/png'})],value:''}});});
+    expect(context.drawImage.mock.calls.some(args=>args[0]===image)).toBe(true);
+    expect(context.fillRect).toHaveBeenCalledWith(288,478,1024,1024);
+    expect(context.drawImage).toHaveBeenCalledWith(expect.anything(),352,542,896,896);
+    expect(container.querySelector('a[download]')).not.toBeNull();
+    context.drawImage.mockClear();
+    await act(async()=>Simulate.click(container.querySelector('[aria-label="Remove custom background"]')));
+    expect(context.drawImage.mock.calls.some(args=>args[0]===image)).toBe(false);
+    expect(context.drawImage).toHaveBeenCalledWith(expect.anything(),240,430,1120,1120);
 });

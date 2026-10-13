@@ -1,5 +1,28 @@
 import { getTourProfile } from "./tourProfile";
 
+test.each([
+    ['andrewmeredith','ANDREW MEREDITH'],
+    ['dddylan','DDDylan'],
+    ['janeantiparty','Jane Antiparty'],
+    ['ashby','Ashby'],
+])('uses only the matching artist in a comma-separated lineup for %s', (slug,title) => {
+    const dates=[{listings:[{artist:'ANDREW MEREDITH, DDDylan, Jane Antiparty, Ashby',name:'Local Venue',suburb:'Northbridge'}]}];
+    expect(getTourProfile(dates,slug)).toMatchObject({title,isVenue:false,isSuburb:false});
+});
+
+test('prefers an exact lineup member over an earlier partial artist match',()=>{
+    const dates=[{listings:[
+        {artist:'Andrew Meredith Tribute',name:'Venue A'},
+        {artist:'Other Band, Andrew Meredith',name:'Venue B'},
+    ]}];
+    expect(getTourProfile(dates,'andrewmeredith').title).toBe('Andrew Meredith');
+});
+
+test('retains the full title when the URL matches the whole comma-containing name',()=>{
+    const dates=[{listings:[{artist:'Earth, Wind &amp; Fire',name:'Venue'}]}];
+    expect(getTourProfile(dates,'earthwindfire').title).toBe('Earth, Wind & Fire');
+});
+
 test("recognizes a venue even when the URL omits The", () => {
     const gig = { artist: "Live Band", name: "The Windsor Hotel", address: "112 Mill Point Road", suburb: "South Perth" };
     expect(getTourProfile([{ listings: [gig, gig] }], "windsorhotel")).toEqual({

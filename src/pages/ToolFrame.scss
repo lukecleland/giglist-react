@@ -1,0 +1,31 @@
+.tool-frame {
+    min-height:100vh; min-height:100dvh; display:flex; flex-direction:column;
+    .tool-header {
+        box-sizing:border-box;display:flex;align-items:center;gap:16px;min-height:40px;height:auto;
+        padding:6px 16px!important;margin:0;background:#050505;text-align:left;
+        h1 {margin:0;color:#fff;font:400 24px/28px "carbontyperegular",monospace;letter-spacing:normal;text-align:left;overflow-wrap:anywhere;}
+        .tool-back {flex-shrink:0;color:#fff;font:400 14px/24px "Poster Grotesk",Arial,sans-serif;text-decoration:none;padding:0 8px;border:1px solid #666;border-radius:4px;}
+        .tool-back:hover {background:#333;}
+        .tool-back:focus-visible {outline:2px solid #fff;outline-offset:3px;}
+    }
+    .tool-content { flex:1;min-width:0;display:flex;flex-direction:column; }
+    .tool-content>.feature-standard,.tool-content>.feature-social,.tool-content>.feature-embed {
+        box-sizing:border-box;width:100%;min-height:0;padding:32px 24px 60px;flex:1;
+    }
+    .tool-content>.qr-poster-page {box-sizing:border-box;width:100%;margin:0 auto;padding:32px 24px 60px;}
+    .qr-code-editor .qr-poster-image,.qr-code-editor .qr-poster-controls {grid-row:1;}
+    .tool-content>.feature-screen {min-height:0;flex:1;padding:32px 5vw 40px;}
+    .feature-screen-top {margin-bottom:28px;}
+    .tool-content>.feature-map {height:auto;flex:1;min-height:600px;}
+    .feature-map>header {justify-content:flex-end;background:transparent;}
+    .feature-map>header a {color:#111;}
+    >.feature-footer {width:100%;flex-shrink:0;margin:0;}
+    @media(max-width:760px) {
+        .tool-content>.qr-poster-page,.tool-content>.feature-social,.tool-content>.feature-standard,.tool-content>.feature-embed {padding:24px 16px 50px;}
+    }
+}
+@media print {
+    .tool-frame {display:block;min-height:0;}
+    .tool-frame>.tool-header,.tool-frame>.feature-footer {display:none;}
+    .tool-frame .tool-content>.qr-poster-page {padding:0;}
+}
