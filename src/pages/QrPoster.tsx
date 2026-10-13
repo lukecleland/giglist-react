@@ -305,10 +305,38 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
                     if (cancelled) return;
                     drawPoster(context, { theme, listingBackground, invertFonts, header, headerCaps, customBanner: header === "custom" ? bannerUpload?.image : undefined, customPalette: (header === "custom" ? bannerUpload?.palette : undefined) || (useCustomBackground ? backgroundUpload?.palette : undefined), listStyle: selectedListStyle, periodLabel, fonts: posterFonts || undefined, artwork: art, title: displayName, targetUrl, qr: image, photo, gigs, month, isVenue, isSuburb, photoCredit: localImage ? locationPhoto?.credit : undefined });
                 } else {
-                const size = useCustomBackground && backgroundUpload ? 896 : 1120;
-                const qrX = (canvas.width - size) / 2;
-                const qrY = 990 - size / 2;
+                const heading = displayName;
+                let nameSize = 184;
+                context.font = `${nameSize}px "carbontyperegular"`;
+                while (context.measureText(heading).width > 1360 && nameSize > 112) {
+                    nameSize -= 2;
+                    context.font = `${nameSize}px "carbontyperegular"`;
+                }
+                const headingLines: string[] = [];
+                let line = '';
+                for (const word of heading.split(/\s+/)) {
+                    if (line && context.measureText(`${line} ${word}`).width > 1360) {
+                        headingLines.push(line); line = '';
+                    }
+                    // Break unusually long unspaced names without shrinking their letters.
+                    for (const character of (line ? ' ' : '') + word) {
+                        if (line && context.measureText(line + character).width > 1360) {
+                            headingLines.push(line); line = '';
+                        }
+                        line += character;
+                    }
+                }
+                if (line) headingLines.push(line);
+                const headingRows = headingLines.map((text,index)=>({text,y:275+index*nameSize*1.25}));
+                const headingBottom = Math.max(...headingRows.map(({text,y})=>y+(context.measureText(text).actualBoundingBoxDescent ?? nameSize*.2)));
+                const originalSize = useCustomBackground && backgroundUpload ? 896 : 1120;
                 const quietSpace = 64;
+                const qrY = headingLines.length > 1 ? Math.max(990-originalSize/2,headingBottom+30+40+quietSpace) : 990-originalSize/2;
+                const size = Math.min(originalSize,Math.max(384,990+originalSize/2-qrY));
+                const qrX = (canvas.width-size)/2;
+                const footerShift = Math.max(0,qrY+size-1550);
+                // Extremely long names can extend the page once the QR reaches its minimum.
+                canvas.height = 2000+Math.ceil(footerShift);
                 context.fillStyle = background;
                 context.fillRect(0, 0, canvas.width, canvas.height);
                 if (useCustomBackground && backgroundUpload) {
@@ -344,20 +372,14 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
                     context.fillStyle = foreground;
                     lines.forEach(({text, y}) => context.fillText(text, 800, y, 1360));
                 };
-                const heading = displayName;
-                let nameSize = 184;
                 context.font = `${nameSize}px "carbontyperegular"`;
-                while (context.measureText(heading).width > 1360 && nameSize > 32) {
-                    nameSize -= 2;
-                    context.font = `${nameSize}px "carbontyperegular"`;
-                }
-                drawTextPanel([{text: heading, y: 275}], nameSize);
+                drawTextPanel(headingRows, nameSize);
 
                 // Render at the SVG's native size, with ample quiet space.
                 context.imageSmoothingEnabled = false;
                 context.drawImage(image, qrX, qrY, size, size);
                 context.font = '64px "carbontyperegular"';
-                drawTextPanel([{text: "Scan the QR Code to see", y: 1730}, {text: "upcoming gigs on Giglist", y: 1830}], 64);
+                drawTextPanel([{text: "Scan the QR Code to see", y: 1730+footerShift}, {text: "upcoming gigs on Giglist", y: 1830+footerShift}], 64);
                 }
                 if (cancelled) return;
                 const nextPng = canvas.toDataURL("image/png");

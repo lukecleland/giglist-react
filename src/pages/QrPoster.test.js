@@ -487,3 +487,22 @@ test('feed outages explain the missing preview and Retry restores the poster',as
     expect(container.querySelector('.qr-poster-image')).not.toBeNull();
     expect(container.querySelector('.poster-preview-status')).toBeNull();
 });
+
+
+test('long QR headings wrap at a readable minimum and make room by shrinking the QR',async()=>{
+    const artist='Daren Reid and the Soul City Groove';
+    axios.get.mockResolvedValue({data:[{listings:[{artist,name:'Empire Bar',suburb:'Perth',address:'1 Main Street'}]}]});
+    const rows=[];
+    context.fillText.mockImplementation((text,x,y)=>rows.push({text,y,font:context.font}));
+    await act(async()=>{ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/darenreidandthesoulcitygroove" /></HelmetProvider></MemoryRouter>,container);});
+    const heading=rows.filter(row=>row.y<1600);
+    expect(heading.length).toBeGreaterThan(1);
+    expect(heading.map(row=>row.text).join(' ')).toBe(artist);
+    expect(heading.every(row=>parseFloat(row.font)>=112)).toBe(true);
+    const [,x,y,width,height]=context.drawImage.mock.calls[0];
+    expect(width).toBeLessThan(1120);
+    expect(width).toBe(height);
+    expect(x).toBe((1600-width)/2);
+    expect(y-64).toBeGreaterThan(heading[heading.length-1].y+30);
+    expect(y+height+64).toBeLessThan(1730-64);
+});
