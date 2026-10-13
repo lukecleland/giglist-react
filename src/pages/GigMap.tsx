@@ -7,14 +7,10 @@ import moment from "moment";
 import { AddToCalendar } from "../components/AddToCalendar";
 import { ShareGig } from "../components/ShareGig";
 import { Helmet } from "react-helmet-async";
-import markerIcon from "../styles/assets/gigmap-marker.svg";
-import clusterIcon from "../styles/assets/gigmap-cluster.svg";
+import { gigMapClusterOptions, gigMapMarkerIcon } from "../styles/gigMapMarkers";
 import "./GigMap.scss";
 
 const containerStyle = { width: "100%", height: "100%" };
-const clusterStyles = [{
-    url: clusterIcon, width: 56, height: 56, textColor: "#111", textSize: 18, fontWeight: "bold",
-}];
 const mapOptions = {
     styles: mapStyles, disableDefaultUI: true, zoomControl: true,
     gestureHandling: "greedy", backgroundColor: "#171b22",
@@ -76,14 +72,12 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
         </div>}
         {isLoaded && <GoogleMap mapContainerStyle={containerStyle} options={mapOptions}
             center={initialView.center} zoom={initialView.zoom} onLoad={onMapLoad} onClick={() => setSelectedKey(null)}>
-            <MarkerClusterer key={searchDate} gridSize={40} maxZoom={18}
-                averageCenter styles={clusterStyles} zoomOnClick
-                title="Click to zoom in to gig locations" onClick={() => setSelectedKey(null)}>
+            <MarkerClusterer key={searchDate} {...gigMapClusterOptions} onClick={() => setSelectedKey(null)}>
                 {(clusterer) => <>{locations.map((location) => <Marker
                     key={location.key} clusterer={clusterer} position={location.position}
                     title={location.listings.map((listing) => `${listing.artist} — ${listing.name}`).join("; ")}
                     onClick={() => setSelectedKey(location.key)}
-                    icon={{ url: markerIcon, scaledSize: new window.google.maps.Size(32, 32), anchor: new window.google.maps.Point(16, 16) }}
+                    icon={gigMapMarkerIcon()}
                 />)}</>}
             </MarkerClusterer>
             {selectedLocation && <InfoWindow position={selectedLocation.position} options={{ pixelOffset: new window.google.maps.Size(0, -20) }} onCloseClick={() => setSelectedKey(null)}>

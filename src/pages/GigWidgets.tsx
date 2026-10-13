@@ -85,10 +85,10 @@ export const GigWidgets = () => {
             </div> : <div className="gigwidgets-search">
                 <form onSubmit={submit}>
                     <label htmlFor="gigwidgets-query">Search for your Artist Name / Venue / Suburb / City</label>
-                    <div className="gigwidgets-search-row"><input ref={input} id="gigwidgets-query" type="search" placeholder="Start typing a name or location…" autoComplete="off" value={query} onChange={event=>{setQuery(event.target.value);setMessage('');}} aria-describedby="gigwidgets-search-status" /><button type="submit" disabled={status!=='ready'||compactName(query).length<2}>Search</button></div>
+                    <div className="gigwidgets-search-row"><input ref={input} id="gigwidgets-query" type="search" placeholder="Start typing a name or location…" autoComplete="off" spellCheck={false} value={query} onChange={event=>{setQuery(event.target.value);setMessage('');}} aria-describedby="gigwidgets-search-status" /><button type="submit" disabled={status!=='ready'||compactName(query).length<2}>Search</button></div>
                 </form>
                 <div id="gigwidgets-search-status" role="status">
-                    {status==='loading'?'Loading artists and locations…':status==='error'?'Search couldn’t load. Please try again.':message||(selectedSlug?'That name is no longer available. Search again below.':compactName(query).length>=2 ? results.length ? `${results.length} matches`:'No matches found. Try another name or location.':'')}
+                    {status==='loading'?'Loading artists and locations…':status==='error'?'Search couldn’t load. Please try again.':message||(selectedSlug?'That name is no longer available. Search again below.':compactName(query).length>=2 ? results.length ? `${results.length} ${results.length===1?'match':'matches'}`:'No matches found. Try another name or location.':'')}
                 </div>
                 {status==='error'&&<button className="gigwidgets-retry" onClick={()=>setRetry(value=>value+1)}>Retry</button>}
                 {status==='ready'&&results.length>0&&<ul className="gigwidgets-results" aria-label="Search results">{results.slice(0,20).map(subject=><li key={subject.slug}><button onClick={()=>select(subject)}><span>{subject.name}</span><small>{subject.kind}</small></button></li>)}</ul>}

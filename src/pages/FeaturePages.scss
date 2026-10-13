@@ -1,3 +1,5 @@
+@import "../styles/mapPopupClose";
+
 @font-face { font-family:"Poster Grotesk";src:url("../styles/font/poster/SpaceGrotesk[wght].ttf") format("truetype");font-weight:300 700;font-display:swap; }
 body.feature-body { margin:0; background:#e5e4e0; color:#141414; }
 .feature-status { min-height:100vh;display:grid;place-items:center;font:600 20px Arial,sans-serif; }
@@ -86,9 +88,22 @@ body.feature-body { margin:0; background:#e5e4e0; color:#141414; }
 .feature-social-controls select { display:block;padding:10px;border:1px solid #aaa;border-radius:4px;background:#fff;font:inherit; }
 .feature-map-canvas { position:relative;flex:1;min-height:350px; }
 .feature-map-canvas>p { padding:30px; }
-.feature-map-selected { position:absolute;left:20px;bottom:20px;z-index:2;width:min(360px,calc(100% - 40px));max-height:45vh;overflow:auto;background:#fff;box-shadow:0 8px 32px #0005;padding:15px; }
-.feature-map-selected button { float:right;border:0;background:none;font-size:28px;cursor:pointer; }
-.feature-map-selected .feature-gig { clear:both;border-bottom:1px solid #ddd; }
+.feature-map-selected { box-sizing:border-box;width:min(320px,calc(100vw - 80px));max-height:min(60vh,480px);overflow:auto;background:#fff;color:#111;padding:0;font-family:"Poster Grotesk",Arial,sans-serif; }
+.feature-map-canvas {
+    @include map-popup-close;
+    .gm-style-iw-c { padding:0!important; }
+    .gm-style-iw-d { overflow:auto!important; }
+}
+.feature-map-hero { display:block;width:100%;height:160px;object-fit:cover; }
+.feature-map-venue-body { padding:16px; }
+.feature-map-venue+ .feature-map-venue { border-top:1px solid #ddd; }
+.feature-map-venue h2 { margin:0 0 12px;font:700 20px/1.25 "Poster Grotesk",Arial,sans-serif;overflow-wrap:anywhere; }
+.feature-map-artist+ .feature-map-artist { margin-top:14px;padding-top:12px;border-top:1px solid #eee; }
+.feature-map-artist h3 { margin:0 0 6px;font:600 15px/1.35 "Poster Grotesk",Arial,sans-serif;overflow-wrap:anywhere; }
+.feature-map-dates { display:flex;flex-direction:column;gap:2px; }
+.feature-map-dates a { display:block;padding:5px 0;color:#a14132!important;font-size:13px;line-height:1.4;text-decoration:none; }
+.feature-map-dates a:hover { text-decoration:underline; }
+.feature-map-selected a:focus-visible { outline:2px solid #345dd4;outline-offset:2px; }
 .feature-map>.feature-footer { flex-shrink:0;min-height:105px; }
 .feature-social-controls label { font-weight:700; }
 .feature-social>header { text-align:center; }

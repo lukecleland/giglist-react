@@ -979,11 +979,35 @@ a {
     z-index: 9999;
 }
 
+.ui.page.grid:has(> .page-modal-listing) {
+    box-sizing: border-box;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    > .row { flex: 0 0 auto; }
+    @media (max-width: 767px) { padding-top: 50px; }
+}
+
 .ui.page.grid > .page-modal-listing {
-    height: 100%;
-    min-height: 100vw;
+    flex: 1 0 auto;
+    height: auto;
+    min-height: 0;
     width: 100%;
     background-size: cover;
+}
+
+.ui.page.grid > .page-modal-listing .modal-content-header {
+    padding-inline: 20px;
+}
+
+.ui.page.grid > .page-modal-listing .listing-artist-heading {
+    background: #fff;
+    color: #000;
+    padding: 7px 10px 5px;
 }
 
 .ui.page.grid > .page-modal-listing .modal-content {

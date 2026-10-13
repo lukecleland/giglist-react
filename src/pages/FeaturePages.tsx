@@ -5,8 +5,9 @@ import QRCode from 'react-qr-code';
 import axios from 'axios';
 import moment from 'moment';
 import { Helmet } from 'react-helmet-async';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, Marker, MarkerClusterer, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
 import { mapStyles } from '../styles/mapStyles';
+import { gigMapClusterOptions, gigMapMarkerIcon } from '../styles/gigMapMarkers';
 import { TListing, TGiglist } from '../types/types';
 import { normalizeGigText } from '../utils/normalizeGigText';
 import { getTourProfile } from '../utils/tourProfile';
@@ -48,9 +49,9 @@ const useFeatureFeed = (slug: string, month?: number) => {
     return {profile,gigs,status};
 };
 
-const ListingLink = ({gig,title,sub,fullDate=false}: {gig:TListing;title:string;sub:string;fullDate?:boolean}) =>
+const ListingLink = ({gig,title,sub}: {gig:TListing;title:string;sub:string}) =>
     <a className="feature-gig" href={buildGigPath(gig)}>
-        <time dateTime={gig.date}>{fullDate ? `${moment(gig.date).format('ddd D MMM YYYY')} · ${gig.start || 'Time TBA'}` : gigDateLabel(gig)}</time>
+        <time dateTime={gig.date}>{gigDateLabel(gig)}</time>
         <strong>{title}</strong>
         <span>{sub}</span>
     </a>;
@@ -103,6 +104,30 @@ const ScreenView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListing[];pr
     </div></ToolFrame>;
 };
 
+const MapVenueSummary = ({gigs}: {gigs:TListing[]}) => {
+    const venues=new Map<string,Map<string,TListing[]>>();
+    gigs.forEach(gig=>{
+        const venue=clean(gig.name),artist=clean(gig.artist);
+        const artists=venues.get(venue)||new Map<string,TListing[]>();
+        artists.set(artist,[...(artists.get(artist)||[]),gig]);
+        venues.set(venue,artists);
+    });
+    return <div className="feature-map-selected" role="region" aria-label="Venue gigs">
+        {Array.from(venues,([venue,artists])=><section className="feature-map-venue" key={venue}>
+            <img className="feature-map-hero" src={Array.from(artists.values()).flat().map(gig=>gig.location_image_url?.trim()).find(Boolean)||'/placeholder-gig.jpeg'} alt={venue}
+                onError={event=>{const image=event.currentTarget;if(image.getAttribute('src')!=='/placeholder-gig.jpeg')image.src='/placeholder-gig.jpeg';}} />
+            <div className="feature-map-venue-body"><h2>{venue}</h2>
+            {Array.from(artists,([artist,dates])=><div className="feature-map-artist" key={artist}>
+                <h3>{artist}</h3>
+                <div className="feature-map-dates">{dates.map((gig,index)=><a key={`${gig.id}-${index}`} href={buildGigPath(gig)} aria-label={`${artist} at ${venue}, ${moment(gig.date).format('D MMM YYYY')}, ${gig.start || 'Time TBA'}`}>
+                    <time dateTime={gig.date}>{moment(gig.date).format('ddd D MMM YYYY')} · {gig.start || 'Time TBA'}</time>
+                </a>)}</div>
+            </div>)}
+            </div>
+        </section>)}
+    </div>;
+};
+
 const MapView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListing[];profile:ReturnType<typeof getTourProfile>}) => {
     const [selected,setSelected]=useState<string|null>(null);
     const mapRef=useRef<google.maps.Map|null>(null);
@@ -128,9 +153,15 @@ const MapView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListing[];profi
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[points,isLoaded]);
     const selectedPoint=points.find(point=>point.key===selected);
-    return <ToolFrame title={`${profile.title} gig map${route.month === undefined ? "" : " · "+moment().month(route.month).format("MMMM")}`} url={route.targetUrl}><div className="feature-map"><header><a href={route.targetUrl}>View all gigs ↗</a></header><div className="feature-map-summary"><span>{points.length} venue{points.length===1?'':'s'}</span></div>
-        <div className="feature-map-canvas">{loadError?<p role="alert">The map couldn’t load.</p>:!isLoaded?<p>Loading map…</p>:!points.length?<p>No mapped venues for these gigs.</p>:<GoogleMap mapContainerStyle={{width:'100%',height:'100%'}} onLoad={map=>{mapRef.current=map;fitPoints(map);}} onUnmount={()=>{mapRef.current=null;}} options={{styles:mapStyles,zoomControl:true,disableDefaultUI:true}} center={points[0].position} zoom={12}>{points.map(point=><Marker key={point.key} position={point.position} onClick={()=>setSelected(point.key)}/>)}</GoogleMap>}
-            {isLoaded&&selectedPoint&&<div className="feature-map-selected"><button aria-label="Close venue details" onClick={()=>setSelected(null)}>×</button>{selectedPoint.gigs.map((gig,index)=><ListingLink key={`${gig.id}-${index}`} gig={gig} title={clean(gig.artist)} sub={clean(gig.name)} fullDate/>)}</div>}</div>
+    return <ToolFrame title={`${profile.title} - ${points.length} venue${points.length===1?'':'s'}${route.month === undefined ? "" : " · "+moment().month(route.month).format("MMMM")}`} url={route.targetUrl}><div className="feature-map">
+        <div className="feature-map-canvas">{loadError?<p role="alert">The map couldn’t load.</p>:!isLoaded?<p>Loading map…</p>:!points.length?<p>No mapped venues for these gigs.</p>:<GoogleMap mapContainerStyle={{position:'absolute',inset:0,width:'100%',height:'100%'}} onLoad={map=>{mapRef.current=map;fitPoints(map);}} onUnmount={()=>{mapRef.current=null;}} options={{styles:mapStyles,zoomControl:true,disableDefaultUI:true}} center={points[0].position} zoom={12} onClick={()=>setSelected(null)}>
+            <MarkerClusterer {...gigMapClusterOptions} onClick={()=>setSelected(null)}>
+                {clusterer=><>{points.map(point=><Marker key={point.key} clusterer={clusterer} position={point.position} icon={gigMapMarkerIcon()} title={Array.from(new Set(point.gigs.map(gig=>`${clean(gig.artist)} — ${clean(gig.name)}`))).join('; ')} onClick={()=>setSelected(point.key)}/>)}</>}
+            </MarkerClusterer>
+            {selectedPoint&&<InfoWindow position={selectedPoint.position} options={{pixelOffset:new window.google.maps.Size(0,-20)}} onCloseClick={()=>setSelected(null)}>
+                <MapVenueSummary gigs={selectedPoint.gigs} />
+            </InfoWindow>}
+        </GoogleMap>}</div>
     </div></ToolFrame>;
 };
 

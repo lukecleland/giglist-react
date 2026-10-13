@@ -1,0 +1,36 @@
+@mixin map-popup-close {
+    // Keep Google's accessible close control, without its empty header row.
+    .gm-style-iw-chr {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 1;
+    }
+
+    .gm-style-iw-ch { display: none; }
+
+    .gm-style-iw-c button.gm-ui-hover-effect {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        width: 32px !important;
+        height: 32px !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #fff !important;
+        opacity: 1;
+        box-shadow: 0 1px 5px #0006;
+
+        span, img { margin: 0 !important; }
+    }
+
+    .gm-style-iw-chr button.gm-ui-hover-effect {
+        position: relative !important;
+        top: 0 !important;
+        right: 0 !important;
+    }
+
+}
