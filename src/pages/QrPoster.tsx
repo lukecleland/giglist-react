@@ -327,7 +327,7 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
                     }
                 }
                 if (line) headingLines.push(line);
-                const headingRows = headingLines.map((text,index)=>({text,y:275+index*nameSize*1.25}));
+                const headingRows = headingLines.map((text,index)=>({text,y:205+index*nameSize*1.25}));
                 const headingBottom = Math.max(...headingRows.map(({text,y})=>y+(context.measureText(text).actualBoundingBoxDescent ?? nameSize*.2)));
                 const originalSize = useCustomBackground && backgroundUpload ? 896 : 1120;
                 const quietSpace = 64;

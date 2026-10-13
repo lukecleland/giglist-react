@@ -113,7 +113,7 @@ test("venue name is the header above the QR code", async () => {
         ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" /></HelmetProvider></MemoryRouter>, container);
     });
     expect(context.fillText).toHaveBeenCalledWith("upcoming gigs on Giglist", 800, 1830, 1360);
-    expect(context.fillText).toHaveBeenCalledWith("Windsor Hotel", 800, 275, 1360);
+    expect(context.fillText).toHaveBeenCalledWith("Windsor Hotel", 800, 205, 1360);
     expect(container.querySelector(".qr-poster-image").alt).toContain("Windsor Hotel. QR code");
 });
 
@@ -122,7 +122,7 @@ test("suburb name is the header above the QR code", async () => {
         ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/perth" /></HelmetProvider></MemoryRouter>, container);
     });
     expect(context.fillText).toHaveBeenCalledWith("upcoming gigs on Giglist", 800, 1830, 1360);
-    expect(context.fillText).toHaveBeenCalledWith("Perth", 800, 275, 1360);
+    expect(context.fillText).toHaveBeenCalledWith("Perth", 800, 205, 1360);
     expect(container.querySelector(".qr-poster-image").alt).toContain("Perth. QR code");
 });
 
