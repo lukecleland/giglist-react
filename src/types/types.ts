@@ -22,6 +22,8 @@ export type TListing = {
     state: string;
     zip: string;
     location_image_url: string;
+    event_image_url?: string;
+    artist_image_url?: string;
     answer: string;
     datestamp: {
         date: Date | string;

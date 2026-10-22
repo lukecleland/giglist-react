@@ -86,3 +86,29 @@ Facebook treat the gig as the homepage. The deployment script refreshes the gig
 rewrite block at the top of `.htaccess` on every deployment. If the check still
 fails, check parent-directory rewrites in cPanel as well: a parent SPA fallback
 must not intercept gig requests before they reach this document root.
+
+## Google event results
+
+Gig pages include Event JSON-LD in the initial PHP response and after React
+navigation. Unknown prices, finish times and organisers are omitted. Start times
+are venue-local wall times without an offset: Google infers the timezone from the
+physical address. Do not use the feed's fixed Perth `datestamp.timezone` nationally.
+The feed currently supplies venue images only. Optional `event_image_url` and
+`artist_image_url` fields take priority when the feed supplies real artwork.
+
+Before building, run `npm run seo:refresh` to refresh `public/sitemap*.xml` from
+the national feed. The generator omits past dates and does not claim that an
+event's performance date is its page modification date. For ongoing updates,
+configure a server cron every three hours (replace `/path/to/repo` with the actual
+cPanel checkout and use the host's Node executable):
+
+```sh
+0 */3 * * * cd /path/to/repo && SITEMAP_OUTPUT_DIR="$HOME/public_html/giglist-react" /usr/bin/node scripts/generate-sitemap.js
+```
+
+After deploying, validate several upcoming gig URLs in Google's Rich Results Test
+(https://search.google.com/test/rich-results), including one with artwork and one
+in a daylight-saving state. Confirm Event data appears in the initial HTML, then
+use Search Console URL Inspection and submit https://giglist.com.au/sitemap.xml.
+Warnings about unknown optional fields are preferable to fabricated values.
+Eligibility does not guarantee that Google displays event cards.

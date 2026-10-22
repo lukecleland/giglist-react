@@ -1,6 +1,5 @@
 import React from "react";
 import { TListing } from "../../types/types";
-import { EventSchema } from "../EventSchema";
 import "./Listing.scss";
 
 export const Listing = ({ listing }: { listing: TListing }) => {
@@ -16,7 +15,6 @@ export const Listing = ({ listing }: { listing: TListing }) => {
 
     return (
         <>
-            {gig.id <= 50 && <EventSchema gig={gig} />}
             <li className={cname}>
                 <div
                     dangerouslySetInnerHTML={{ __html: gigartist }}

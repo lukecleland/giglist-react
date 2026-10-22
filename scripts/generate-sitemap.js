@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const https = require("https");
 
 const SITE_URL = "https://giglist.com.au";
 const FEED_URLS = [
@@ -19,7 +18,7 @@ const STATIC_ROUTES = [
 ];
 
 const SITEMAP_OUTPUT_DIR =
-    process.env.SITEMAP_OUTPUT_DIR || "/home/giglistc/public_html/";
+    process.env.SITEMAP_OUTPUT_DIR || "public";
 
 function fetchJson(url) {
     return new Promise((resolve, reject) => {
@@ -61,6 +60,7 @@ function fetchJson(url) {
             },
         );
 
+        request.setTimeout(20000, () => request.destroy(new Error("Feed request timed out")));
         request.on("error", reject);
     });
 }
@@ -168,7 +168,14 @@ function buildSitemapIndex(files) {
 }
 
 async function generate() {
-    const feed = await fetchFeed();
+    const feed = process.env.SITEMAP_FEED_FILE
+        ? JSON.parse(fs.readFileSync(process.env.SITEMAP_FEED_FILE, "utf8"))
+        : await fetchFeed();
+    if (!Array.isArray(feed)) throw new Error("Expected an array of feed days");
+    // Keep today's events throughout Australia (Perth is the last major zone to roll over).
+    const today = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Australia/Perth', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(new Date());
 
     const eventsByUrl = new Map();
 
@@ -180,6 +187,8 @@ async function generate() {
                 continue;
             }
 
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(listing.date) || listing.date < today) continue;
+
             const url = `${SITE_URL}${toEventPath(
                 listing.artist,
                 listing.name,
@@ -189,7 +198,6 @@ async function generate() {
             if (!eventsByUrl.has(url)) {
                 eventsByUrl.set(url, {
                     loc: url,
-                    lastmod: listing.date,
                     changefreq: "daily",
                     priority: "0.8",
                 });

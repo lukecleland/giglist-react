@@ -41,7 +41,10 @@ if ($match !== null) {
     $date = DateTime::createFromFormat('!Y-m-d', $match['date']);
     $description = ($date ? $date->format('l, j F Y') : $match['date']) . ' at ' . $match['start'] . '. ' . $match['name'] . ', ' . $match['address'] . ', ' . $match['suburb'] . ', ' . (isset($match['state']) ? $match['state'] : '');
     $description = html_entity_decode($description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    $image = isset($match['location_image_url']) ? trim($match['location_image_url']) : '';
+    $image = '';
+    foreach (['event_image_url', 'artist_image_url', 'location_image_url'] as $field) {
+        if (!empty($match[$field])) { $image = trim($match[$field]); break; }
+    }
     if (substr($image, 0, 2) === '//') $image = 'https:' . $image;
     elseif (substr($image, 0, 1) === '/') $image = 'https://giglist.com.au' . $image;
     if (!preg_match('~^https?://~i', $image)) $image = 'https://giglist.com.au/placeholder-gig.jpeg';
@@ -52,6 +55,31 @@ if ($match !== null) {
     }
     foreach (['description'=>$description, 'twitter:card'=>'summary_large_image', 'twitter:title'=>$title, 'twitter:description'=>$description, 'twitter:image'=>$image] as $key=>$value) {
         $tags .= '<meta name="' . $key . '" content="' . gigEscape($value) . '">';
+    }
+    // Physical venue determines the timezone; the feed's datestamp zone is unreliable.
+    $startDate = $date ? $date->format('Y-m-d') : null;
+    $time = false;
+    foreach (['!g:iA', '!g:i A', '!gA', '!g A', '!H:i', '!H:i:s'] as $format) {
+        $parsed = DateTime::createFromFormat($format, strtoupper(trim($match['start'])), new DateTimeZone('UTC'));
+        $errors = DateTime::getLastErrors();
+        if ($parsed && (!$errors || (!$errors['warning_count'] && !$errors['error_count']))) { $time = $parsed; break; }
+    }
+    if ($startDate && $time) $startDate .= 'T' . $time->format('H:i:s');
+    if ($startDate && !empty($match['address']) && !empty($match['suburb'])) {
+        $event = [
+            '@context'=>'https://schema.org', '@type'=>'Event', 'url'=>$url,
+            'name'=>html_entity_decode(trim($match['artist']), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            'startDate'=>$startDate,
+            'description'=>html_entity_decode(trim($match['artist']) . ' at ' . trim($match['name']), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            'location'=>['@type'=>'Place', 'name'=>html_entity_decode(trim($match['name']), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                'address'=>['@type'=>'PostalAddress', 'streetAddress'=>html_entity_decode(trim($match['address']), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                    'addressLocality'=>$match['suburb'], 'addressRegion'=>isset($match['state']) ? $match['state'] : '',
+                    'postalCode'=>isset($match['zip']) ? $match['zip'] : '', 'addressCountry'=>'AU']],
+            'performer'=>['@type'=>'PerformingGroup', 'name'=>html_entity_decode(trim($match['artist']), ENT_QUOTES | ENT_HTML5, 'UTF-8')]
+        ];
+        if ($image !== 'https://giglist.com.au/placeholder-gig.jpeg') $event['image'] = $image;
+        // Helmet adopts this tag on hydration and replaces it during client navigation.
+        $tags .= '<script type="application/ld+json" data-rh="true">' . json_encode($event, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES) . '</script>';
     }
     $html = str_replace('</head>', $tags . '</head>', $html);
 }

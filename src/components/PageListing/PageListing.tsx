@@ -10,6 +10,7 @@ import "./PageListing.scss";
 import { ShareGig } from "../ShareGig";
 import { AddToCalendar } from "../AddToCalendar";
 import { buildGigUrl } from "../../utils/gigUrl";
+import { eventImage as getEventImage } from "../../utils/eventSchema";
 import { weatherUrl } from "../../utils/weatherUrl";
 
 // // Then fetch the link
@@ -30,7 +31,7 @@ export const PageListing = ({
 
     const event_url = buildGigUrl(gig);
 
-    const eventImage = new URL(gig.location_image_url || "/placeholder-gig.jpeg", "https://giglist.com.au").href;
+    const eventImage = getEventImage(gig) || "https://giglist.com.au/placeholder-gig.jpeg";
     const gigBackground = `url(${eventImage})`;
     const eventTitle = `${gig.artist} @ ${gig.name}`.replace(/&amp;/g, "&");
     const eventDescription = `${moment(gig.date).format("dddd, D MMMM YYYY")} at ${gig.start}. ${gig.name}, ${gig.address}, ${gig.suburb}, ${gig.state || ""}`.replace(/&amp;/g, "&");
