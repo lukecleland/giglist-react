@@ -25,7 +25,7 @@ const show=async(kind,slug)=>act(async()=>{ReactDOM.render(<HelmetProvider><Memo
 test('artist embed lists the venue and provides an iframe snippet',async()=>{
     await show('embed','claytonbulger');
     expect(root.textContent).toContain('Windsor Hotel');
-    expect(root.querySelector('textarea').value).toContain('claytonbulger_embed?embed=1');
+    expect(root.querySelector('textarea').value).toContain('claytonbulger/embed?embed=1');
 });
 test('calendar page offers a live subscription and downloadable snapshot',async()=>{
     await show('calendar','windsorhotel');

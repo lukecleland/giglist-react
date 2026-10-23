@@ -28,3 +28,12 @@ test('month poster routes preserve the underlying listing URL', () => {
     expect(posterRouteFromPath('/venue_POSTER_DEC/')).toEqual({targetUrl: 'https://giglist.com.au/venue', month: 11});
     expect(posterRouteFromPath('/venue_poster_xyz')).toBeNull();
 });
+
+ test.each(['/windsorhotel/qr','/windsorhotel/QR/'])('slash QR route: %s',path=>{
+    expect(qrTargetFromPath(path)).toBe('https://giglist.com.au/windsorhotel');
+ });
+ test('slash poster routes support months',()=>{
+    expect(posterRouteFromPath('/venue/poster')).toEqual({targetUrl:'https://giglist.com.au/venue'});
+    expect(posterRouteFromPath('/venue/poster/MAR/')).toEqual({targetUrl:'https://giglist.com.au/venue',month:2});
+    expect(posterRouteFromPath('/venue/poster/xyz')).toBeNull();
+ });

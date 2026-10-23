@@ -1,3 +1,4 @@
+import { Confirm } from "semantic-ui-react";
 import { artworkLabel } from '../utils/artworkLabel';
 import moment from 'moment';
 import { ToolFrame } from './ToolFrame';
@@ -61,6 +62,9 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
         setRangeEnd(activeRange?.end || (selectedMonth ? moment(selectedMonth, 'YYYY-MM').endOf('month').format('YYYY-MM-DD') : ''));
     }, [weekendOnly, weekend, dateRange, selectedMonth]);
     const gigs = useMemo(() => weekendOnly ? weekendGigs(allGigs, weekend) : allGigs.filter(gig => dateRange ? gig.date.slice(0,10) >= dateRange.start && gig.date.slice(0,10) <= dateRange.end : !selectedMonth || gig.date.slice(0,7) === selectedMonth), [allGigs, weekendOnly, weekend, selectedMonth, dateRange]);
+    const [approvedGigs, setApprovedGigs] = useState<TListing[] | null>(null);
+    const [dismissedGigs, setDismissedGigs] = useState<TListing[] | null>(null);
+    const needsConfirmation = poster && gigs.length > 100 && approvedGigs !== gigs;
     const periodLabel = weekendOnly ? weekend.label : dateRange ? `LIVE MUSIC · ${moment(dateRange.start).format('D MMM YYYY')}–${moment(dateRange.end).format('D MMM YYYY')}` : selectedMonth ? `LIVE MUSIC IN ${moment(selectedMonth, 'YYYY-MM').format('MMMM YYYY').toUpperCase()}` : undefined;
     const [rendering, setRendering] = useState(false);
     const [listingBackground, setListingBackground] = useState(true);
@@ -109,6 +113,10 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
     const [inverted, setInverted] = useState(false);
     const [configOpen, setConfigOpen] = useState(false);
     const [displayName, setDisplayName] = useState<string | null>(null);
+    const [headerText, setHeaderText] = useState<string | null>(null);
+    const [headerDraft, setHeaderDraft] = useState<string | null>(null);
+    const posterTitle = headerText || displayName;
+
     const [isSuburb, setIsSuburb] = useState(false);
     const [isVenue, setIsVenue] = useState(false);
     const isArtistPoster = !isSuburb && !isVenue;
@@ -245,7 +253,7 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
         setError("");
         setImageWarning("");
         setVenuePhotoFailed(false);
-        if (!displayName) { setRendering(false); return; }
+        if (!displayName || needsConfirmation) { setRendering(false); setActiveShuffle(null); setPng(""); return; }
         setRendering(true);
 
         const generate = async () => {
@@ -303,7 +311,7 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
                     }
                     const art = photo ? null : localImage || await loadPosterImage(posterArtwork[artwork]);
                     if (cancelled) return;
-                    drawPoster(context, { theme, listingBackground, invertFonts, header, headerCaps, customBanner: header === "custom" ? bannerUpload?.image : undefined, customPalette: (header === "custom" ? bannerUpload?.palette : undefined) || (useCustomBackground ? backgroundUpload?.palette : undefined), listStyle: selectedListStyle, periodLabel, fonts: posterFonts || undefined, artwork: art, title: displayName, targetUrl, qr: image, photo, gigs, month, isVenue, isSuburb, photoCredit: localImage ? locationPhoto?.credit : undefined });
+                    drawPoster(context, { theme, listingBackground, invertFonts, header, headerCaps, customBanner: header === "custom" ? bannerUpload?.image : undefined, customPalette: (header === "custom" ? bannerUpload?.palette : undefined) || (useCustomBackground ? backgroundUpload?.palette : undefined), listStyle: selectedListStyle, periodLabel, fonts: posterFonts || undefined, artwork: art, title: posterTitle!, targetUrl, qr: image, photo, gigs, month, isVenue, isSuburb, photoCredit: localImage ? locationPhoto?.credit : undefined });
                 } else {
                 const heading = displayName;
                 let nameSize = 184;
@@ -405,7 +413,7 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
             cancelled = true;
             if (objectUrl) URL.revokeObjectURL(objectUrl);
         };
-    }, [listingBackground, invertFonts, bannerUpload, backgroundUpload, useCustomBackground, targetUrl, background, foreground, displayName, poster, theme, header, headerCaps, selectedListStyle, weekendOnly, periodLabel, artwork, inverted, venueImage, gigs, month, isVenue, isSuburb, locationPhoto, posterFonts, useVenuePhoto, venuePhotoAttempt]);
+    }, [posterTitle, needsConfirmation, listingBackground, invertFonts, bannerUpload, backgroundUpload, useCustomBackground, targetUrl, background, foreground, displayName, poster, theme, header, headerCaps, selectedListStyle, weekendOnly, periodLabel, artwork, inverted, venueImage, gigs, month, isVenue, isSuburb, locationPhoto, posterFonts, useVenuePhoto, venuePhotoAttempt]);
 
     const backgroundUploadControls = <>
                     <div className="poster-upload-row">
@@ -417,6 +425,12 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
 
     return (
         <ToolFrame title={poster ? "Create Poster" : "Create QR Code"} url={targetUrl}>
+        <Confirm open={!!displayName && needsConfirmation && dismissedGigs !== gigs}
+            header="Generate a large poster?"
+            content={`This result set contains ${gigs.length} gigs. Generating a poster with more than 100 gigs may take a long time, slow down your browser, or time out. Choose a shorter date range or continue anyway.`}
+            cancelButton="Choose a shorter date range" confirmButton="Generate anyway"
+            onCancel={() => { setDismissedGigs(gigs); setConfigOpen(true); }}
+            onConfirm={() => setApprovedGigs(gigs)} />
         <div className={`qr-poster-page poster-editor${poster ? " poster-print-editor" : " qr-code-editor"}`}>
             <Helmet>
                 <title>{poster ? "Giglist | Printable gig poster" : "Giglist | Printable QR code"}</title>
@@ -462,6 +476,13 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
                         {rangeStart&&rangeEnd&&rangeStart>rangeEnd&&<p role="alert">End date must be on or after the start date.</p>}
                     </div>
                     <label className="poster-weekend-toggle"><input type="checkbox" checked={weekendOnly} onChange={event => { setWeekend(upcomingWeekend()); setWeekendOnly(event.target.checked); }} /> Upcoming Weekend (Fri–Sun)</label>
+                    <label className="poster-theme-label">Header Text
+                        <input className="poster-header-text" type="text" aria-label="Header Text" value={headerDraft ?? displayName ?? ''} onChange={event => setHeaderDraft(event.target.value)} />
+                    </label>
+                    <div className="poster-upload-row">
+                        <button type="button" onClick={() => setHeaderText(headerDraft?.trim() || null)}>Apply Header Text</button>
+                        <button type="button" onClick={() => { setHeaderText(null); setHeaderDraft(null); }}>Reset Header Text</button>
+                    </div>
                     <ShuffleControl label="Header Artwork" value={header} options={[...posterHeaders.map(value => ({value, label: artworkLabel(posterHeaderNames[value])})), ...(bannerUpload ? [{value: "custom", label: artworkLabel(bannerUpload.name)}] : [])]} onChange={chooseHeader}>
                     <button type="button" className="poster-header-shuffle" {...shuffleProps("Shuffle Header")} title={`Current header: ${header}`} onClick={() => { setActiveShuffle("Shuffle Header"); const next = nextPosterHeader(header); setHeader(next); setHeaderCaps(!(headerCaps ?? (currentPosterFonts().title === "Poster Condensed"))); }}>{shuffleLabel("Shuffle Header")}</button>
                     </ShuffleControl>
@@ -518,7 +539,8 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
                     download={`giglist-${targetUrl.split("/").pop()}-${poster ? theme + "-poster" + (weekendOnly ? "-weekend-" + weekend.start : "") + (weekendOnly ? "" : dateRange ? "-" + dateRange.start + "-to-" + dateRange.end : month === undefined ? "" : "-" + posterMonths[month] + "-" + selectedMonth!.slice(0,4)) : "qr"}.png`}>Download PNG</a>}
                 <button type="button" disabled={!ready || uploading || rendering} onClick={() => window.print()}>Print</button>
                 </div>
-                {!png && !error && <p role="status">{poster ? "Preparing your poster…" : "Preparing your QR code…"}</p>}
+                {needsConfirmation && <button type="button" onClick={() => setDismissedGigs(null)}>Review large poster generation</button>}
+                {!png && !error && !needsConfirmation && <p role="status">{poster ? "Preparing your poster…" : "Preparing your QR code…"}</p>}
                 {uploading && <p role="status">Preparing background image…</p>}
                 {imageWarning && <p role="status">{imageWarning}</p>}
                 {error && <p role="alert">{error}</p>}
@@ -531,12 +553,12 @@ export const QrPoster = ({ targetUrl, poster = false, month: initialMonth }: { t
                     bgColor={poster ? "#fff" : background} fgColor={poster ? "#000" : foreground} />
             </div>
             {poster && !png && <div className="poster-preview-status">
-                <p role={feedError || error ? 'alert' : 'status'}>{feedError || error || 'Loading poster…'}</p>
+                <p role={feedError || error ? 'alert' : 'status'}>{feedError || error || (needsConfirmation ? 'Choose a shorter date range or confirm generation to continue.' : 'Loading poster…')}</p>
                 {(feedError || error) && <button type="button" onClick={()=>setFeedRetry(value=>value+1)}>Retry</button>}
             </div>}
             {png && <img className="qr-poster-image" src={png}
                 onLoad={() => setReady(true)}
-                alt={poster ? `${displayName}: ${periodLabel || (month === undefined ? "Upcoming gigs" : "Live music in " + posterMonthNames[month])}. ${gigs.length} listings. Scan QR code for gig details.` : `${displayName}. QR code for ${targetUrl}. ${caption}`} />}
+                alt={poster ? `${posterTitle}: ${periodLabel || (month === undefined ? "Upcoming gigs" : "Live music in " + posterMonthNames[month])}. ${gigs.length} listings. Scan QR code for gig details.` : `${displayName}. QR code for ${targetUrl}. ${caption}`} />}
         </div>
         </ToolFrame>
     );

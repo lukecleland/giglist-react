@@ -63,7 +63,7 @@ const EmbedView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListing[];pro
     const initialTheme=new URLSearchParams(window.location.search).get('theme');
     const [theme,setTheme]=useState<EmbedTheme>(themes.includes(initialTheme as EmbedTheme)?initialTheme as EmbedTheme:'giglist');
     const iframeHeight = 240 + Math.min(gigs.length,10)*73;
-    const snippet = `<iframe src="${route.targetUrl}_embed${route.month === undefined ? '' : '_'+posterMonths[route.month]}?embed=1&theme=${theme}" title="${profile.title.replace(/"/g,'&quot;')} gigs" loading="lazy" style="width:100%;height:${iframeHeight}px;border:0"></iframe>`;
+    const snippet = `<iframe src="${route.targetUrl}/embed${route.month === undefined ? '' : '/'+posterMonths[route.month]}?embed=1&theme=${theme}" title="${profile.title.replace(/"/g,'&quot;')} gigs" loading="lazy" style="width:100%;height:${iframeHeight}px;border:0"></iframe>`;
     const [copied,setCopied] = useState(false);
     const content = <div className={`feature-embed ${embedded ? 'feature-embed-only' : ''}`}>
         {!embedded && <div className="feature-tools"><p><strong>{profile.title}</strong></p><p>Put this live gig list on your website. It updates as Giglist adds shows.</p><label htmlFor="embed-theme">Theme</label><select id="embed-theme" value={theme} onChange={event=>{setTheme(event.target.value as EmbedTheme);setCopied(false);}}><option value="giglist">Giglist</option><option value="night">Night</option><option value="paper">Paper</option><option value="colour">Colour</option></select><label htmlFor="embed-code">Copy This Code</label><textarea id="embed-code" readOnly value={snippet} /><button onClick={() => {void navigator.clipboard?.writeText(snippet).then(() => setCopied(true));}}>{copied?'Copied':'Copy Embed Code'}</button></div>}
@@ -198,9 +198,14 @@ export const SocialView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListi
     const [error,setError]=useState('');
     const [weekendOnly,setWeekendOnly]=useState(false);
     const [weekend,setWeekend]=useState(()=>upcomingWeekend());
+    const [dateRange,setDateRange]=useState<{start:string;end:string}|null>(null);
+    const [rangeStart,setRangeStart]=useState('');
+    const [rangeEnd,setRangeEnd]=useState('');
+    const validRange=moment(rangeStart,'YYYY-MM-DD',true).isValid()&&moment(rangeEnd,'YYYY-MM-DD',true).isValid()&&rangeStart<=rangeEnd;
+    const rangeLabel=dateRange ? `${moment(dateRange.start).format('D MMM YYYY')}–${moment(dateRange.end).format('D MMM YYYY')}` : undefined;
     const canvasRef=useRef<HTMLCanvasElement>(null);
     const start=moment().startOf('day'),end=start.clone().add(7,'days');
-    const weekly=useMemo(()=>weekendOnly ? weekendGigs(gigs,weekend) : route.month === undefined ? gigs.filter(gig=>moment(gig.date).isSameOrAfter(start)&&moment(gig.date).isBefore(end)) : gigs,[gigs,route.month,weekendOnly,weekend]);
+    const weekly=useMemo(()=>weekendOnly ? weekendGigs(gigs,weekend) : dateRange ? gigs.filter(gig=>gig.date.slice(0,10)>=dateRange.start&&gig.date.slice(0,10)<=dateRange.end) : route.month === undefined ? gigs.filter(gig=>moment(gig.date).isSameOrAfter(start)&&moment(gig.date).isBefore(end)) : gigs.filter(gig=>moment(gig.date).month()===route.month),[gigs,route.month,weekendOnly,weekend,dateRange]);
     useEffect(()=>{
         let cancelled=false;
         setRendering(true); setPng(''); setError('');
@@ -214,19 +219,19 @@ export const SocialView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListi
                 const faces=await Promise.all([document.fonts.load(`400 42px "${font}"`),document.fonts.load(`700 42px "${font}"`),document.fonts.load('400 42px "Poster Grotesk"'),document.fonts.load('700 42px "Poster Grotesk"'),document.fonts.load('39px "carbontyperegular"')]);
                 if(faces.some(loaded=>!loaded.length))throw new Error('Font could not load');
                 if(cancelled||!canvasRef.current)return;
-                drawSocialCard(canvasRef.current,{title:profile.title,targetUrl:route.targetUrl,gigs:weekly,image,qr,periodLabel:weekendOnly ? weekend.label.toUpperCase() : route.month === undefined ? undefined : periodLabel(route).toUpperCase(),format,palette,font,invertFontColour,autoContrast,isVenue:profile.isVenue,isSuburb:profile.isSuburb});
+                drawSocialCard(canvasRef.current,{title:profile.title,targetUrl:route.targetUrl,gigs:weekly,image,qr,periodLabel:weekendOnly ? weekend.label.toUpperCase() : rangeLabel ? `LIVE MUSIC · ${rangeLabel.toUpperCase()}` : route.month === undefined ? undefined : periodLabel(route).toUpperCase(),format,palette,font,invertFontColour,autoContrast,isVenue:profile.isVenue,isSuburb:profile.isSuburb});
                 setPng(canvasRef.current.toDataURL('image/png'));
             }catch{if(!cancelled)setError('The social graphic couldn’t load. Please try again.');}
             finally{if(!cancelled)setRendering(false);}
         };void render();return()=>{cancelled=true;};
-    },[format,palette,font,invertFontColour,autoContrast,imageKey,backgroundUpload,profile.title,profile.isVenue,profile.isSuburb,route.targetUrl,route.month,weekly,weekendOnly,weekend]);
+    },[format,palette,font,invertFontColour,autoContrast,imageKey,backgroundUpload,profile.title,profile.isVenue,profile.isSuburb,route.targetUrl,route.month,weekly,weekendOnly,weekend,rangeLabel]);
     const images=['none',...Object.keys(posterArtwork)];
     const palettes=[{value:'none',label:'None'},{value:'midnight',label:'Midnight'},{value:'sunset',label:'Sunset'},{value:'paper',label:'Paper'}];
     const next = (values: string[], current: string) => {
         const choices=values.filter(value=>value!==current);
         return choices[Math.floor(Math.random()*choices.length)];
     };
-    return <ToolFrame title="Create Social Card" url={route.targetUrl}><div className="feature-social"><header><p>{route.month === undefined ? 'Share the next seven days of live music.' : periodLabel(route)+'.'}</p></header>
+    return <ToolFrame title="Create Social Card" url={route.targetUrl}><div className="feature-social"><header><p>{rangeLabel ? `Share live music · ${rangeLabel}.` : route.month === undefined ? 'Share the next seven days of live music.' : periodLabel(route)+'.'}</p></header>
         <div className="poster-editor social-editor">
             <aside className="qr-poster-controls" aria-label="Social Post Settings" aria-busy={rendering||uploading}>
                 <div className="poster-panel-heading"><h2>Social Post Settings</h2>
@@ -234,7 +239,14 @@ export const SocialView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListi
                 </div>
                 <div id="social-settings-content" className={`poster-controls-content${configOpen?' is-open':''}`}>
                     <p>QR code links to <a href={route.targetUrl}>{route.targetUrl}</a></p>
-                    <p>{weekendOnly?weekend.label:route.month === undefined?'Next seven days':periodLabel(route)} · {weekly.length} listings</p>
+                    <p>{weekendOnly?weekend.label:rangeLabel?rangeLabel:route.month === undefined?'Next seven days':periodLabel(route)} · {weekly.length} listings</p>
+                    <div className="poster-date-range">
+                        <label>From<input type="date" aria-label="Social start date" value={rangeStart} onChange={event=>setRangeStart(event.target.value)} /></label>
+                        <label>To<input type="date" aria-label="Social end date" value={rangeEnd} min={rangeStart||undefined} onChange={event=>setRangeEnd(event.target.value)} /></label>
+                        <button type="button" disabled={!validRange} onClick={()=>{setDateRange({start:rangeStart,end:rangeEnd});setWeekendOnly(false);}}>Apply Date Range</button>
+                        {dateRange&&<button type="button" onClick={()=>{setDateRange(null);setRangeStart('');setRangeEnd('');setWeekendOnly(false);}}>Reset Date Range</button>}
+                        {rangeStart&&rangeEnd&&rangeStart>rangeEnd&&<p role="alert">End date must be on or after the start date.</p>}
+                    </div>
                     <label className="poster-weekend-toggle"><input type="checkbox" checked={weekendOnly} onChange={event=>{setWeekend(upcomingWeekend());setWeekendOnly(event.target.checked);}} /> Upcoming Weekend (Fri–Sun)</label>
                     <label className="poster-theme-label">Size<select aria-label="Size" value={format} onChange={event=>setFormat(event.target.value as SocialFormat)}><option value="story">Story · 1080 × 1920</option><option value="square">Square · 1080 × 1080</option></select></label>
                     <ShuffleControl label="Colour" value={palette} options={palettes} onChange={value=>setPalette(value as SocialPalette)}>
@@ -267,7 +279,7 @@ export const SocialView = ({route,gigs,profile}: {route:FeatureRoute;gigs:TListi
 };
 
 export const FeaturePage = ({route}: {route:FeatureRoute}) => {
-    const {profile,gigs,status}=useFeatureFeed(route.slug,route.month);
+    const {profile,gigs,status}=useFeatureFeed(route.slug,route.kind==='social'?undefined:route.month);
     useEffect(()=>{document.body.classList.add('feature-body');return()=>document.body.classList.remove('feature-body');},[]);
     if(status==='loading')return <div className="feature-status" role="status">Loading gigs…</div>;
     if(status==='error')return <div className="feature-status" role="alert">Gigs couldn’t load. Refresh to try again.</div>;

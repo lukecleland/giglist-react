@@ -1,5 +1,5 @@
 export const qrTargetFromPath = (pathname: string): string | null => {
-    const match = /^\/([^/]+)\/?$/.exec(pathname);
+    const match = /^\/([^/]+)\/?$/.exec(pathname.replace(/\/qr(\/?)$/i, "_qr$1"));
     if (!match) return null;
     let name: string;
     try { name = decodeURIComponent(match[1]); }
@@ -10,7 +10,7 @@ export const qrTargetFromPath = (pathname: string): string | null => {
 
 export const posterMonths = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 export const posterRouteFromPath = (pathname: string): { targetUrl: string; month?: number } | null => {
-    const match = /^(.*)_poster(?:_([a-z]{3}))?(\/?)$/i.exec(pathname);
+    const match = /^(.*)[/_]poster(?:[/_]([a-z]{3}))?(\/?)$/i.exec(pathname);
     if (!match) return null;
     const month = match[2] ? posterMonths.indexOf(match[2].toLowerCase()) : undefined;
     if (month === -1) return null;

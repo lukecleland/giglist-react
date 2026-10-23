@@ -5,7 +5,7 @@ export type FeatureKind = typeof featureKinds[number];
 
 export type FeatureRoute = { kind: FeatureKind; slug: string; targetUrl: string; month?: number };
 export const featureRouteFromPath = (pathname: string): FeatureRoute | null => {
-    const match = /^\/([^/]+)_(embed|calendar|screen|map|social)(?:_([a-z]{3}))?\/?$/i.exec(pathname);
+    const match = /^\/([^/]+)[/_](embed|calendar|screen|map|social)(?:[/_]([a-z]{3}))?\/?$/i.exec(pathname);
     if (!match) return null;
     const month = match[3] ? posterMonths.indexOf(match[3].toLowerCase()) : undefined;
     if (month === -1) return null;

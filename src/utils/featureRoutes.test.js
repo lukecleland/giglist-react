@@ -15,3 +15,8 @@ test.each(['embed','calendar','screen','map','social'])('%s accepts a month suff
     expect(featureRouteFromPath(`/fremantle_${kind}_OCT/`)).toEqual({kind,slug:'fremantle',targetUrl:'https://giglist.com.au/fremantle',month:9});
     expect(featureRouteFromPath(`/fremantle_${kind}_jan`).month).toBe(0);
 });
+
+test.each(['embed','calendar','screen','map','social'])('%s supports slash routes with optional months',kind=>{
+    expect(featureRouteFromPath(`/fremantle/${kind}`)).toEqual({kind,slug:'fremantle',targetUrl:'https://giglist.com.au/fremantle'});
+    expect(featureRouteFromPath(`/fremantle/${kind}/OCT/`).month).toBe(9);
+});

@@ -42,11 +42,11 @@ export const TourListing = ({ slug }: { slug: string }) => {
             <h2>Upcoming Gigs</h2>
         </header>
         <nav className="tour-tools" aria-label={`${profile.title} gig tools`}>
-            <a href={`/${slug}_embed`}>Embed</a>
-            <a href={`/${slug}_calendar`}>Calendar</a>
-            <a href={`/${slug}_screen`}>Venue screen</a>
-            <a href={`/${slug}_map`}>Map</a>
-            <a href={`/${slug}_social`}>Social card</a>
+            <a href={`/${slug}/embed`}>Embed</a>
+            <a href={`/${slug}/calendar`}>Calendar</a>
+            <a href={`/${slug}/screen`}>Venue screen</a>
+            <a href={`/${slug}/map`}>Map</a>
+            <a href={`/${slug}/social`}>Social card</a>
         </nav>
         {listings.length > 0 ? <ul className="tour-dates">
             {listings.map((gig, index) => <li key={`${gig.id}-${index}`}>

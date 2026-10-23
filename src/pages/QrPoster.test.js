@@ -506,3 +506,34 @@ test('long QR headings wrap at a readable minimum and make room by shrinking the
     expect(y-64).toBeGreaterThan(heading[heading.length-1].y+30);
     expect(y+height+64).toBeLessThan(1730-64);
 });
+
+test.each([100,101])('poster with %i gigs requires confirmation only above 100',async count=>{
+    axios.get.mockResolvedValue({data:[{listings:Array.from({length:count},(_,index)=>({artist:`Band ${index}`,name:'Windsor Hotel',address:'Main Street',suburb:'Perth',date:'2027-03-15',start:'8pm'}))}]});
+    await act(async()=>ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/windsorhotel" poster /></HelmetProvider></MemoryRouter>,container));
+    const confirm=()=>Array.from(document.querySelectorAll('button')).find(button=>button.textContent==='Generate anyway');
+    if(count===100){expect(confirm()).toBeUndefined();expect(document.fonts.load).toHaveBeenCalled();return;}
+    expect(confirm()).toBeDefined();
+    expect(document.fonts.load).not.toHaveBeenCalled();
+    await act(async()=>Simulate.click(Array.from(document.querySelectorAll('button')).find(button=>button.textContent==='Choose a shorter date range')));
+    expect(document.fonts.load).not.toHaveBeenCalled();
+    await act(async()=>Simulate.click(Array.from(container.querySelectorAll('button')).find(button=>button.textContent==='Review large poster generation')));
+    await act(async()=>Simulate.click(confirm()));
+    expect(document.fonts.load).toHaveBeenCalled();
+});
+
+test('custom header text updates the poster and can reset to the original name', async () => {
+    for (const method of ['strokeText', 'strokeRect', 'beginPath', 'arc', 'fill', 'stroke', 'moveTo', 'lineTo', 'save', 'restore', 'scale', 'translate', 'rotate', 'ellipse', 'closePath']) context[method] = jest.fn();
+    await act(async () => ReactDOM.render(<MemoryRouter><HelmetProvider><QrPoster targetUrl="https://giglist.com.au/claytonbulger" poster /></HelmetProvider></MemoryRouter>, container));
+    const input = container.querySelector('input[aria-label="Header Text"]');
+    const button = label => Array.from(container.querySelectorAll('button')).find(item => item.textContent === label);
+    expect(input.value).toBe('Clayton Bulger');
+    act(() => Simulate.change(input, {target: {value: 'Friday Sessions'}}));
+    context.fillText.mockClear();
+    await act(async () => Simulate.click(button('Apply Header Text')));
+    expect(context.fillText.mock.calls.map(([text]) => text).join(' ').toUpperCase()).toContain('FRIDAY SESSIONS');
+    expect(container.querySelector('img.qr-poster-image').alt).toContain('Friday Sessions:');
+    expect(container.querySelector('.qr-poster-controls a').href).toBe('https://giglist.com.au/claytonbulger');
+    await act(async () => Simulate.click(button('Reset Header Text')));
+    expect(input.value).toBe('Clayton Bulger');
+    expect(container.querySelector('img.qr-poster-image').alt).toContain('Clayton Bulger:');
+});

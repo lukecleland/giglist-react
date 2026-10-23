@@ -12,13 +12,13 @@ import './FeaturePages.scss';
 import './GigWidgets.scss';
 
 const tools: {suffix: string; name: string; description: string; icon: SemanticICONS}[] = [
-    {suffix:'_poster',name:'Poster',description:'Create a printable gig poster with your own style and imagery.',icon:'file image outline'},
-    {suffix:'_qr',name:'QR Code',description:'Make a QR graphic that links straight to the latest gigs.',icon:'qrcode'},
-    {suffix:'_social',name:'Social Card',description:'Create a story or square graphic ready to share.',icon:'images outline'},
-    {suffix:'_embed',name:'Website Embed',description:'Add an updating gig list to your website.',icon:'code'},
-    {suffix:'_calendar',name:'Calendar',description:'Browse dates and add upcoming gigs to your calendar.',icon:'calendar alternate outline'},
-    {suffix:'_screen',name:'Venue Screen',description:'Display upcoming gigs on a full-screen rotating board.',icon:'desktop'},
-    {suffix:'_map',name:'Gig Map',description:'Explore the gigs and venues on an interactive map.',icon:'map outline'},
+    {suffix:'/poster',name:'Poster',description:'Create a printable gig poster with your own style and imagery.',icon:'file image outline'},
+    {suffix:'/qr',name:'QR Code',description:'Make a QR graphic that links straight to the latest gigs.',icon:'qrcode'},
+    {suffix:'/social',name:'Social Card',description:'Create a story or square graphic ready to share.',icon:'images outline'},
+    {suffix:'/embed',name:'Website Embed',description:'Add an updating gig list to your website.',icon:'code'},
+    {suffix:'/calendar',name:'Calendar',description:'Browse dates and add upcoming gigs to your calendar.',icon:'calendar alternate outline'},
+    {suffix:'/screen',name:'Venue Screen',description:'Display upcoming gigs on a full-screen rotating board.',icon:'desktop'},
+    {suffix:'/map',name:'Gig Map',description:'Explore the gigs and venues on an interactive map.',icon:'map outline'},
     {suffix:'',name:'Gig Listings',description:'Open the shareable page with all matching gigs.',icon:'list'},
 ];
 
@@ -75,7 +75,7 @@ export const GigWidgets = () => {
                 <p className="gigwidgets-intro">Choose a tool to get started.</p>
                 <p className="gigwidgets-alpha-note">* Please note, these experimental tools are new and in alpha development.</p>
                 <nav className="gigwidgets-cards" aria-label={`Tools for ${selected.name}`}>
-                    {tools.filter(tool=>selected.kind!=='Venue'||tool.suffix!=='_map').map(tool=><Link key={tool.name} to={`/${encodeURIComponent(selected.slug)}${tool.suffix}`} className="gigwidgets-card">
+                    {tools.filter(tool=>selected.kind!=='Venue'||tool.suffix!=='/map').map(tool=><Link key={tool.name} to={`/${encodeURIComponent(selected.slug)}${tool.suffix}`} className="gigwidgets-card">
                         <Icon name={tool.icon} aria-hidden="true" /><h2>{tool.name}</h2><p>{tool.description}</p><span aria-hidden="true">Open tool ↗</span>
                     </Link>)}
                 </nav>

@@ -133,3 +133,30 @@ test('rejected background upload preserves the current graphic and reports the r
     expect(container.querySelector('[role=alert]').textContent).toContain('JPG, PNG or WebP');
     expect(container.querySelector('a[download]')).not.toBeNull();
 });
+
+test('custom date ranges are inclusive and validate their ordering',async()=>{
+    await render();
+    const input=async(label,value)=>act(async()=>Simulate.change(container.querySelector(`input[aria-label="${label}"]`),{target:{value}}));
+    const apply=()=>Array.from(container.querySelectorAll('button')).find(button=>button.textContent==='Apply Date Range');
+    expect(apply().disabled).toBe(true);
+    await input('Social start date','2026-10-16');
+    await input('Social end date','2026-10-14');
+    expect(apply().disabled).toBe(true);
+    await input('Social end date','2026-10-16');
+    await act(async()=>Simulate.click(apply()));
+    expect(output().gigs).toEqual([gigs[1]]);
+    expect(output().periodLabel).toContain('16 OCT 2026');
+    await act(async()=>Simulate.click(Array.from(container.querySelectorAll('button')).find(button=>button.textContent==='Reset Date Range')));
+    expect(output().gigs).toEqual(gigs);
+});
+
+test('custom range can select gigs beyond the default week and route month',async()=>{
+    const later={date:'2026-11-20',artist:'Later Show'};
+    await act(async()=>ReactDOM.render(<MemoryRouter><SocialView route={{...route,month:9}} profile={profile} gigs={[...gigs,later]}/></MemoryRouter>,container));
+    expect(output().gigs).toEqual(gigs);
+    for(const label of ['Social start date','Social end date']){
+        await act(async()=>Simulate.change(container.querySelector(`input[aria-label="${label}"]`),{target:{value:'2026-11-20'}}));
+    }
+    await act(async()=>Simulate.click(Array.from(container.querySelectorAll('button')).find(button=>button.textContent==='Apply Date Range')));
+    expect(output().gigs).toEqual([later]);
+});

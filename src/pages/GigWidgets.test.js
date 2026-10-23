@@ -25,8 +25,8 @@ test('artist search opens eight tools using only the selected lineup member',asy
     act(()=>{Simulate.submit(container.querySelector('form'));});
     expect(container.querySelector('h1').textContent).toBe('Andrew Meredith');
     expect(Array.from(container.querySelectorAll('.gigwidgets-card'),link=>link.getAttribute('href'))).toEqual([
-        '/andrewmeredith_poster','/andrewmeredith_qr','/andrewmeredith_social','/andrewmeredith_embed',
-        '/andrewmeredith_calendar','/andrewmeredith_screen','/andrewmeredith_map','/andrewmeredith'
+        '/andrewmeredith/poster','/andrewmeredith/qr','/andrewmeredith/social','/andrewmeredith/embed',
+        '/andrewmeredith/calendar','/andrewmeredith/screen','/andrewmeredith/map','/andrewmeredith'
     ]);
     expect(container.querySelector('.feature-footer')).not.toBeNull();
     act(()=>{Simulate.click(container.querySelector('.gigwidgets-back'));});
@@ -38,7 +38,7 @@ test.each([['therose','The Rose','Venue'],['fitzroy','Fitzroy','Suburb'],['sydne
     await render(`/gigwidgets?for=${slug}`);
     expect(container.querySelector('h1').textContent).toBe(name);
     expect(container.querySelector('.gigwidgets-kicker').textContent).toBe(kind);
-    expect(!!container.querySelector(`a[href="/${slug}_map"]`)).toBe(kind!=='Venue');
+    expect(!!container.querySelector(`a[href="/${slug}/map"]`)).toBe(kind!=='Venue');
 });
 
 test('failed feed can be retried and unmatched searches give feedback',async()=>{
