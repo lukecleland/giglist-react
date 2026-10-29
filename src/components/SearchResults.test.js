@@ -7,9 +7,9 @@ import { Menu } from "./Menu";
 import { DateList } from "./DateList";
 
 jest.mock("semantic-ui-react", () => ({
-    Icon: ({ name, onClick }) => <button data-icon={name} onClick={onClick} />,
+    Icon: ({ name, onClick }) => <span data-icon={name} onClick={onClick} />,
 }));
-jest.mock("antd", () => ({ DatePicker: () => null, Space: ({ children }) => <div>{children}</div> }));
+jest.mock("antd", () => ({ Drawer: ({ open, children }) => open ? <div role="dialog">{children}</div> : null, DatePicker: () => null, Space: ({ children }) => <div>{children}</div> }));
 jest.mock("./ListingModal", () => ({ ListingModal: ({ listing }) => <div>{listing.artist}</div> }));
 jest.mock("./GigAds", () => ({ GigAds: () => <div data-ad="true" /> }));
 
@@ -49,7 +49,8 @@ function render(path) {
 test("URL search filters after feed loading without opening either search window", () => {
     render("/claytonbulger");
     expect(container.querySelectorAll("input[name=searchq]")).toHaveLength(0);
-    expect(container.querySelector(".mobile-links").style.display).toBe("none");
+    expect(container.querySelector("[aria-expanded]").getAttribute("aria-expanded")).toBe("false");
+    expect(container.querySelector("input[type=search]").value).toBe("Clayton Bulger");
     expect(container.querySelectorAll("[data-ad]")).toHaveLength(1);
     const days = container.querySelectorAll(".day");
     expect(days[days.length - 1].lastElementChild).toBe(container.querySelector("[data-ad]"));
@@ -75,8 +76,20 @@ test("normal search limits ads and clearing restores normal rotation", () => {
 test("the dedicated Search page opens search with crawlable Search and Store links", () => {
     render("/search");
     expect(container.querySelector("input[name=searchq]").value).toBe("");
-    expect(container.querySelector(".mobile-links").style.display).toBe("block");
-    expect(container.querySelectorAll("a[href='/search']")).toHaveLength(2);
-    expect(container.querySelectorAll("a[href='/store']")).toHaveLength(2);
+    expect(container.querySelector("input[type=search]").value).toBe("");
+    expect(container.querySelector("[aria-expanded]").getAttribute("aria-expanded")).toBe("false");
+    expect(container.querySelectorAll("a[href='/search']")).toHaveLength(1);
+    expect(container.querySelectorAll("a[href='/store']")).toHaveLength(1);
     expect(container.querySelectorAll("[data-ad]")).toHaveLength(3);
+});
+
+ test("mobile search filters gigs and date links retain the chosen date", () => {
+    render("/search?date=2026-10-02");
+    expect(container.querySelectorAll(".day")).toHaveLength(1);
+    expect(container.querySelector(".date").textContent).toBe("Day 2");
+    const input = container.querySelector("input[type=search]");
+    act(() => Simulate.change(input, { target: { value: "missing artist" } }));
+    expect(container.querySelectorAll(".day")).toHaveLength(0);
+    act(() => Simulate.change(input, { target: { value: "Clayton" } }));
+    expect(container.querySelectorAll(".day")).toHaveLength(3);
 });

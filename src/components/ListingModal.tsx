@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { TListing } from "../types/types";
 import { Listing } from "./Listing/Listing";
+import { MobileDrawer, useDrawer } from "./MobileDrawer";
 import { PageListing } from "./PageListing/PageListing";
 
 export const ListingModal = ({ listing, children }: { listing: TListing; children?: React.ReactNode }) => {
     const [open, setOpen] = useState(false);
+    const drawer = useDrawer();
+    const show = () => window.matchMedia("(max-width: 767px)").matches ? drawer.show() : setOpen(true);
 
     useEffect(() => {
         if (!open) {
@@ -32,17 +35,21 @@ export const ListingModal = ({ listing, children }: { listing: TListing; childre
             <div
                 role="button"
                 tabIndex={0}
-                onClick={() => setOpen(true)}
+                onClick={show}
                 onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        setOpen(true);
+                        show();
                     }
                 }}
                 style={{ cursor: "pointer" }}
             >
                 {children || <Listing listing={listing} />}
             </div>
+
+            <MobileDrawer open={drawer.open} close={drawer.close} title="Gig details" fullScreen>
+                <PageListing listing={listing} />
+            </MobileDrawer>
 
             {open && (
                 <div

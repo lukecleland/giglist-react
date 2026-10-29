@@ -4,17 +4,18 @@ import type { DatePickerProps } from "antd";
 import { DatePicker, Space } from "antd";
 import "antd/dist/antd.css";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { filterGigSearch, nameForSearchSlug, searchSlugFromPath } from "../utils/searchUrl";
+
+import { MobileDrawer, useDrawer } from "./MobileDrawer";
 
 export const Menu: React.ElementType = () => {
     const [searchToggle, setSearchToggle] = useState<boolean>(false);
-    const [menuToggle, setMenuToggle] = useState<boolean>(false);
+    const drawer = useDrawer();
     const [datePickerOpen, setDatePickerOpen] = useState(false);
-    const [datePickerOpenMobile, setDatePickerOpenMobile] = useState(false);
     const [postcode, setPostcode] = useState<string>("0000");
     const [searchQuery, setSearchQuery] = useState("");
-    const { pathname: path } = useLocation();
+    const { pathname: path, search } = useLocation();
     const navigate = useNavigate();
     const { setGiglist, giglistFull, nationalGiglist, setIsSearching } = useContext(
         CustomContext,
@@ -23,11 +24,11 @@ export const Menu: React.ElementType = () => {
     useEffect(() => {
         const slug = searchSlugFromPath(path);
         setSearchQuery(slug ? nameForSearchSlug(nationalGiglist, slug) : "");
-        setGiglist(slug ? filterGigSearch(nationalGiglist, slug, true) : giglistFull);
+        const date = new URLSearchParams(search).get("date");
+        setGiglist(slug ? filterGigSearch(nationalGiglist, slug, true) : date ? giglistFull.filter((gig) => gig.datetime === date) : giglistFull);
         setIsSearching(!!slug);
         setSearchToggle(path === "/search" || path === "/search/");
-        setMenuToggle(path === "/search" || path === "/search/");
-    }, [path, giglistFull, nationalGiglist, setGiglist, setIsSearching]);
+    }, [path, search, giglistFull, nationalGiglist, setGiglist, setIsSearching]);
 
     useEffect(() => {
         const updatePostcode = () => {
@@ -68,21 +69,6 @@ export const Menu: React.ElementType = () => {
         setSearchToggle(!searchToggle);
     };
 
-    const handleMenuToggle = (event: React.MouseEvent<HTMLAnchorElement>) => {
-        event.preventDefault();
-        setMenuToggle(!menuToggle);
-    };
-
-    const handleSearchEnter = (
-        event: React.KeyboardEvent<HTMLInputElement>,
-    ) => {
-        console.log(event.key);
-        if (event.key === "Enter") {
-            setSearchToggle(false);
-            setMenuToggle(false);
-        }
-    };
-
     const postcodeDisplay =
         postcode === "0000" || postcode === "0" ? "National" : postcode;
 
@@ -109,7 +95,7 @@ export const Menu: React.ElementType = () => {
                         {postcodeDisplay}
                     </a>
                     <div className="right menu">
-                        {path != "/gigmap" && path != "/submit" && (
+                        {path !== "/gigmap" && path !== "/submit" && (
                             <a
                                 href="/search"
                                 className="item search-button"
@@ -225,137 +211,43 @@ export const Menu: React.ElementType = () => {
                 </div>
             </div>
             <div className="mobile only row">
-                <div className="ui inverted menu navbar full-width">
-                    <a href="/">
-                        <div className="logo"></div>
-                    </a>
-
-                    <div className="menu-icon">
-                        <a href="/location" className="location-icon">
-                            <Icon name="crosshairs" />
-                        </a>
-                        <Space
-                            direction="vertical"
-                            style={{
-                                backgroundColor: "black",
-                                color: "white",
-                                height: 30,
-                            }}
-                        >
-                            <Icon
-                                name="calendar alternate outline"
-                                onClick={() => setDatePickerOpenMobile(true)}
-                                style={{
-                                    color: "#f4f4f4",
-                                    borderLeft: "black",
-                                    margin: "-10px 0px 0px 0px",
-                                }}
-                            />
-
-                            <DatePicker
-                                className={"datePicker"}
-                                open={datePickerOpenMobile}
-                                onOpenChange={setDatePickerOpenMobile}
-                                onChange={onChange}
-                            />
-                        </Space>
-
-                        <Icon
-                            name="sidebar"
-                            style={{
-                                color: "#f4f4f4",
-                                borderLeft: "black",
-                                margin: "-10px 0px 0px 0px",
-                            }}
-                            onClick={handleMenuToggle}
-                        ></Icon>
-                    </div>
-
-                    <div
-                        className="mobile-links"
-                        style={
-                            menuToggle
-                                ? { display: "block" }
-                                : { display: "none" }
-                        }
-                    >
-                        <ul>
-                            <li>
-                                <a
-                                    href="/search"
-                                    className="item search-mobile"
-                                    onClick={handleSearchToggle}
-                                >
-                                    Search
-                                </a>
-                                {searchToggle && (
-                                    <div
-                                        className="ui inverted form search-form-mobile"
-                                        id="search-form-mobile"
-                                    >
-                                        <div className="field pad">
-                                            <label>
-                                                Artist / Venue / Suburb
-                                            </label>
-                                            <input
-                                                autoComplete="off"
-                                                name="searchq"
-                                                value={searchQuery}
-                                                type="text"
-                                                placeholder="Search Artist / Venue / Suburb"
-                                                id="event_name_search"
-                                                autoFocus={false}
-                                                onChange={(e) => doSearch(e)}
-                                                onKeyDown={(e) => {
-                                                    handleSearchEnter(e);
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                            </li>
-                            <li>
-                                <a className="item" href="/gigmap">
-                                    Gigmap
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    className="item"
-                                    href="/store"
-                                >
-                                    Store
-                                </a>
-                            </li>
-                            <li>
-                                <a className="item" href="/submit">
-                                    Submit
-                                </a>
-                            </li>
-                            <li>
-                                <a className="item" href="/about">
-                                    About
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/location" className="item">
-                                    Set Location
-                                </a>
-                            </li>
-                            {/* <li>
-                                <a className="item" href="shop.php">
-                                    Shop
-                                </a>
-                            </li> */}
-                            {/* <li>
-                                <a className="item" href="/musoswanted">
-                                    Musos Wanted!
-                                </a>
-                            </li> */}
-                        </ul>
-                    </div>
+                <div className="mobile-app-header">
+                    <Link to="/" className="mobile-brand" aria-label="Giglist home">
+                        <img src={require("../styles/assets/newLogoGiglist.png")} alt="Giglist" />
+                    </Link>
+                    <form className="mobile-search" role="search" onSubmit={(event) => {
+                        event.preventDefault();
+                        (event.currentTarget.querySelector("input") as HTMLInputElement)?.blur();
+                    }}>
+                        <Icon name="search" aria-hidden="true" />
+                        <input type="search" aria-label="Search artist, venue or suburb"
+                            placeholder="Find Gigs" value={searchQuery}
+                            onChange={doSearch} onFocus={() => {
+                                if (path !== "/" && path !== "/search" && !searchSlugFromPath(path)) navigate("/search");
+                            }} />
+                        {!!searchQuery && <button type="button" aria-label="Clear search" onClick={() => doSearch(undefined)}>×</button>}
+                    </form>
+                    <button className="mobile-menu-button" type="button" aria-label="Open navigation"
+                        aria-expanded={drawer.open} onClick={drawer.show}><Icon name="bars" /></button>
                 </div>
             </div>
+            <MobileDrawer open={drawer.open} close={drawer.close} title="Giglist">
+                <nav aria-label="Mobile navigation" className="mobile-drawer-nav">
+                    <Link to="/" replace onClick={() => doSearch(undefined)}><Icon name="list" /> All gigs</Link>
+                    <Link to="/gigmap" replace><Icon name="map outline" /> Gigmap</Link>
+                    <Link to="/location" replace><Icon name="crosshairs" /> Location <small>{postcodeDisplay}</small></Link>
+                    <label className="mobile-date-filter"><span><Icon name="calendar alternate outline" /> Filter by date</span>
+                        <input type="date" aria-label="Filter gigs by date" onChange={(event) => {
+                            if (!event.target.value) return;
+                            const selectedDate = event.target.value;
+                            navigate(`/search?date=${selectedDate}`, { replace: true });
+                        }} />
+                    </label>
+                    <Link to="/store" replace><Icon name="shopping bag" /> Store</Link>
+                    <Link to="/submit" replace><Icon name="plus" /> Submit a gig</Link>
+                    <Link to="/about" replace><Icon name="info circle" /> About</Link>
+                </nav>
+            </MobileDrawer>
         </>
     );
 };

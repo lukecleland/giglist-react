@@ -25,7 +25,7 @@
             rel="icon"
             href="%PUBLIC_URL%/favicon.png"
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="robots" content="index, follow" data-rh="true" />
         <meta name="theme-color" content="#000000" />
 
@@ -115,24 +115,7 @@
                     }
                 });
 
-                // if mobile, add sticky class to first date class found, wait until react loads
-                if ($(window).width() < 600) {
-                    setTimeout(function () {
-                        $(".day:first-child .date").addClass("sticky");
-                    }, 1000);
-                }
             });
-
-            window.onscroll = function () {
-                // loop through each day class and if in view add sticky class to the .date child of that day use offset. we don't want to switch until the next day scolls to top. add some buffer tot he action so it doesn't switch too early.
-                $(".day").each(function () {
-                    if ($(this).offset().top - $(window).scrollTop() < 100) {
-                        $(this).find(".date").addClass("sticky");
-                    } else {
-                        $(this).find(".date").removeClass("sticky");
-                    }
-                });
-            };
         </script>
     </head>
     <body>
