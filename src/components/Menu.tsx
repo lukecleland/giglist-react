@@ -30,10 +30,13 @@ export const Menu: React.ElementType = () => {
     }, [path, giglistFull, nationalGiglist, setGiglist, setIsSearching]);
 
     useEffect(() => {
-        const location = window.localStorage.getItem("location");
-        if (location) {
-            setPostcode(JSON.parse(location).postcode);
-        }
+        const updatePostcode = () => {
+            const location = window.localStorage.getItem("location");
+            if (location) setPostcode(String(JSON.parse(location).postcode));
+        };
+        updatePostcode();
+        window.addEventListener("locationchange", updatePostcode);
+        return () => window.removeEventListener("locationchange", updatePostcode);
     }, []);
 
     const doSearch = (e: ChangeEvent<HTMLInputElement> | undefined) => {

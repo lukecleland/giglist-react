@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { TGiglist, GigAd, TAllTimeCount } from "../types/types";
 import axios from "axios";
+import { initializeLocation } from "../utils/initialLocation";
 import { fetchGigAds } from "../utils/fetchGigAds";
 import { normalizeGigText } from "../utils/normalizeGigText";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
@@ -57,9 +58,11 @@ const Data = () => {
     //    "https://ggdnjoumpevcetavddjp.supabase.co/functions/v1/legacy-national-feed";
 
     useEffect(() => {
+        const locationReady = initializeLocation();
         // Fetch GIGADS from an API and update the state
         fetchGigAds("Token oBtxXLOu03SJmaB8O8TNh3c8M6dbMobB")
-            .then((ads) => {
+            .then(async (ads) => {
+                await locationReady;
                 const activeAds = ads.filter((ad) => ad.Active);
 
                 const postcodeFirstChar = getPostcode().toString()[0];
@@ -87,7 +90,8 @@ const Data = () => {
         // Fetch giglist data from the national API and update the context
         axios
             .get(feedLink, { timeout: 15000 })
-            .then((response) => {
+            .then(async (response) => {
+                await locationReady;
                 if (setGiglist) {
                     const nationalGiglist = normalizeGigText(response.data as TGiglist);
                     setNationalGiglist(nationalGiglist);

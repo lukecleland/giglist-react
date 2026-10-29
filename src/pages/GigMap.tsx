@@ -19,7 +19,7 @@ const mapOptions = {
 const GigMap = ({ giglist }: { giglist: TGiglist }) => {
     const [searchDate, setSearchDate] = useState(() => moment().format("YYYY-MM-DD"));
     const [selectedKey, setSelectedKey] = useState<string | null>(null);
-    const [initialView] = useState(() => {
+    const initialView = useMemo(() => {
         try {
             const location = JSON.parse(window.localStorage.getItem("location") || "null");
             if (["0000", "0"].includes(String(location?.postcode))) {
@@ -28,9 +28,9 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
             const lat = Number(location?.lat);
             const lng = Number(location?.long);
             if (location?.lat && location?.long && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) return { national: false, center: { lat, lng }, zoom: 13 };
-        } catch { /* Use Perth when no valid saved location is available. */ }
-        return { national: false, center: { lat: -31.9505, lng: 115.8605 }, zoom: 13 };
-    });
+        } catch { /* Use the national view when no saved location is available. */ }
+        return { national: true, center: { lat: -27, lng: 133 }, zoom: 4 };
+    }, [giglist]);
     const onMapLoad = useCallback((map: google.maps.Map) => {
         if (initialView.national) {
             // Fit mainland Australia and Tasmania for both portrait and landscape screens.
