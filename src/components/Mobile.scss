@@ -25,16 +25,18 @@
 }
 @media (max-width: 767px) {
     .mobile-app-header {
-        position: fixed; inset: 0 0 auto; z-index: 1000;
-        display: grid; grid-template-columns: 205px minmax(0, 1fr) 44px; align-items: center; gap: 10px;
+        // Explicit offsets also work in older Android browsers without inset support.
+        position: fixed; top: 0; left: 0; right: 0; width: 100%; box-sizing: border-box; z-index: 1000;
+        display: flex; align-items: center;
+        padding: 8px 10px;
         padding: calc(8px + env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 8px max(10px, env(safe-area-inset-left));
         background: #080909; border-bottom: 1px solid #292b2d; min-height: 60px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    .mobile-brand { display: flex; align-items: center; min-height: 44px; padding-top: 4px; }
-    .mobile-brand img { width: 100%; height: auto; }
+    .mobile-brand { display: flex; flex: 0 1 205px; min-width: 0; align-items: center; min-height: 44px; padding-top: 4px; margin-right: 10px; }
+    .mobile-brand img { display: block; width: 100%; min-width: 0; height: auto; }
     .mobile-search {
-        display: flex; align-items: center; min-width: 0; width: 100%; max-width: 180px; justify-self: end; height: 28px;
+        display: flex; flex: 1 0 100px; align-items: center; min-width: 100px; max-width: 180px; margin-left: auto; margin-right: 10px; height: 28px; box-sizing: border-box;
         border: 1px solid #303234; background: #141516; border-radius: 999px; padding-left: 10px;
         i.icon { color: #aaa; margin: 0 6px 0 0; font-size: 14px; }
         input { width: 100%; min-width: 0; height: 100%; background: transparent; color: #fff; border: 0; outline: 0; font-family: inherit; font-size: 16px; line-height: 1.2; text-align: left; padding: 0 10px 0 0; }
@@ -43,7 +45,7 @@
         button { background: none; border: 0; color: #ddd; min-width: 28px; height: 28px; font-size: 22px; }
         &:focus-within { border-color: #aaa; }
     }
-    .mobile-menu-button { width: 44px; height: 44px; border: 0; background: transparent; color: #fff; font-size: 23px; padding: 0; }
+    .mobile-menu-button { flex: 0 0 44px; width: 44px; height: 44px; border: 0; background: transparent; color: #fff; font-size: 23px; padding: 0; }
     .mobile-menu-button i.icon { margin: 0; }
     .ui.page.grid { height: auto; min-height: 100dvh; padding-top: calc(60px + env(safe-area-inset-top)); }
     .ui.page.grid > * { margin-top: 0; }

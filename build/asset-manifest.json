@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "./static/css/main.33a71cea.css",
+    "main.css": "./static/css/main.f7d01cc8.css",
     "main.js": "./static/js/main.1313511c.js",
     "static/media/canvas.jpg": "./static/media/canvas.72504fc3e61e09ff6b15.jpg",
     "static/media/goldenland.jpg": "./static/media/goldenland.d84570a384b41b53a31b.jpg",
@@ -108,11 +108,11 @@
     "static/media/outline-icons.woff2": "./static/media/outline-icons.687a4990ea22bb1a49d4.woff2",
     "index.html": "./index.html",
     "static/media/gigmap-cluster.svg": "./static/media/gigmap-cluster.91accabeb2b880e11cfc174f57903669.svg",
-    "main.33a71cea.css.map": "./static/css/main.33a71cea.css.map",
+    "main.f7d01cc8.css.map": "./static/css/main.f7d01cc8.css.map",
     "main.1313511c.js.map": "./static/js/main.1313511c.js.map"
   },
   "entrypoints": [
-    "static/css/main.33a71cea.css",
+    "static/css/main.f7d01cc8.css",
     "static/js/main.1313511c.js"
   ]
 }
