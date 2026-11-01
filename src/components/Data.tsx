@@ -6,7 +6,7 @@ import { fetchGigAds } from "../utils/fetchGigAds";
 import { normalizeGigText } from "../utils/normalizeGigText";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
 
-const filterByLocationFromStorage = (giglist: TGiglist) => {
+export const filterByLocationFromStorage = (giglist: TGiglist) => {
     const location = window.localStorage.getItem("location");
 
     if (location) {

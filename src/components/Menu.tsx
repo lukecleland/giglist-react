@@ -3,6 +3,10 @@ import { Icon } from "semantic-ui-react";
 import type { DatePickerProps } from "antd";
 import { DatePicker, Space } from "antd";
 import "antd/dist/antd.css";
+import axios from "axios";
+import { filterByLocationFromStorage } from "./Data";
+import { normalizeGigText } from "../utils/normalizeGigText";
+import { TGiglist } from "../types/types";
 import { CustomContext, CustomContextType } from "./GiglistProvider";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { filterGigSearch, nameForSearchSlug, searchSlugFromPath } from "../utils/searchUrl";
@@ -15,6 +19,7 @@ export const Menu: React.ElementType = () => {
     const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [postcode, setPostcode] = useState<string>("0000");
     const [searchQuery, setSearchQuery] = useState("");
+    const [dateStatus, setDateStatus] = useState("");
     const { pathname: path, search } = useLocation();
     const navigate = useNavigate();
     const { setGiglist, giglistFull, nationalGiglist, setIsSearching } = useContext(
@@ -27,7 +32,24 @@ export const Menu: React.ElementType = () => {
         const date = new URLSearchParams(search).get("date");
         setGiglist(slug ? filterGigSearch(nationalGiglist, slug, true) : date ? giglistFull.filter((gig) => gig.datetime === date) : giglistFull);
         setIsSearching(!!slug);
+        setDateStatus("");
+        const controller = new AbortController();
+        if (!slug && date && !giglistFull.some(day => day.datetime === date)) {
+            setDateStatus("Loading gigs for this date…");
+            axios.get("https://giglist.com.au/feed_national.php", {
+                params: { date }, timeout: 15000, signal: controller.signal,
+            }).then(({ data }) => {
+                if (controller.signal.aborted) return;
+                if (!Array.isArray(data)) throw new Error("Invalid date feed");
+                const results = filterByLocationFromStorage(normalizeGigText(data as TGiglist));
+                setGiglist(results.filter(day => day.datetime === date));
+                setDateStatus(results.some(day => day.datetime === date && day.listings.length) ? "" : "No gigs found for this date in your selected location.");
+            }).catch(() => {
+                if (!controller.signal.aborted) setDateStatus("Could not load gigs for this date. Please try again.");
+            });
+        }
         setSearchToggle(path === "/search" || path === "/search/");
+        return () => controller.abort();
     }, [path, search, giglistFull, nationalGiglist, setGiglist, setIsSearching]);
 
     useEffect(() => {
@@ -50,7 +72,7 @@ export const Menu: React.ElementType = () => {
     const filterByDateCalendar = (datetime: string) => {
         setIsSearching(false);
         setSearchQuery("");
-        setGiglist(giglistFull.filter((gig) => gig.datetime === datetime));
+        navigate(datetime ? `/search?date=${encodeURIComponent(datetime)}` : "/search");
     };
 
     const onChange: DatePickerProps["onChange"] = (
@@ -74,6 +96,7 @@ export const Menu: React.ElementType = () => {
 
     return (
         <>
+            {dateStatus && <p role="status">{dateStatus}</p>}
             <div className="computer tablet only row">
                 <div className="ui inverted menu navbar full-width">
                     <a href="/">
@@ -238,9 +261,7 @@ export const Menu: React.ElementType = () => {
                     <Link to="/location" replace><Icon name="crosshairs" /> Location <small>{postcodeDisplay}</small></Link>
                     <label className="mobile-date-filter"><span><Icon name="calendar alternate outline" /> Filter by date</span>
                         <input type="date" aria-label="Filter gigs by date" onChange={(event) => {
-                            if (!event.target.value) return;
-                            const selectedDate = event.target.value;
-                            navigate(`/search?date=${selectedDate}`, { replace: true });
+                            filterByDateCalendar(event.target.value);
                         }} />
                     </label>
                     <Link to="/store" replace><Icon name="shopping bag" /> Store</Link>

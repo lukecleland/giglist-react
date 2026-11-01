@@ -1,7 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import axios from "axios";
+jest.mock("axios", () => ({ get: jest.fn() }));
 import { act, Simulate } from "react-dom/test-utils";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useNavigate } from "react-router-dom";
 import { CustomContext, GiglistProvider } from "./GiglistProvider";
 import { Menu } from "./Menu";
 import { DateList } from "./DateList";
@@ -15,21 +17,25 @@ jest.mock("./GigAds", () => ({ GigAds: () => <div data-ad="true" /> }));
 
 const feed = [1, 2, 3].map((id) => ({
     datestring: `Day ${id}`, datetime: `2026-10-0${id}`,
-    listings: [{ id, artist: "Clayton Bulger", name: "Windsor Hotel", suburb: "Perth", date: "2026-10-01" }],
+    listings: [{ id, artist: "Clayton Bulger", name: "Windsor Hotel", address: "123 Test Street", suburb: "Perth", date: "2026-10-01" }],
 }));
 
 function Seed() {
+    const navigate = useNavigate();
     const { setGiglistFull, setNationalGiglist, setGigAds } = React.useContext(CustomContext);
     React.useEffect(() => {
         setGiglistFull([...feed, { datestring: "Empty day", datetime: "2026-10-04", listings: [] }]);
         setNationalGiglist(feed);
         setGigAds([{}, {}]);
     }, [setGiglistFull, setNationalGiglist, setGigAds]);
-    return null;
+    return <button data-reset onClick={() => navigate("/")}>Reset route</button>;
 }
 
 let container;
 beforeEach(() => {
+    axios.get.mockReset();
+    axios.get.mockResolvedValue({ data: [] });
+    window.localStorage.clear();
     container = document.createElement("div");
     document.body.appendChild(container);
 });
@@ -92,4 +98,21 @@ test("the dedicated Search page opens search with crawlable Search and Store lin
     expect(container.querySelectorAll(".day")).toHaveLength(0);
     act(() => Simulate.change(input, { target: { value: "Clayton" } }));
     expect(container.querySelectorAll(".day")).toHaveLength(3);
+});
+
+
+test("a date outside the upcoming feed loads archived gigs and leaving restores upcoming gigs", async () => {
+    axios.get.mockResolvedValue({ data: [{ ...feed[0], datetime: "2020-01-01", datestring: "Archived day" }] });
+    await act(async () => { render("/search?date=2020-01-01"); });
+    expect(axios.get).toHaveBeenCalledWith("https://giglist.com.au/feed_national.php", expect.objectContaining({ params: { date: "2020-01-01" } }));
+    expect(container.querySelector(".date").textContent).toBe("Archived day");
+    const allGigs = container.querySelector("[data-reset]");
+    act(() => Simulate.click(allGigs, { button: 0 }));
+    expect(container.querySelectorAll(".day")).toHaveLength(3);
+});
+
+test("archive failures display an error instead of claiming no gigs", async () => {
+    axios.get.mockRejectedValue(new Error("Offline"));
+    await act(async () => { render("/search?date=2020-01-01"); });
+    expect(container.querySelector('[role="status"]').textContent).toContain("Could not load gigs");
 });
