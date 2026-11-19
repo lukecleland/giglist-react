@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { GoogleMap, useJsApiLoader, Marker, MarkerClusterer, InfoWindow } from "@react-google-maps/api";
 import { mapStyles } from "../styles/mapStyles";
 import { TGiglist } from "../types/types";
-import { getMapLocations } from "../utils/mapLocations";
+import { getMapLocations, groupMapListings } from "../utils/mapLocations";
 import moment from "moment";
 import { AddToCalendar } from "../components/AddToCalendar";
 import { ShareGig } from "../components/ShareGig";
@@ -18,6 +18,10 @@ const mapOptions = {
 
 const GigMap = ({ giglist }: { giglist: TGiglist }) => {
     const [searchDate, setSearchDate] = useState(() => moment().format("YYYY-MM-DD"));
+    const [rangeDays, setRangeDays] = useState(7);
+    const endDate = moment(searchDate).add(rangeDays - 1, "days").format("YYYY-MM-DD");
+    const today = moment().format("YYYY-MM-DD");
+    const tomorrow = moment().add(1, "day").format("YYYY-MM-DD");
     const [selectedKey, setSelectedKey] = useState<string | null>(null);
     const initialView = useMemo(() => {
         try {
@@ -37,7 +41,15 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
             map.fitBounds({ north: -10, south: -44, west: 112, east: 154 }, 24);
         }
     }, [initialView]);
-    const locations = useMemo(() => getMapLocations(giglist, searchDate), [giglist, searchDate]);
+    const locations = useMemo(() => getMapLocations(giglist, searchDate, endDate), [giglist, searchDate, endDate]);
+    const gigCounts = useMemo(() => new Map(locations.map(location => [location.key, location.listings.length])), [locations]);
+    const calculateCluster = useCallback((markers: google.maps.Marker[]) => {
+        const count = markers.reduce((total, marker) => {
+            const position = marker.getPosition();
+            return total + (position ? gigCounts.get(`${position.lat()},${position.lng()}`) || 0 : 0);
+        }, 0);
+        return { text: String(count), index: 1, title: `${count} gigs — click to zoom in` };
+    }, [gigCounts]);
     const selectedLocation = locations.find((location) => location.key === selectedKey);
     const { isLoaded, loadError } = useJsApiLoader({
         id: "google-map-script",
@@ -57,22 +69,47 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
             <meta property="og:description" content="Explore live music gigs on the Giglist map and discover venues and shows near you." />
             <meta property="og:url" content="https://giglist.com.au/gigmap" />
         </Helmet>
-        <div className="date-control"><div>
-            <button className="previous" onClick={() => changeDate(-1)} aria-label="Previous day">
-                <img src={require("../styles/assets/triangle.png")} alt="" />
-            </button>
-            <p>{moment(searchDate).format("ddd MMM D, YYYY")}</p>
-            <button className="next" onClick={() => changeDate(1)} aria-label="Next day">
-                <img src={require("../styles/assets/triangle.png")} alt="" />
-            </button>
-        </div></div>
+        <nav className="date-control gigmap-navigation" aria-label="Gigmap dates">
+            <div className="gigmap-presets">
+                {[
+                    { label: "Next 7 days", date: today, days: 7 },
+                    { label: "Today", date: today, days: 1 },
+                    { label: "Tomorrow", date: tomorrow, days: 1 },
+                ].map(({ label, date, days }) => <button key={label}
+                    aria-pressed={searchDate === date && rangeDays === days}
+                    onClick={() => { setSearchDate(date); setRangeDays(days); setSelectedKey(null); }}>
+                    {label}
+                </button>)}
+                <label className="gigmap-date-picker">Choose date
+                    <input type="date" aria-label="Choose date" value={searchDate}
+                        onChange={(event) => {
+                            const date = event.target.value;
+                            if (!moment(date, "YYYY-MM-DD", true).isValid()) return;
+                            setSearchDate(date); setRangeDays(1); setSelectedKey(null);
+                        }} />
+                </label>
+            </div>
+            <div className="gigmap-period">
+                <button className="previous" onClick={() => changeDate(-rangeDays)} aria-label={rangeDays === 7 ? "Previous 7 days" : "Previous day"}><img src={require("../styles/assets/triangle.png")} alt="" /></button>
+                <div aria-live="polite">
+                    <strong>{rangeDays === 7
+                        ? `${moment(searchDate).format("D MMM")} – ${moment(endDate).format("D MMM YYYY")}`
+                        : moment(searchDate).format("ddd, D MMM YYYY")}</strong>
+                </div>
+                <button className="next" onClick={() => changeDate(rangeDays)} aria-label={rangeDays === 7 ? "Next 7 days" : "Next day"}><img src={require("../styles/assets/triangle.png")} alt="" /></button>
+            </div>
+        </nav>
         <div className="gigmap-canvas" aria-busy={!isLoaded && !loadError}>
+        <div className="gigmap-counts" aria-live="polite">
+            {locations.reduce((count, location) => count + location.listings.length, 0)} gigs · {locations.length} map locations
+        </div>
         {!isLoaded && <div className="gigmap-loading" role={loadError ? "alert" : "status"}>
             {loadError ? "The map couldn’t load. Please refresh to try again." : "Loading map…"}
         </div>}
+        {isLoaded && locations.length === 0 && <div className="gigmap-empty" role="status">No gigs to map for these dates. Try another day or week.</div>}
         {isLoaded && <GoogleMap mapContainerStyle={containerStyle} options={mapOptions}
             center={initialView.center} zoom={initialView.zoom} onLoad={onMapLoad} onClick={() => setSelectedKey(null)}>
-            <MarkerClusterer key={searchDate} {...gigMapClusterOptions} onClick={() => setSelectedKey(null)}>
+            <MarkerClusterer key={`${searchDate}-${endDate}`} {...gigMapClusterOptions} calculator={calculateCluster} onClick={() => setSelectedKey(null)}>
                 {(clusterer) => <>{locations.map((location) => <Marker
                     key={location.key} clusterer={clusterer} position={location.position}
                     title={location.listings.map((listing) => `${listing.artist} — ${listing.name}`).join("; ")}
@@ -82,23 +119,18 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
             </MarkerClusterer>
             {selectedLocation && <InfoWindow position={selectedLocation.position} options={{ pixelOffset: new window.google.maps.Size(0, -20) }} onCloseClick={() => setSelectedKey(null)}>
                 <div style={{ maxHeight: "min(60vh, 480px)", overflowY: "auto" }}>
-                    {selectedLocation.listings.map((listing, index) => <div className="gigmap-preview" key={`${listing.id}-${index}`}>
-                        <img src={listing.location_image_url?.trim() || "/placeholder-gig.jpeg"}
-                            alt={listing.name} className="gigmap-preview-image"
-                            onError={(event) => {
-                                const image = event.currentTarget;
-                                if (image.getAttribute("src") !== "/placeholder-gig.jpeg") image.src = "/placeholder-gig.jpeg";
-                            }} />
-                        <div className="gigmap-preview-body">
-                            <div className="gigmap-preview-artist">{listing.artist.replace(/&amp;/g, "&")}</div>
-                            <div className="gigmap-preview-venue">
-                                {listing.name.replace(/&amp;/g, "&")}
-                            </div>
-                            <div className="gigmap-preview-details">
-                                <div>{[listing.address, listing.suburb, listing.state].filter(Boolean).join(", ").replace(/&amp;/g, "&")}</div>
-                                <div className="gigmap-preview-datetime">{moment(listing.date).format("ddd, D MMM YYYY")} · {listing.start}</div>
-                            </div>
-                            <div className="gigmap-preview-actions">
+                    {groupMapListings(selectedLocation.listings).map(({ key, venue: listing, dates }) => <div className="gigmap-preview gigmap-venue-group" key={key}>
+                        <div className="gigmap-venue-header">
+                            <img src={listing.location_image_url?.trim() || "/placeholder-gig.jpeg"}
+                                alt={listing.name} className="gigmap-preview-image"
+                                onError={(event) => {
+                                    const image = event.currentTarget;
+                                    if (image.getAttribute("src") !== "/placeholder-gig.jpeg") image.src = "/placeholder-gig.jpeg";
+                                }} />
+                            <div>
+                                <div className="gigmap-preview-venue">{listing.name.replace(/&amp;/g, "&")}</div>
+                                <div className="gigmap-preview-details">{[listing.address, listing.suburb, listing.state].filter(Boolean).join(", ").replace(/&amp;/g, "&")}</div>
+                                <div className="gigmap-preview-actions">
                             <a className="gigmap-directions"
                                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${selectedLocation.position.lat},${selectedLocation.position.lng}`)}`}
                                 target="_blank" rel="noopener noreferrer"
@@ -109,10 +141,22 @@ const GigMap = ({ giglist }: { giglist: TGiglist }) => {
                                     <path d="M9 15v-4h7m-3-3 3 3-3 3" />
                                 </svg>
                             </a>
-                            <AddToCalendar listing={listing} className="gigmap-calendar" />
-                            <ShareGig listing={listing} />
+                                </div>
                             </div>
                         </div>
+                        {dates.map(({ date, listings }) => <div className="gigmap-date-group" key={date}>
+                            <h3>{moment(date).format("ddd, D MMM YYYY")}</h3>
+                            {listings.map((listing, index) => <div className="gigmap-show-row" key={`${listing.id}-${index}`}>
+                                <div className="gigmap-show-title">
+                                    <span className="gigmap-preview-artist">{listing.artist.replace(/&amp;/g, "&")}</span>
+                                    <span className="gigmap-show-time">{listing.start}</span>
+                                </div>
+                                <div className="gigmap-preview-actions">
+                                    <AddToCalendar listing={listing} className="gigmap-calendar" />
+                                    <ShareGig listing={listing} />
+                                </div>
+                            </div>)}
+                        </div>)}
                     </div>)}
                 </div>
             </InfoWindow>}

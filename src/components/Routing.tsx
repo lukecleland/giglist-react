@@ -67,7 +67,7 @@ export const Routing = () => {
             <Route path="/search" element={<Main />} />
             <Route path="/:searchSlug" element={<Main />} />
             <Route path="/location" element={<Location />} />
-            <Route path="/gigmap" element={<GigMap giglist={giglist} />} />
+            <Route path="/gigmap" element={<GigMap giglist={routeGiglist} />} />
             <Route path="/qr" element={<Navigate to="/" />} />
             <Route path="/submit" element={<Submit />} />
             <Route path="/about" element={<About />} />

@@ -30,6 +30,7 @@ Downloaded 2026-09-30 from Unsplash, under https://unsplash.com/license. Bundled
 - pigment: https://images.unsplash.com/photo-1533158326339-7f3cf2404354 — Unsplash license https://unsplash.com/license
 - woodland: https://images.unsplash.com/photo-1473448912268-2022ce9509d8 — Unsplash license https://unsplash.com/license
 - concertlights: https://images.unsplash.com/photo-1506157786151-b8491531f063 — Unsplash license https://unsplash.com/license
+  - Also used unchanged as `public/giglist-live-music.jpg` for the homepage/search preview.
 - purplegig: https://images.unsplash.com/photo-1459749411175-04bf5292ceea — Unsplash license https://unsplash.com/license
 - soundstage: https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b — Unsplash license https://unsplash.com/license
 

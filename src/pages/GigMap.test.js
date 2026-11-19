@@ -33,6 +33,9 @@ test("dark clustered map shows co-located gigs and clears them when changing dat
         act(() => Simulate.click(container.querySelector("[data-marker=true]")));
         expect(container.querySelector("[data-popup]").textContent).toContain("First Act");
         expect(container.querySelector("[data-popup]").textContent).toContain("Second Act");
+        expect(container.querySelectorAll(".gigmap-venue-header")).toHaveLength(1);
+        expect(container.querySelectorAll(".gigmap-date-group")).toHaveLength(1);
+        expect(container.querySelectorAll(".gigmap-show-row")).toHaveLength(2);
         expect(container.querySelector(".gigmap-preview-image").getAttribute("src")).toBe("/placeholder-gig.jpeg");
         const calendar = container.querySelector(".gigmap-calendar");
         const event = decodeURIComponent(calendar.getAttribute("href").split(",")[1]);
@@ -47,7 +50,7 @@ test("dark clustered map shows co-located gigs and clears them when changing dat
         expect(directionsUrl.searchParams.get("destination")).toBe("-31.95,115.86");
         expect(directionsUrl.searchParams.has("origin")).toBe(false);
         expect(directions.target).toBe("_blank");
-        act(() => Simulate.click(container.querySelector('[aria-label="Next day"]')));
+        act(() => Simulate.click(container.querySelector('[aria-label="Next 7 days"]')));
         expect(container.querySelector("[data-popup]")).toBeNull();
         expect(container.querySelectorAll("[data-marker=true]")).toHaveLength(0);
     } finally {
@@ -70,7 +73,8 @@ test("keeps the same map container while the Google Maps script loads", () => {
         act(() => { ReactDOM.render(<HelmetProvider><GigMap giglist={[]} /></HelmetProvider>, container); });
         expect(container.querySelector(".gigmap-canvas")).toBe(canvas);
         expect(canvas.getAttribute("aria-busy")).toBe("false");
-        expect(canvas.querySelector('[role="status"]')).toBeNull();
+        expect(canvas.querySelector('.gigmap-loading')).toBeNull();
+        expect(canvas.querySelector('.gigmap-empty').textContent).toContain('No gigs to map');
         expect(mockMapProps.mapContainerStyle).toEqual({ width: "100%", height: "100%" });
     } finally {
         mockIsLoaded = true;
@@ -102,4 +106,39 @@ test("local postcode keeps a neighbourhood view", () => {
         expect(mockMapProps.center).toEqual({ lat: -31.95, lng: 115.86 });
         expect(mockMapProps.zoom).toBe(13);
     } finally { act(() => { ReactDOM.unmountComponentAtNode(container); }); }
+});
+
+test("defaults to seven days and supports day shortcuts, date selection, and returning to the week", () => {
+    const oldGoogle = window.google;
+    window.google = { maps: { Size: class {}, Point: class {} } };
+    const container = document.createElement('div');
+    const gigs = [-1, 0, 1, 6, 7].map((offset, id) => ({
+        id, artist: `Act ${offset}`, name: 'Venue', lat: '-31.95', lng: '115.86',
+        date: moment().add(offset, 'days').format('YYYY-MM-DD'), start: '8pm',
+    }));
+    const clickPreset = label => act(() => Simulate.click(Array.from(container.querySelectorAll('.gigmap-presets button')).find(button => button.textContent === label)));
+    const markers = [{ getPosition: () => ({ lat: () => -31.95, lng: () => 115.86 }) }];
+    try {
+        act(() => ReactDOM.render(<HelmetProvider><GigMap giglist={[{ listings: gigs }]} /></HelmetProvider>, container));
+        expect(container.querySelector('.gigmap-counts').textContent).toContain('3 gigs');
+        expect(mockClusterProps.calculator(markers).text).toBe('3');
+        expect(container.querySelector('[aria-pressed="true"]').textContent).toBe('Next 7 days');
+        clickPreset('Today');
+        expect(mockClusterProps.calculator(markers).text).toBe('1');
+        expect(container.querySelector('[data-marker=true]').textContent).toBe('Act 0 — Venue');
+        clickPreset('Tomorrow');
+        expect(container.querySelector('[data-marker=true]').textContent).toBe('Act 1 — Venue');
+        act(() => Simulate.change(container.querySelector('input'), { target: { value: moment().add(7, 'days').format('YYYY-MM-DD') } }));
+        expect(container.querySelector('[data-marker=true]').textContent).toBe('Act 7 — Venue');
+        clickPreset('Next 7 days');
+        expect(mockClusterProps.calculator(markers).text).toBe('3');
+        expect(container.querySelector('.gigmap-counts').textContent).toContain('3 gigs');
+        act(() => Simulate.click(container.querySelector('[aria-label="Next 7 days"]')));
+        expect(container.querySelector('[data-marker=true]').textContent).toBe('Act 7 — Venue');
+        act(() => Simulate.click(container.querySelector('[aria-label="Previous 7 days"]')));
+        expect(container.querySelector('.gigmap-counts').textContent).toContain('3 gigs');
+    } finally {
+        act(() => ReactDOM.unmountComponentAtNode(container));
+        window.google = oldGoogle;
+    }
 });

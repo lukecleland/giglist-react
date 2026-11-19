@@ -27,6 +27,27 @@ export const Main = () => {
                     content="Discover live music gigs across Australia. Browse upcoming shows by date, search by artist or venue, and find gigs near you."
                 />
                 <meta property="og:url" content={`https://giglist.com.au/${isSearchPage ? "search" : ""}`} />
+                <meta property="og:image" content="https://giglist.com.au/giglist-live-music.jpg" />
+                <meta property="og:image:alt" content="A live music crowd beneath concert stage lights" />
+                <meta name="twitter:image" content="https://giglist.com.au/giglist-live-music.jpg" />
+                <meta name="twitter:image:alt" content="A live music crowd beneath concert stage lights" />
+                {!isSearchPage && (
+                    <script type="application/ld+json">
+                        {JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "WebPage",
+                            "@id": "https://giglist.com.au/#webpage",
+                            url: "https://giglist.com.au/",
+                            name: "Giglist | Live Music Gig Guide Australia",
+                            primaryImageOfPage: {
+                                "@type": "ImageObject",
+                                url: "https://giglist.com.au/giglist-live-music.jpg",
+                                width: 1600,
+                                height: 1067,
+                            },
+                        })}
+                    </script>
+                )}
             </Helmet>
             <div className="side-scroll">
                 <section>

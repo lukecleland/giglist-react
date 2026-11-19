@@ -1,4 +1,4 @@
-import { getMapLocations } from "./mapLocations";
+import { getMapLocations, groupMapListings } from "./mapLocations";
 
 const gig = { id: 1, lat: "-31.95", lng: "115.86", date: "2026-10-01", artist: "First Act", name: "Venue", address: "1 Main Street", start: "7:30PM" };
 test("groups co-located gigs and filters to the selected date", () => {
@@ -38,4 +38,27 @@ test("normalizes encoded ampersands and time spacing", () => {
     const first = { ...gig, artist: 'A &amp; B' };
     const duplicate = { ...gig, id: 2, artist: 'A & B', start: '7:30 PM' };
     expect(getMapLocations([{ listings: [first, duplicate] }], gig.date)[0].listings).toHaveLength(1);
+});
+
+test("includes all seven days, excludes dates outside the range, and keeps repeat performances", () => {
+    const dates = ['2026-10-01', '2026-10-02', '2026-10-07', '2026-09-30', '2026-10-08'];
+    const feed = [{ listings: dates.map((date, id) => ({ ...gig, date, id })) }];
+    const locations = getMapLocations(feed, '2026-10-01', '2026-10-07');
+    expect(locations).toHaveLength(1);
+    expect(locations[0].listings.map(listing => listing.date)).toEqual(dates.slice(0, 3));
+});
+
+test("groups popup results by venue then date and sorts show times without changing the feed", () => {
+    const shows = [
+        { ...gig, id: 1, date: '2026-10-02', start: '9pm' },
+        { ...gig, id: 2, date: '2026-10-01', start: '20:00' },
+        { ...gig, id: 3, date: '2026-10-01', start: '7:30PM', location_image_url: '/venue.jpg' },
+        { ...gig, id: 4, name: 'Other Venue' },
+    ];
+    const groups = groupMapListings(shows);
+    expect(groups).toHaveLength(2);
+    expect(groups[0].venue.location_image_url).toBe('/venue.jpg');
+    expect(groups[0].dates.map(group => group.date)).toEqual(['2026-10-01', '2026-10-02']);
+    expect(groups[0].dates[0].listings.map(show => show.id)).toEqual([3, 2]);
+    expect(shows.map(show => show.id)).toEqual([1, 2, 3, 4]);
 });
