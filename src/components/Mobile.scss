@@ -24,6 +24,11 @@
     .listing-poster-footer { padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 767px) {
+    // Keep list browsing gestures from zooming or horizontally panning the page.
+    // Scope this to navigation and the list, rather than disabling zoom site-wide.
+    .mobile-app-header, .mobile-drawer-nav, main .side-scroll {
+        touch-action: pan-y;
+    }
     .mobile-app-header {
         // Explicit offsets also work in older Android browsers without inset support.
         position: fixed; top: 0; left: 0; right: 0; width: 100%; box-sizing: border-box; z-index: 1000;
@@ -51,7 +56,7 @@
     .ui.page.grid > * { margin-top: 0; }
     .ui.page.grid.gigmap-layout { padding-top: calc(60px + env(safe-area-inset-top)); }
     .ui.page.grid:has(> .page-modal-listing) { padding-top: calc(60px + env(safe-area-inset-top)); }
-    .side-scroll { width: 100%; }
+    .side-scroll { width: 100%; min-width: 0; }
     main .side-scroll section { overflow: visible; padding: 0 16px calc(20px + env(safe-area-inset-bottom)) !important; }
     .day { margin: 0; padding: 0; }
     .day > .date { position: sticky; top: calc(60px + env(safe-area-inset-top)); z-index: 10; height: auto; padding: 12px 2px 6px 10px; margin: 0 0 8px; font-size: 24px; line-height: 1.2; }
@@ -59,8 +64,8 @@
     .day .event-wrapper.listing {
         display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; row-gap: 3px;
         margin: 0; padding: 9px 10px; min-height: 58px; border-bottom: 1px solid #27292a; border-radius: 0;
-        .event-title { grid-column: 1; float: none; width: auto; margin: 0; font-size: 14px; line-height: 1.25; letter-spacing: 0.3px; }
-        .event-venue { grid-row: 2; grid-column: 1 / -1; padding: 0; font-size: 12px; line-height: 1.25; }
+        .event-title { grid-column: 1; float: none; width: auto; min-width: 0; overflow-wrap: anywhere; margin: 0; font-size: 14px; line-height: 1.25; letter-spacing: 0.3px; }
+        .event-venue { grid-row: 2; grid-column: 1 / -1; min-width: 0; overflow-wrap: anywhere; padding: 0; font-size: 12px; line-height: 1.25; }
         .event-time { grid-row: 1; grid-column: 2; margin: 0; font-size: 12px; line-height: 1.5; white-space: nowrap; }
         &.sponsored, &.patreon { padding-right: 28px; background-position: right 3px bottom 10px; background-size: 16px; }
     }
